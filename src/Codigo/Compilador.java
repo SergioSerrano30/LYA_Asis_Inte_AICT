@@ -1,5 +1,19 @@
 package Codigo;
 
+import compilerTools.Directory;
+import compilerTools.ErrorLSSL;
+import compilerTools.Functions;
+import compilerTools.Production;
+import compilerTools.TextColor;
+import compilerTools.Token;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
+import javax.swing.JOptionPane;
+import javax.swing.Timer;
+import say.swing.JFontChooser;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -11,11 +25,35 @@ package Codigo;
  */
 public class Compilador extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Compilador
-     */
+    private String title;
+    private Directory directorio;
+    private ArrayList<Token> tokens;
+    private ArrayList<ErrorLSSL> errors;
+    private ArrayList<TextColor> textsColor;
+    private Timer timerKeyReleased;
+    private ArrayList<Production> identProd;
+    private HashMap<String, String> identificadores;
+    private boolean codeHasBeenCompiled = false;
+    
     public Compilador() {
         initComponents();
+        init();
+    }
+    
+    public void init(){
+        //title = "Compiler";
+        //setLocationRelativeTo(null);
+        //setTitle(title);
+        directorio = new Directory(this, txtCodigo, title, ".aict");
+        addWindowListener(new WindowAdapter() {// Cuando presiona la "X" de la esquina superior derecha
+            @Override
+            public void windowClosing(WindowEvent e) {
+                directorio.Exit();
+                System.exit(0);
+            }
+        });
+        
+        Functions.setLineNumberOnJTextComponent(txtCodigo);
     }
 
     /**
@@ -39,6 +77,7 @@ public class Compilador extends javax.swing.JFrame {
         pnlCodigo = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         txtCodigo = new javax.swing.JTextPane();
+        jFontChooser1 = new say.swing.JFontChooser();
         pnlError = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         txtError = new javax.swing.JTextArea();
@@ -55,7 +94,7 @@ public class Compilador extends javax.swing.JFrame {
         correr = new javax.swing.JMenu();
         opCompilar = new javax.swing.JMenuItem();
         opEjecutar = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
+        opciones = new javax.swing.JMenu();
         opFuente = new javax.swing.JMenuItem();
 
         jMenu1.setText("jMenu1");
@@ -83,7 +122,6 @@ public class Compilador extends javax.swing.JFrame {
 
         imgNuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/nuevoArchivo30x30.png"))); // NOI18N
         imgNuevo.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        imgNuevo.setPreferredSize(new java.awt.Dimension(30, 30));
         pnlBarraHerramientas.add(imgNuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         imgAbrir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/abrirArchivo30x30.png"))); // NOI18N
@@ -104,6 +142,11 @@ public class Compilador extends javax.swing.JFrame {
 
         imgEjecutar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/ejecutar30x30.png"))); // NOI18N
         imgEjecutar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        imgEjecutar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                imgEjecutarMousePressed(evt);
+            }
+        });
         pnlBarraHerramientas.add(imgEjecutar, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 0, -1, -1));
 
         pnlFondo.add(pnlBarraHerramientas, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
@@ -113,12 +156,17 @@ public class Compilador extends javax.swing.JFrame {
         pnlCodigo.setPreferredSize(new java.awt.Dimension(830, 320));
         pnlCodigo.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        txtCodigo.setFont(new java.awt.Font("Roboto", 0, 16)); // NOI18N
         txtCodigo.setMaximumSize(new java.awt.Dimension(830, 320));
         txtCodigo.setMinimumSize(new java.awt.Dimension(830, 320));
         txtCodigo.setPreferredSize(new java.awt.Dimension(830, 320));
         jScrollPane1.setViewportView(txtCodigo);
 
         pnlCodigo.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 820, 320));
+
+        jFontChooser1.setFont(new java.awt.Font("Roboto", 0, 16)); // NOI18N
+        jFontChooser1.setSelectedFont(new java.awt.Font("Roboto", 0, 16)); // NOI18N
+        pnlCodigo.add(jFontChooser1, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 20, -1, -1));
 
         pnlFondo.add(pnlCodigo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, -1, -1));
 
@@ -149,28 +197,24 @@ public class Compilador extends javax.swing.JFrame {
         archivo.setForeground(new java.awt.Color(0, 0, 0));
         archivo.setText("Archivo");
 
-        opNuevo.setBackground(null);
         opNuevo.setForeground(new java.awt.Color(0, 0, 0));
         opNuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/nuevoArchivo20x20.png"))); // NOI18N
         opNuevo.setText("Nuevo...");
         opNuevo.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         archivo.add(opNuevo);
 
-        opAbrir.setBackground(null);
         opAbrir.setForeground(new java.awt.Color(0, 0, 0));
         opAbrir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/abrirArchivo20x20.png"))); // NOI18N
         opAbrir.setText("Abrir...");
         opAbrir.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         archivo.add(opAbrir);
 
-        opGuardar.setBackground(null);
         opGuardar.setForeground(new java.awt.Color(0, 0, 0));
         opGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/guardarArchivo20x20.png"))); // NOI18N
         opGuardar.setText("Guardar...");
         opGuardar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         archivo.add(opGuardar);
 
-        opGuardarComo.setBackground(null);
         opGuardarComo.setForeground(new java.awt.Color(0, 0, 0));
         opGuardarComo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/guardarComo20x20.png"))); // NOI18N
         opGuardarComo.setText("Guardar como...");
@@ -179,25 +223,21 @@ public class Compilador extends javax.swing.JFrame {
 
         menu.add(archivo);
 
-        editar.setBackground(null);
         editar.setForeground(new java.awt.Color(0, 0, 0));
         editar.setText("Editar");
 
-        opCortar.setBackground(null);
         opCortar.setForeground(new java.awt.Color(0, 0, 0));
         opCortar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/cortar20x20.png"))); // NOI18N
         opCortar.setText("Cortar");
         opCortar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         editar.add(opCortar);
 
-        opCopiar.setBackground(null);
         opCopiar.setForeground(new java.awt.Color(0, 0, 0));
         opCopiar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/copiar20x20.png"))); // NOI18N
         opCopiar.setText("Copiar");
         opCopiar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         editar.add(opCopiar);
 
-        opPegar.setBackground(null);
         opPegar.setForeground(new java.awt.Color(0, 0, 0));
         opPegar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/pegar20x20.png"))); // NOI18N
         opPegar.setText("Pegar");
@@ -206,18 +246,15 @@ public class Compilador extends javax.swing.JFrame {
 
         menu.add(editar);
 
-        correr.setBackground(null);
         correr.setForeground(new java.awt.Color(0, 0, 0));
         correr.setText("Correr");
 
-        opCompilar.setBackground(null);
         opCompilar.setForeground(new java.awt.Color(0, 0, 0));
         opCompilar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/compilar20x20.png"))); // NOI18N
         opCompilar.setText("Compilar");
         opCompilar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         correr.add(opCompilar);
 
-        opEjecutar.setBackground(null);
         opEjecutar.setForeground(new java.awt.Color(0, 0, 0));
         opEjecutar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/ejecutar20x20.png"))); // NOI18N
         opEjecutar.setText("Ejecutar");
@@ -226,22 +263,48 @@ public class Compilador extends javax.swing.JFrame {
 
         menu.add(correr);
 
-        jMenu2.setBackground(new java.awt.Color(255, 255, 255));
-        jMenu2.setForeground(new java.awt.Color(0, 0, 0));
-        jMenu2.setText("Opciones");
+        opciones.setBackground(new java.awt.Color(255, 255, 255));
+        opciones.setForeground(new java.awt.Color(0, 0, 0));
+        opciones.setText("Opciones");
 
         opFuente.setBackground(new java.awt.Color(255, 255, 255));
         opFuente.setForeground(new java.awt.Color(0, 0, 0));
         opFuente.setText("Fuente");
-        jMenu2.add(opFuente);
+        opFuente.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                opFuenteMouseClicked(evt);
+            }
+        });
+        opFuente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                opFuenteActionPerformed(evt);
+            }
+        });
+        opciones.add(opFuente);
 
-        menu.add(jMenu2);
+        menu.add(opciones);
 
         setJMenuBar(menu);
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void opFuenteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_opFuenteMouseClicked
+        //JFontChooser fc = new JFontChooser();
+        //JOptionPane.showMessageDialog(null, fc,"Elegir fuente",JOptionPane.PLAIN_MESSAGE);
+        //txtCodigo.setFont(fc.getSelectedFont());
+    }//GEN-LAST:event_opFuenteMouseClicked
+
+    private void imgEjecutarMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imgEjecutarMousePressed
+        
+    }//GEN-LAST:event_imgEjecutarMousePressed
+
+    private void opFuenteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opFuenteActionPerformed
+        JFontChooser fc = new JFontChooser();
+        JOptionPane.showMessageDialog(null, fc,"Elegir fuente",JOptionPane.PLAIN_MESSAGE);
+        txtCodigo.setFont(fc.getSelectedFont());
+    }//GEN-LAST:event_opFuenteActionPerformed
 
     /**
      * @param args the command line arguments
@@ -288,8 +351,8 @@ public class Compilador extends javax.swing.JFrame {
     private javax.swing.JLabel imgGuardar;
     private javax.swing.JLabel imgGuardarComo;
     private javax.swing.JLabel imgNuevo;
+    private say.swing.JFontChooser jFontChooser1;
     private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JMenuBar menu;
@@ -303,6 +366,7 @@ public class Compilador extends javax.swing.JFrame {
     private javax.swing.JMenuItem opGuardarComo;
     private javax.swing.JMenuItem opNuevo;
     private javax.swing.JMenuItem opPegar;
+    private javax.swing.JMenu opciones;
     private javax.swing.JPanel pnlBarraHerramientas;
     private javax.swing.JPanel pnlCodigo;
     private javax.swing.JPanel pnlError;
