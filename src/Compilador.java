@@ -1,23 +1,34 @@
-package Codigo;
 
+
+import com.formdev.flatlaf.FlatIntelliJLaf;
 import compilerTools.Directory;
 import compilerTools.ErrorLSSL;
 import compilerTools.Functions;
+import compilerTools.Grammar;
 import compilerTools.Production;
 import compilerTools.TextColor;
 import compilerTools.Token;
+import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import say.swing.JFontChooser;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 
 /**
  *
@@ -41,9 +52,9 @@ public class Compilador extends javax.swing.JFrame {
     }
     
     public void init(){
-        //title = "Compiler";
-        //setLocationRelativeTo(null);
-        //setTitle(title);
+        title = "AICT - Compilador";
+        setLocationRelativeTo(null);
+        setTitle(title);
         directorio = new Directory(this, txtCodigo, title, ".aict");
         addWindowListener(new WindowAdapter() {// Cuando presiona la "X" de la esquina superior derecha
             @Override
@@ -53,8 +64,122 @@ public class Compilador extends javax.swing.JFrame {
             }
         });
         
-        Functions.setLineNumberOnJTextComponent(txtCodigo);
+        Functions.setLineNumberOnJTextComponent(txtCodigo); //Pone los numeros de linea
+        timerKeyReleased = new Timer(300,((e) ->{
+            timerKeyReleased.stop();
+            colorAnalysis();
+          
+        }));
+        Functions.insertAsteriskInName(this, txtCodigo,() ->{
+            timerKeyReleased.restart();
+        });
+        tokens = new ArrayList<>();
+        errors = new ArrayList<>();
+        textsColor = new ArrayList<>();
+        identProd = new ArrayList<>(); //Identificadores de producción
+        identificadores = new HashMap<>();
+        
+        Functions.setAutocompleterJTextComponent(new String[]{"color","numero","este","oeste","norte","sur","pintar"}, txtCodigo,() ->{
+            timerKeyReleased.restart();
+        });
+        
     }
+    private void colorAnalysis(){
+        textsColor.clear();
+        LexerColor lexer;
+        
+        try {
+            File codigo = new File("color.encrypter");
+            FileOutputStream output = new FileOutputStream(codigo);
+            byte[] bytesText = txtCodigo.getText().getBytes();
+            output.write(bytesText);
+            BufferedReader entrada = new BufferedReader(new InputStreamReader(new FileInputStream(codigo),"UTF-8"));
+            lexer = new LexerColor(entrada);
+            while(true){
+                TextColor textColor = lexer.yylex();
+                if(textColor == null){
+                    break;
+                }
+                textsColor.add(textColor);
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Compilador.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Compilador.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        Functions.colorTextPane(textsColor, txtCodigo, new Color(40,40,40));
+    }
+    private void clearField(){
+        Functions.clearDataInTable(tblTokens);
+        txtConsola.setText("");
+        tokens.clear();
+        errors.clear();
+        identProd.clear();
+        identificadores.clear();
+        codeHasBeenCompiled = false;
+    }
+    private void compile(){
+        clearField();
+        lexicalAnalysis();
+        fillTablaTokens();
+        syntacticAnalysis();
+        semanticAnalysis();
+        printConsole();
+        codeHasBeenCompiled = true;
+    }
+    private void lexicalAnalysis(){
+        Lexer lexer;
+        
+        try {
+            File codigo = new File("code.encrypter");
+            FileOutputStream output = new FileOutputStream(codigo);
+            byte[] bytesText = txtCodigo.getText().getBytes();
+            output.write(bytesText);
+            BufferedReader entrada = new BufferedReader(new InputStreamReader(new FileInputStream(codigo),"UTF-8"));
+            lexer = new Lexer(entrada);
+            while(true){
+                Token token = lexer.yylex();
+                if(token == null){
+                    break;
+                }
+                tokens.add(token);
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Compilador.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Compilador.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    private void fillTablaTokens(){
+        tokens.forEach(token -> {
+            Object[] data = new Object[]{token.getLexicalComp(), token.getLexeme(), "[" + token.getLine() + ", " + token.getColumn() + "]"};
+            Functions.addRowDataInTable(tblTokens, data);
+        });
+    }
+    private void syntacticAnalysis(){
+        Grammar gramatica = new Grammar(tokens,errors);
+        gramatica.show();
+    }
+    private void semanticAnalysis(){
+        
+    }
+    private void printConsole(){
+        int sizeErrors = errors.size();
+        if (sizeErrors > 0) {
+            Functions.sortErrorsByLineAndColumn(errors);
+            String strErrors = "\n";
+            for (ErrorLSSL error : errors) {
+                String strError = String.valueOf(error);
+                strErrors += strError + "\n";
+            }
+            txtConsola.setText("Compilación terminada...\n" + strErrors + "\nLa compilación terminó con errores...");
+        } else {
+            txtConsola.setText("Compilación terminada...");
+        }
+        txtConsola.setCaretPosition(0);
+    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -78,9 +203,11 @@ public class Compilador extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         txtCodigo = new javax.swing.JTextPane();
         jFontChooser1 = new say.swing.JFontChooser();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tblTokens = new javax.swing.JTable();
         pnlError = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        txtError = new javax.swing.JTextArea();
+        txtConsola = new javax.swing.JTextArea();
         menu = new javax.swing.JMenuBar();
         archivo = new javax.swing.JMenu();
         opNuevo = new javax.swing.JMenuItem();
@@ -101,9 +228,7 @@ public class Compilador extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("AICT Compilador");
-        setMaximumSize(new java.awt.Dimension(830, 550));
         setMinimumSize(new java.awt.Dimension(830, 550));
-        setPreferredSize(new java.awt.Dimension(830, 550));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -121,26 +246,57 @@ public class Compilador extends javax.swing.JFrame {
         pnlBarraHerramientas.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         imgNuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/nuevoArchivo30x30.png"))); // NOI18N
+        imgNuevo.setToolTipText("Nuevo archivo");
         imgNuevo.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        imgNuevo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                imgNuevoMousePressed(evt);
+            }
+        });
         pnlBarraHerramientas.add(imgNuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         imgAbrir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/abrirArchivo30x30.png"))); // NOI18N
+        imgAbrir.setToolTipText("Abrir archivo");
         imgAbrir.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        imgAbrir.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                imgAbrirMousePressed(evt);
+            }
+        });
         pnlBarraHerramientas.add(imgAbrir, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 0, -1, -1));
 
         imgGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/guardarArchivo30x30.png"))); // NOI18N
+        imgGuardar.setToolTipText("Guardar archivo");
         imgGuardar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        imgGuardar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                imgGuardarMousePressed(evt);
+            }
+        });
         pnlBarraHerramientas.add(imgGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 0, -1, -1));
 
         imgGuardarComo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/guardarComo30x30.png"))); // NOI18N
+        imgGuardarComo.setToolTipText("Guardar como");
         imgGuardarComo.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        imgGuardarComo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                imgGuardarComoMousePressed(evt);
+            }
+        });
         pnlBarraHerramientas.add(imgGuardarComo, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 0, -1, -1));
 
         imgCompilar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/compilar30x30.png"))); // NOI18N
+        imgCompilar.setToolTipText("Compilar");
         imgCompilar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        imgCompilar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                imgCompilarMousePressed(evt);
+            }
+        });
         pnlBarraHerramientas.add(imgCompilar, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 0, -1, -1));
 
         imgEjecutar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/ejecutar30x30.png"))); // NOI18N
+        imgEjecutar.setToolTipText("Ejecutar");
         imgEjecutar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         imgEjecutar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -162,11 +318,34 @@ public class Compilador extends javax.swing.JFrame {
         txtCodigo.setPreferredSize(new java.awt.Dimension(830, 320));
         jScrollPane1.setViewportView(txtCodigo);
 
-        pnlCodigo.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 820, 320));
+        pnlCodigo.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 470, 320));
 
         jFontChooser1.setFont(new java.awt.Font("Roboto", 0, 16)); // NOI18N
         jFontChooser1.setSelectedFont(new java.awt.Font("Roboto", 0, 16)); // NOI18N
-        pnlCodigo.add(jFontChooser1, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 20, -1, -1));
+        pnlCodigo.add(jFontChooser1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, -1, -1));
+
+        tblTokens.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Componente léxico", "Lexema", "[Linea, Columna]"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane2.setViewportView(tblTokens);
+
+        pnlCodigo.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 0, 340, 320));
 
         pnlFondo.add(pnlCodigo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, -1, -1));
 
@@ -176,12 +355,12 @@ public class Compilador extends javax.swing.JFrame {
         pnlError.setPreferredSize(new java.awt.Dimension(830, 130));
         pnlError.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        txtError.setColumns(20);
-        txtError.setRows(5);
-        txtError.setMaximumSize(new java.awt.Dimension(830, 130));
-        txtError.setMinimumSize(new java.awt.Dimension(830, 130));
-        txtError.setPreferredSize(new java.awt.Dimension(830, 130));
-        jScrollPane3.setViewportView(txtError);
+        txtConsola.setColumns(20);
+        txtConsola.setRows(5);
+        txtConsola.setMaximumSize(new java.awt.Dimension(830, 130));
+        txtConsola.setMinimumSize(new java.awt.Dimension(830, 130));
+        txtConsola.setPreferredSize(new java.awt.Dimension(830, 130));
+        jScrollPane3.setViewportView(txtConsola);
 
         pnlError.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 820, 130));
 
@@ -297,7 +476,14 @@ public class Compilador extends javax.swing.JFrame {
     }//GEN-LAST:event_opFuenteMouseClicked
 
     private void imgEjecutarMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imgEjecutarMousePressed
-        
+        //imgCompilar.doLayout();
+        if(codeHasBeenCompiled){
+            if(!errors.isEmpty()){
+                JOptionPane.showMessageDialog(null, "Se encontró un error");
+            }else{
+                
+            }
+        }
     }//GEN-LAST:event_imgEjecutarMousePressed
 
     private void opFuenteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opFuenteActionPerformed
@@ -305,6 +491,40 @@ public class Compilador extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(null, fc,"Elegir fuente",JOptionPane.PLAIN_MESSAGE);
         txtCodigo.setFont(fc.getSelectedFont());
     }//GEN-LAST:event_opFuenteActionPerformed
+
+    private void imgNuevoMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imgNuevoMousePressed
+        directorio.New();
+        clearField();
+    }//GEN-LAST:event_imgNuevoMousePressed
+
+    private void imgAbrirMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imgAbrirMousePressed
+        if(directorio.Open()){
+            colorAnalysis();
+            clearField();
+        }
+    }//GEN-LAST:event_imgAbrirMousePressed
+
+    private void imgGuardarMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imgGuardarMousePressed
+        if(directorio.Save()){
+            clearField();
+        }
+    }//GEN-LAST:event_imgGuardarMousePressed
+
+    private void imgGuardarComoMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imgGuardarComoMousePressed
+        if(directorio.SaveAs()){
+            clearField();
+        }
+    }//GEN-LAST:event_imgGuardarComoMousePressed
+
+    private void imgCompilarMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imgCompilarMousePressed
+        if(getTitle().contains("*") || getTitle().equals(title)){
+            if(directorio.Save()){
+                compile();
+            }
+        }else{
+            compile();
+        }
+    }//GEN-LAST:event_imgCompilarMousePressed
 
     /**
      * @param args the command line arguments
@@ -336,7 +556,12 @@ public class Compilador extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Compilador().setVisible(true);
+                try {
+                    UIManager.setLookAndFeel(new FlatIntelliJLaf());
+                    new Compilador().setVisible(true);
+                } catch (UnsupportedLookAndFeelException ex) {
+                    Logger.getLogger(Compilador.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
@@ -354,6 +579,7 @@ public class Compilador extends javax.swing.JFrame {
     private say.swing.JFontChooser jFontChooser1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JMenuBar menu;
     private javax.swing.JMenuItem opAbrir;
@@ -371,7 +597,8 @@ public class Compilador extends javax.swing.JFrame {
     private javax.swing.JPanel pnlCodigo;
     private javax.swing.JPanel pnlError;
     private javax.swing.JPanel pnlFondo;
+    private javax.swing.JTable tblTokens;
     private javax.swing.JTextPane txtCodigo;
-    private javax.swing.JTextArea txtError;
+    private javax.swing.JTextArea txtConsola;
     // End of variables declaration//GEN-END:variables
 }
