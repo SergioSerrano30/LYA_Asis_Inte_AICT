@@ -28,6 +28,8 @@ import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.SimpleAttributeSet;
 import say.swing.JFontChooser;
 
 
@@ -68,7 +70,13 @@ public class Compilador extends javax.swing.JFrame {
         Functions.setLineNumberOnJTextComponent(txtCodigo); //Pone los numeros de linea
         timerKeyReleased = new Timer((int) (1000 * 0.3), (ActionEvent e) -> {
             timerKeyReleased.stop();
+            
+            int posicion = txtCodigo.getCaretPosition();
+            txtCodigo.setText(txtCodigo.getText().replaceAll("[\r]+", ""));
+            txtCodigo.setCaretPosition(posicion);
+            
             colorAnalysis();
+            
         });
         Functions.insertAsteriskInName(this, txtCodigo,() ->{
             timerKeyReleased.restart();
@@ -111,7 +119,7 @@ public class Compilador extends javax.swing.JFrame {
         Functions.colorTextPane(textsColor, txtCodigo, new Color(40, 40, 40));
     }
     private void clearField(){
-        Functions.clearDataInTable(tblTokens);
+        //Functions.clearDataInTable(tblTokens);
         txtConsola.setText("");
         tokens.clear();
         errors.clear();
@@ -152,10 +160,10 @@ public class Compilador extends javax.swing.JFrame {
         
     }
     private void fillTablaTokens(){
-        tokens.forEach(token -> {
+        /*tokens.forEach(token -> {
             Object[] data = new Object[]{token.getLexicalComp(), token.getLexeme(), "[" + token.getLine() + ", " + token.getColumn() + "]"};
             Functions.addRowDataInTable(tblTokens, data);
-        });
+        });*/
     }
     private void syntacticAnalysis(){
         Grammar gramatica = new Grammar(tokens,errors);
@@ -204,8 +212,6 @@ public class Compilador extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         txtCodigo = new javax.swing.JTextPane();
         jFontChooser1 = new say.swing.JFontChooser();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        tblTokens = new javax.swing.JTable();
         pnlError = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         txtConsola = new javax.swing.JTextArea();
@@ -224,6 +230,7 @@ public class Compilador extends javax.swing.JFrame {
         opEjecutar = new javax.swing.JMenuItem();
         opciones = new javax.swing.JMenu();
         opFuente = new javax.swing.JMenuItem();
+        jMenuItem1 = new javax.swing.JMenuItem();
 
         jMenu1.setText("jMenu1");
 
@@ -317,36 +324,22 @@ public class Compilador extends javax.swing.JFrame {
         txtCodigo.setMaximumSize(new java.awt.Dimension(830, 320));
         txtCodigo.setMinimumSize(new java.awt.Dimension(830, 320));
         txtCodigo.setPreferredSize(new java.awt.Dimension(830, 320));
-        jScrollPane1.setViewportView(txtCodigo);
-
-        pnlCodigo.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 470, 320));
-
-        jFontChooser1.setFont(new java.awt.Font("Roboto", 0, 16)); // NOI18N
-        jFontChooser1.setSelectedFont(new java.awt.Font("Roboto", 0, 16)); // NOI18N
-        pnlCodigo.add(jFontChooser1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, -1, -1));
-
-        tblTokens.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
-            },
-            new String [] {
-                "Componente léxico", "Lexema", "[Linea, Columna]"
+        txtCodigo.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtCodigoKeyReleased(evt);
             }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, true
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtCodigoKeyTyped(evt);
             }
         });
-        jScrollPane2.setViewportView(tblTokens);
+        jScrollPane1.setViewportView(txtCodigo);
 
-        pnlCodigo.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 0, 340, 320));
+        pnlCodigo.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 810, 320));
+
+        jFontChooser1.setFont(new java.awt.Font("Roboto", 0, 16)); // NOI18N
+        jFontChooser1.setSelectedFontFamily("Roboto");
+        jFontChooser1.setSelectedFontSize(16);
+        pnlCodigo.add(jFontChooser1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, -1, -1));
 
         pnlFondo.add(pnlCodigo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, -1, -1));
 
@@ -363,7 +356,7 @@ public class Compilador extends javax.swing.JFrame {
         txtConsola.setPreferredSize(new java.awt.Dimension(830, 130));
         jScrollPane3.setViewportView(txtConsola);
 
-        pnlError.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 820, 130));
+        pnlError.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 810, 130));
 
         pnlFondo.add(pnlError, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 350, -1, 170));
 
@@ -381,24 +374,44 @@ public class Compilador extends javax.swing.JFrame {
         opNuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/nuevoArchivo20x20.png"))); // NOI18N
         opNuevo.setText("Nuevo...");
         opNuevo.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        opNuevo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                opNuevoActionPerformed(evt);
+            }
+        });
         archivo.add(opNuevo);
 
         opAbrir.setForeground(new java.awt.Color(0, 0, 0));
         opAbrir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/abrirArchivo20x20.png"))); // NOI18N
         opAbrir.setText("Abrir...");
         opAbrir.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        opAbrir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                opAbrirActionPerformed(evt);
+            }
+        });
         archivo.add(opAbrir);
 
         opGuardar.setForeground(new java.awt.Color(0, 0, 0));
         opGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/guardarArchivo20x20.png"))); // NOI18N
         opGuardar.setText("Guardar...");
         opGuardar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        opGuardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                opGuardarActionPerformed(evt);
+            }
+        });
         archivo.add(opGuardar);
 
         opGuardarComo.setForeground(new java.awt.Color(0, 0, 0));
         opGuardarComo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/guardarComo20x20.png"))); // NOI18N
         opGuardarComo.setText("Guardar como...");
         opGuardarComo.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        opGuardarComo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                opGuardarComoActionPerformed(evt);
+            }
+        });
         archivo.add(opGuardarComo);
 
         menu.add(archivo);
@@ -433,12 +446,22 @@ public class Compilador extends javax.swing.JFrame {
         opCompilar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/compilar20x20.png"))); // NOI18N
         opCompilar.setText("Compilar");
         opCompilar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        opCompilar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                opCompilarActionPerformed(evt);
+            }
+        });
         correr.add(opCompilar);
 
         opEjecutar.setForeground(new java.awt.Color(0, 0, 0));
         opEjecutar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/ejecutar20x20.png"))); // NOI18N
         opEjecutar.setText("Ejecutar");
         opEjecutar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        opEjecutar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                opEjecutarActionPerformed(evt);
+            }
+        });
         correr.add(opEjecutar);
 
         menu.add(correr);
@@ -462,6 +485,14 @@ public class Compilador extends javax.swing.JFrame {
         });
         opciones.add(opFuente);
 
+        jMenuItem1.setText("Tabla de tokens");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        opciones.add(jMenuItem1);
+
         menu.add(opciones);
 
         setJMenuBar(menu);
@@ -477,7 +508,7 @@ public class Compilador extends javax.swing.JFrame {
     }//GEN-LAST:event_opFuenteMouseClicked
 
     private void imgEjecutarMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imgEjecutarMousePressed
-        //imgCompilar.doLayout();
+        opCompilar.doClick();
         if(codeHasBeenCompiled){
             if(!errors.isEmpty()){
                 JOptionPane.showMessageDialog(null, "Se encontró un error");
@@ -527,6 +558,74 @@ public class Compilador extends javax.swing.JFrame {
         }
         //txtConsola.setText("Compilando...");
     }//GEN-LAST:event_imgCompilarMousePressed
+
+    private void txtCodigoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCodigoKeyTyped
+        
+    }//GEN-LAST:event_txtCodigoKeyTyped
+
+    private void txtCodigoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCodigoKeyReleased
+        if(evt.getKeyCode() == 9){
+            int pos = txtCodigo.getCaretPosition();
+            txtCodigo.setText(txtCodigo.getText().replaceAll("\t", "    "));
+            txtCodigo.setCaretPosition(pos+4);
+
+        }
+    }//GEN-LAST:event_txtCodigoKeyReleased
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        vtn_TablaTokens vtnTabla = new vtn_TablaTokens();
+        vtnTabla.setVisible(true);
+        Functions.clearDataInTable(vtnTabla.tblTokens);
+        tokens.forEach(token -> {
+            Object[] data = new Object[]{token.getLexicalComp(), token.getLexeme(), "[" + token.getLine() + ", " + token.getColumn() + "]"};
+            Functions.addRowDataInTable(vtnTabla.tblTokens, data);
+        });
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void opNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opNuevoActionPerformed
+        directorio.New();
+        clearField();
+    }//GEN-LAST:event_opNuevoActionPerformed
+
+    private void opAbrirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opAbrirActionPerformed
+        if(directorio.Open()){
+            colorAnalysis();
+            clearField();
+        }
+    }//GEN-LAST:event_opAbrirActionPerformed
+
+    private void opGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opGuardarActionPerformed
+        if(directorio.Save()){
+            clearField();
+        }
+    }//GEN-LAST:event_opGuardarActionPerformed
+
+    private void opGuardarComoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opGuardarComoActionPerformed
+        if(directorio.SaveAs()){
+            clearField();
+        }
+    }//GEN-LAST:event_opGuardarComoActionPerformed
+
+    private void opCompilarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opCompilarActionPerformed
+        if(getTitle().contains("*") || getTitle().equals(title)){
+            if(directorio.Save()){
+                compile();
+            }
+        }else{
+            compile();
+        }
+    }//GEN-LAST:event_opCompilarActionPerformed
+
+    private void opEjecutarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opEjecutarActionPerformed
+        //imgCompilar.doLayout();
+        if(codeHasBeenCompiled){
+            if(!errors.isEmpty()){
+                JOptionPane.showMessageDialog(null, "Se encontró un error");
+            }else{
+                
+            }
+        }
+    }//GEN-LAST:event_opEjecutarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -580,8 +679,8 @@ public class Compilador extends javax.swing.JFrame {
     private javax.swing.JLabel imgNuevo;
     private say.swing.JFontChooser jFontChooser1;
     private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JMenuBar menu;
     private javax.swing.JMenuItem opAbrir;
@@ -599,7 +698,6 @@ public class Compilador extends javax.swing.JFrame {
     private javax.swing.JPanel pnlCodigo;
     private javax.swing.JPanel pnlError;
     private javax.swing.JPanel pnlFondo;
-    private javax.swing.JTable tblTokens;
     private javax.swing.JTextPane txtCodigo;
     private javax.swing.JTextArea txtConsola;
     // End of variables declaration//GEN-END:variables
