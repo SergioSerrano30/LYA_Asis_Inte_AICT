@@ -9,6 +9,7 @@ import compilerTools.Production;
 import compilerTools.TextColor;
 import compilerTools.Token;
 import java.awt.Color;
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
@@ -65,11 +66,10 @@ public class Compilador extends javax.swing.JFrame {
         });
         
         Functions.setLineNumberOnJTextComponent(txtCodigo); //Pone los numeros de linea
-        timerKeyReleased = new Timer(300,((e) ->{
+        timerKeyReleased = new Timer((int) (1000 * 0.3), (ActionEvent e) -> {
             timerKeyReleased.stop();
             colorAnalysis();
-          
-        }));
+        });
         Functions.insertAsteriskInName(this, txtCodigo,() ->{
             timerKeyReleased.restart();
         });
@@ -84,30 +84,31 @@ public class Compilador extends javax.swing.JFrame {
         });
         
     }
-    private void colorAnalysis(){
+    private void colorAnalysis() {
+        /* Limpiar el arreglo de colores */
         textsColor.clear();
-        LexerColor lexer;
-        
+        /* Extraer rangos de colores */
+        LexerColor lexerColor;
         try {
             File codigo = new File("color.encrypter");
             FileOutputStream output = new FileOutputStream(codigo);
             byte[] bytesText = txtCodigo.getText().getBytes();
             output.write(bytesText);
-            BufferedReader entrada = new BufferedReader(new InputStreamReader(new FileInputStream(codigo),"UTF-8"));
-            lexer = new LexerColor(entrada);
-            while(true){
-                TextColor textColor = lexer.yylex();
-                if(textColor == null){
+            BufferedReader entrada = new BufferedReader(new InputStreamReader(new FileInputStream(codigo), "UTF8"));
+            lexerColor = new LexerColor(entrada);
+            while (true) {
+                TextColor textColor = lexerColor.yylex();
+                if (textColor == null) {
                     break;
                 }
                 textsColor.add(textColor);
             }
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(Compilador.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("El archivo no pudo ser encontrado... " + ex.getMessage());
         } catch (IOException ex) {
-            Logger.getLogger(Compilador.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Error al escribir en el archivo... " + ex.getMessage());
         }
-        Functions.colorTextPane(textsColor, txtCodigo, new Color(40,40,40));
+        Functions.colorTextPane(textsColor, txtCodigo, new Color(40, 40, 40));
     }
     private void clearField(){
         Functions.clearDataInTable(tblTokens);
@@ -129,25 +130,24 @@ public class Compilador extends javax.swing.JFrame {
     }
     private void lexicalAnalysis(){
         Lexer lexer;
-        
         try {
             File codigo = new File("code.encrypter");
             FileOutputStream output = new FileOutputStream(codigo);
             byte[] bytesText = txtCodigo.getText().getBytes();
             output.write(bytesText);
-            BufferedReader entrada = new BufferedReader(new InputStreamReader(new FileInputStream(codigo),"UTF-8"));
+            BufferedReader entrada = new BufferedReader(new InputStreamReader(new FileInputStream(codigo), "UTF8"));
             lexer = new Lexer(entrada);
-            while(true){
+            while (true) {
                 Token token = lexer.yylex();
-                if(token == null){
+                if (token == null) {
                     break;
                 }
                 tokens.add(token);
             }
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(Compilador.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("El archivo no pudo ser encontrado... " + ex.getMessage());
         } catch (IOException ex) {
-            Logger.getLogger(Compilador.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Error al escribir en el archivo... " + ex.getMessage());
         }
         
     }
@@ -178,6 +178,7 @@ public class Compilador extends javax.swing.JFrame {
             txtConsola.setText("Compilación terminada...");
         }
         txtConsola.setCaretPosition(0);
+        
     }
     
 
@@ -524,6 +525,7 @@ public class Compilador extends javax.swing.JFrame {
         }else{
             compile();
         }
+        //txtConsola.setText("Compilando...");
     }//GEN-LAST:event_imgCompilarMousePressed
 
     /**
