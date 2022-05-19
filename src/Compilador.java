@@ -167,6 +167,127 @@ public class Compilador extends javax.swing.JFrame {
     }
     private void syntacticAnalysis(){
         Grammar gramatica = new Grammar(tokens,errors);
+        gramatica.delete(new String[]{"Error", "Error_1", "Error_2"},1);
+        
+        /* Operaciones de retorno */
+        gramatica.group("OP_RETORNO", "OP_Retorno Parentesis_A Parentesis_C",true);
+        
+        gramatica.group("OP_RETORNO", "OP_Retorno Parentesis_C",true,
+                5,"Error sintáctico {}: Falta parantesis que abre \"(\" en la función [#,%]");
+        gramatica.group("OP_RETORNO", "OP_Retorno Parentesis_A",true,
+                6,"Error sintáctico {}: Falta parantesis que cierra \")\" en la función [#,%]");
+        gramatica.group("OP_RETORNO", "OP_Retorno",true,
+                7,"Error sintáctico {}: Falta parantesis que abre \"(\" y cierra \")\" en la función [#,%]");
+        
+        
+        /* Variables */ 
+        gramatica.group("VALOR", "(Cadena | Numero | OP_RETORNO)");
+        gramatica.group("VARIABLE", "Identificador Op_Asignacion VALOR",true);
+        gramatica.group("VARIABLE", "Op_Asignacion VALOR",true,
+                1,"Error sintáctico {}: Falta el identificador en la declaración de variable [#,%]");
+        gramatica.group("VARIABLE", "Identificador VALOR",true,
+                2,"Error sintáctico {}: Falta el operador de asignación (\"=\") en la declaración de variable [#,%]");
+        gramatica.group("VARIABLE", "Identificador Op_Asignacion",true,
+                3,"Error sintáctico {}: Falta el valor en la declaración de variable [#,%]");
+        gramatica.group("VARIABLE_PC", "VARIABLE Punto_Coma",true);
+        gramatica.group("VARIABLE_PC", "VARIABLE",true,
+                4,"Error sintáctico {}: Falta el ; al final de la declaración de variable [#,%]");
+        
+        /* Funciones */
+        gramatica.group("VALOR", "(VALOR | Identificador)");
+        gramatica.group("PARAMETROS", "VALOR (Coma VALOR)+");
+        gramatica.group("FUNCION", "(OP_Cita | OP_Turno | OP_Iluminacion | OP_Temperatura | OP_Puerta)",true);
+        gramatica.group("FUNCION_COMPLETA", "FUNCION Parentesis_A (PARAMETROS | VALOR)? Parentesis_C");
+        gramatica.group("FUNCION_COMPLETA", "FUNCION (PARAMETROS | VALOR)? Parentesis_C",
+                8,"Error sintáctico {}: Falta parantesis que abre \"(\" en la función [#,%]");
+        gramatica.group("FUNCION_COMPLETA", "FUNCION Parentesis_A (PARAMETROS | VALOR)?",
+                9,"Error sintáctico {}: Falta parantesis que cierra \")\" en la función[#,%]");
+        gramatica.group("FUNCION_COMPLETA", "FUNCION (PARAMETROS | VALOR)?",
+                10,"Error sintáctico {}: Falta parantesis que abre \"(\" y cierra \")\" en la función [#,%]");
+        gramatica.group("FUNCION_COMPLETA_PC", "FUNCION_COMPLETA Punto_Coma",true);
+        gramatica.group("FUNCION_COMPLETA_PC", "FUNCION_COMPLETA",true,
+                11,"Error sintáctico {}: Falta ; al final de la función [#,%]");
+        
+        /* Ciclo FOR */ 
+        gramatica.group("CICLO_FOR", "For Parentesis_A VALOR Parentesis_C",true);
+        gramatica.group("CICLO_FOR", "For VALOR Parentesis_C",true,
+                19,"Error sintáctico {}: Falta el parantesis que abre \"(\" en el ciclo FOR [#,%]");
+        gramatica.group("CICLO_FOR", "For Parentesis_A Parentesis_C",true,
+                20,"Error sintáctico {}: Falta el VALOR en el ciclo FOR [#,%]");
+        gramatica.group("CICLO_FOR", "For Parentesis_A VALOR",true,
+                21,"Error sintáctico {}: Falta el parantesis que cierra \")\" en el ciclo FOR [#,%]");
+        gramatica.group("CICLO_FOR", "For Parentesis_A ",true,
+                22,"Error sintáctico {}: Falta el VALOR y el parantesis que cierra \")\" en el ciclo FOR [#,%]");
+        gramatica.group("CICLO_FOR", "For Parentesis_C",true,
+                23,"Error sintáctico {}: Falta el parantesis que abre \"(\" y el VALOR en el ciclo FOR [#,%]");
+        gramatica.group("CICLO_FOR", "For VALOR",true,
+                24,"Error sintáctico {}: Falta el parantesis que abre \"(\" y el parentesis que cierra \")\" en el ciclo FOR [#,%]");
+        gramatica.group("CICLO_FOR", "For",true,
+                25,"Error sintáctico {}: Falta el parantesis que abre \"(\", el VALOR y el parantesis que cierra \")\" en el ciclo FOR [#,%]");
+        
+        /* Expresiones lógicas */
+        gramatica.group("EXP_LOGICA", "VALOR (Op_Relacional VALOR)?");
+        gramatica.group("EXP_LOGICA", "VALOR (VALOR)?",
+                33,"Error sintáctico {}: Falta el operador relacional en la expresión lógica");
+        
+        /* Condicionales */
+        gramatica.group("IF", "If Parentesis_A EXP_LOGICA Parentesis_C",true);
+        gramatica.group("IF", "If EXP_LOGICA Parentesis_C",true,
+                12,"Error sintáctico {}: Falta parantesis que abre \"(\" en la condición [#,%]");
+        gramatica.group("IF", "If Parentesis_A Parentesis_C",true,
+                13,"Error sintáctico {}: Falta la expresión lógica en la condición [#,%]");
+        gramatica.group("IF", "If Parentesis_A EXP_LOGICA",true,
+                14,"Error sintáctico {}: Falta parantesis que cierra \")\" en la condición [#,%]");
+        gramatica.group("IF", "If Parentesis_A ",true,
+                15,"Error sintáctico {}: Falta la expresión lógica y el parantesis que cierra \")\" en la condición [#,%]");
+        gramatica.group("IF", "If EXP_LOGICA ",true,
+                16,"Error sintáctico {}: Falta parantesis que abre \"(\" y parentesis que cierra \")\" en la condición [#,%] [#,%]");
+        gramatica.group("IF", "If Parentesis_C",true,
+                17,"Error sintáctico {}: Falta el parantesis que abre \"(\" y la expresión lógica en la condición [#,%]");
+        gramatica.group("IF", "If",true,
+                18,"Error sintáctico {}: Falta el parantesis que abre \"(\", la expresión lógica y parentesis que cierra \")\" en la condición [#,%]");
+        
+        /* Cliclo WHILE */
+        gramatica.group("CICLO_WHILE", "While Parentesis_A EXP_LOGICA Parentesis_C",true);
+        gramatica.group("CICLO_WHILE", "While EXP_LOGICA Parentesis_C",true,
+                26,"Error sintáctico {}: Falta parantesis que abre \"(\" en el ciclo WHILE [#,%]");
+        gramatica.group("CICLO_WHILE", "While Parentesis_A Parentesis_C",true,
+                27,"Error sintáctico {}: Falta la expresión lógica en el ciclo WHILE [#,%]");
+        gramatica.group("CICLO_WHILE", "While Parentesis_A EXP_LOGICA",true,
+                28,"Error sintáctico {}: Falta parantesis que cierra \")\" en el ciclo WHILE [#,%]");
+        gramatica.group("CICLO_WHILE", "While Parentesis_A ",true,
+                29,"Error sintáctico {}: Falta la expresión lógica y el parantesis que cierra \")\" en el ciclo WHILE [#,%]");
+        gramatica.group("CICLO_WHILE", "While EXP_LOGICA ",true,
+                30,"Error sintáctico {}: Falta parantesis que abre \"(\" y parentesis que cierra \")\" en el ciclo WHILE [#,%] [#,%]");
+        gramatica.group("CICLO_WHILE", "While Parentesis_C",true,
+                31,"Error sintáctico {}: Falta el parantesis que abre \"(\" y la expresión lógica en el ciclo WHILE [#,%]");
+        gramatica.group("CICLO_WHILE", "While",true,
+                32,"Error sintáctico {}: Falta el parantesis que abre \"(\", la expresión lógica y parentesis que cierra \")\" en el ciclo WHILE [#,%]");
+        
+        
+        /* Agrupación de sentencias */
+        gramatica.group("SENTENCIAS", "(FUNCION_COMPLETA_PC | VARIABLE_PC)+");
+        gramatica.group("EST_CONTROL_COMPLETA", "(CICLO_FOR | IF | CICLO_WHILE)");
+        gramatica.loopForFunExecUntilChangeNotDetected(()->{
+            gramatica.group("EST_CONTROL_COMPLETA_LALC", "EST_CONTROL_COMPLETA Llave_A (SENTENCIAS)? Llave_C",true);
+            gramatica.group("SENTENCIAS", "(EST_CONTROL_COMPLETA_LALC)");
+        });
+        gramatica.delete("EXP_LOGICA",
+                33,"Error sintactico {}: La expresión lógica [] no está contenida dentro de una estructura de control [#,%]");
+        gramatica.delete(new String[]{"Llave_A","Llave_C"},
+                34,"Error sintactico {}: La llave [] no está en el contenido de una agrupación");
+        gramatica.delete("Punto_Coma",
+                35,"Error sintactico {}: El [] no está al final de una sentencia [#,%]");
+        gramatica.delete(new String[]{"Parentesis_A","Parentesis_C"},
+                36,"Error sintactico {}: El parentesis [] no está contenido en una agrupación [#,%]");
+        gramatica.delete("EST_CONTROL_COMPLETA",
+                37,"Error sintactico {}: La estructura de control no está declarada correctamente [#,%]");
+        gramatica.delete("Op_Logico",
+                38,"Error sintactico {}: El operador lógico [] no está dentro de una expresión");
+        gramatica.delete(new String[]{"OP_RETORNO","FUNCION"}, 
+                39, "Error sintactico {}: La función [] está mal declarada [#,%]");
+        gramatica.delete("Op_Asignacion",
+                40,"Error sintactica {}: El operador de asignación [] no está en una declaración [#,%]");
         gramatica.show();
     }
     private void semanticAnalysis(){
@@ -230,7 +351,7 @@ public class Compilador extends javax.swing.JFrame {
         opEjecutar = new javax.swing.JMenuItem();
         opciones = new javax.swing.JMenu();
         opFuente = new javax.swing.JMenuItem();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        opTablaTokens = new javax.swing.JMenuItem();
 
         jMenu1.setText("jMenu1");
 
@@ -485,13 +606,13 @@ public class Compilador extends javax.swing.JFrame {
         });
         opciones.add(opFuente);
 
-        jMenuItem1.setText("Tabla de tokens");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        opTablaTokens.setText("Tabla de tokens");
+        opTablaTokens.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                opTablaTokensActionPerformed(evt);
             }
         });
-        opciones.add(jMenuItem1);
+        opciones.add(opTablaTokens);
 
         menu.add(opciones);
 
@@ -572,7 +693,7 @@ public class Compilador extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_txtCodigoKeyReleased
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+    private void opTablaTokensActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opTablaTokensActionPerformed
         vtn_TablaTokens vtnTabla = new vtn_TablaTokens();
         vtnTabla.setVisible(true);
         Functions.clearDataInTable(vtnTabla.tblTokens);
@@ -580,7 +701,7 @@ public class Compilador extends javax.swing.JFrame {
             Object[] data = new Object[]{token.getLexicalComp(), token.getLexeme(), "[" + token.getLine() + ", " + token.getColumn() + "]"};
             Functions.addRowDataInTable(vtnTabla.tblTokens, data);
         });
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    }//GEN-LAST:event_opTablaTokensActionPerformed
 
     private void opNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opNuevoActionPerformed
         directorio.New();
@@ -679,7 +800,6 @@ public class Compilador extends javax.swing.JFrame {
     private javax.swing.JLabel imgNuevo;
     private say.swing.JFontChooser jFontChooser1;
     private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JMenuBar menu;
@@ -693,6 +813,7 @@ public class Compilador extends javax.swing.JFrame {
     private javax.swing.JMenuItem opGuardarComo;
     private javax.swing.JMenuItem opNuevo;
     private javax.swing.JMenuItem opPegar;
+    private javax.swing.JMenuItem opTablaTokens;
     private javax.swing.JMenu opciones;
     private javax.swing.JPanel pnlBarraHerramientas;
     private javax.swing.JPanel pnlCodigo;
