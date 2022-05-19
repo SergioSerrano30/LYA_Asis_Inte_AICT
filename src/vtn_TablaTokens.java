@@ -30,6 +30,7 @@ public class vtn_TablaTokens extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setBackground(new java.awt.Color(255, 255, 255));
         setMaximumSize(new java.awt.Dimension(450, 450));
         setMinimumSize(new java.awt.Dimension(450, 450));
         setPreferredSize(new java.awt.Dimension(450, 450));
@@ -38,10 +39,7 @@ public class vtn_TablaTokens extends javax.swing.JFrame {
 
         tblTokens.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+
             },
             new String [] {
                 "Componente léxico", "Lexema", "[Linea, Columna]"
