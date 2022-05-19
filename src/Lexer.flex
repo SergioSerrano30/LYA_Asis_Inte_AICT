@@ -11,7 +11,7 @@ import compilerTools.Token;
     }
 %}
     /* Variables de comentarios y espacios */
-    TerminadorDeLinea = (\r|\n)|(\r\n)
+    TerminadorDeLinea = \r|\n|\r\n
     EntradaDeCaracter = [^\r\n]
     EspacioEnBlanco = {TerminadorDeLinea} | [ \t\f]
     ComentarioTradicional = "/*" [^*] ~"*/" | "/*" "*"+ "/"
@@ -22,18 +22,22 @@ import compilerTools.Token;
     Comentario = {ComentarioTradicional} | {FinDeLineaComentario} | {ComentarioDeDocumentacion}
 
     /* Identificador */
-    Letra = [A-Za-z��_����������]
+    Letra = [A-Za-zÑñ_ÁÉÍÓÚáéíóú]
     Digito = [0-9]
     Identificador = {Letra}({Letra}|{Digito})*
     
     /* Numero */
     Numero = 0 | [1-9][0-9]*
 
+    /* Cadena */
+    Cadena = \".*\"
+
 %%
 {Comentario}|{EspacioEnBlanco} { /* Ignorar */ }
-
+{Cadena} { return token (yytext(), "Cadena", yyline, yycolumn); }
 /* Identificador */
 \${Identificador} { return token(yytext(), "Identificador", yyline, yycolumn); }
+
 
 /* ------------ PALABRAS RESERVADAS ------------ */
 /* Opciones cita */
@@ -42,11 +46,7 @@ cita_cancelar { return token(yytext(), "OP_Cita", yyline, yycolumn); }
 
 /* Opciones turnos */
 
-turno_nuevo |
-turno_actual |
-turno_proximo |
-turno_tiempo |
-turno_fecha { return token(yytext(), "OP_Turno", yyline, yycolumn); }
+turno_nuevo { return token(yytext(), "OP_Turno", yyline, yycolumn); }
 
 /* Opciones iluminacion */
 ilu_encender |
@@ -55,35 +55,30 @@ ilu_apagar { return token(yytext(), "OP_Iluminacion", yyline, yycolumn); }
 /* Opciones temperatura */
 temp_establecer |
 temp_subir |
-temp_bajar { return token(yytext(), "OP_Temperatura", yyline, yycolumn); }
+temp_bajar  { return token(yytext(), "OP_Temperatura", yyline, yycolumn); }
 
 /* Opciones puerta */
 puerta_abrir |
 puerta_cerrar { return token(yytext(), "OP_Puerta", yyline, yycolumn); }
+
+/* Opciones de retorno */
+turno_actual |
+turno_proximo |
+turno_tiempo |
+ilu_status |
+temp_actual | 
+puerta_status { return token(yytext(), "OP_Retorno", yyline, yycolumn); }
 
 /* --------------------------------- */
 
 /* Condicionales */
 
 if { return token(yytext(), "If", yyline, yycolumn); }
-else { return token(yytext(), "Else", yyline, yycolumn); }
 
 /* Ciclos */
 
 while { return token(yytext(), "While", yyline, yycolumn); }
 for { return token(yytext(), "For", yyline, yycolumn); }
-
-/* Romper ciclo */
-
-break { return token(yytext(), "Break", yyline, yycolumn); }
-
-/* End */
-
-end { return token(yytext(), "End", yyline, yycolumn); }
-
-/* Class */
-
-class { return token(yytext(), "Class", yyline, yycolumn); }
 
 /* Return */
 
@@ -94,16 +89,19 @@ return { return token(yytext(), "Return", yyline, yycolumn); }
 "&&" |
 "||" { return token(yytext(), "Op_Logico", yyline, yycolumn); }
 
+/* Operadores Relacional */
+
+">" |
+"<" |
+">=" |
+"<=" |
+"==" |
+"!=" { return token(yytext(), "Op_Relacional", yyline, yycolumn); }
+
+
 /* Operador de asignacion */
 
 "=" { return token(yytext(), "Op_Asignacion", yyline, yycolumn); }
-
-/* Operadores aritmeticos */
-
-"+" |
-"-" |
-"*" |
-"/" { return token(yytext(), "Op_Aritmetico", yyline, yycolumn); }
 
 /* --------------------------------- */
 /* Operadores de agrupacion */
@@ -126,8 +124,8 @@ return { return token(yytext(), "Return", yyline, yycolumn); }
 /* ------------ ERRORES ------------ */
 
     //Numero erroneo
-    {Numero} { return token(yytext(), "Error_1", yyline, yycolumn); }
+    0{Numero} { return token(yytext(), "Error_1", yyline, yycolumn); }
     //Identificador erroneo
     {Identificador} { return token(yytext(), "Error_2", yyline, yycolumn); }
 
-. { return token(yytext(), "ERROR", yyline, yycolumn); }
+. { return token(yytext(), "Error", yyline, yycolumn); }
