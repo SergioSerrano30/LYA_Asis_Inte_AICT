@@ -28,6 +28,7 @@ import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import say.swing.JFontChooser;
@@ -48,7 +49,6 @@ public class Compilador extends javax.swing.JFrame {
     private ArrayList<Production> identProd;
     private HashMap<String, String> identificadores;
     private boolean codeHasBeenCompiled = false;
-    
     public Compilador() {
         initComponents();
         init();
@@ -130,9 +130,9 @@ public class Compilador extends javax.swing.JFrame {
     private void compile(){
         clearField();
         lexicalAnalysis();
-        fillTablaTokens();
+        //fillTablaTokens();
         syntacticAnalysis();
-        semanticAnalysis();
+        //semanticAnalysis();
         printConsole();
         codeHasBeenCompiled = true;
     }
@@ -160,10 +160,18 @@ public class Compilador extends javax.swing.JFrame {
         
     }
     private void fillTablaTokens(){
-        /*tokens.forEach(token -> {
+        vtn_TablaTokens vtnTabla = new vtn_TablaTokens();
+        Functions.clearDataInTable(vtnTabla.tblTokens);
+        tokens.forEach(token -> {
             Object[] data = new Object[]{token.getLexicalComp(), token.getLexeme(), "[" + token.getLine() + ", " + token.getColumn() + "]"};
-            Functions.addRowDataInTable(tblTokens, data);
-        });*/
+            Functions.addRowDataInTable(vtnTabla.tblTokens, data);
+            System.out.println(token.getLexicalComp()+ " " + token.getLexeme() + "[" + token.getLine() + ", " + token.getColumn() + "]");
+        });
+        
+        System.out.println("Tokens listos");
+        vtnTabla.setVisible(true);
+        
+        
     }
     private void syntacticAnalysis(){
         Grammar gramatica = new Grammar(tokens,errors);
@@ -694,13 +702,7 @@ public class Compilador extends javax.swing.JFrame {
     }//GEN-LAST:event_txtCodigoKeyReleased
 
     private void opTablaTokensActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opTablaTokensActionPerformed
-        vtn_TablaTokens vtnTabla = new vtn_TablaTokens();
-        vtnTabla.setVisible(true);
-        Functions.clearDataInTable(vtnTabla.tblTokens);
-        tokens.forEach(token -> {
-            Object[] data = new Object[]{token.getLexicalComp(), token.getLexeme(), "[" + token.getLine() + ", " + token.getColumn() + "]"};
-            Functions.addRowDataInTable(vtnTabla.tblTokens, data);
-        });
+        fillTablaTokens();
     }//GEN-LAST:event_opTablaTokensActionPerformed
 
     private void opNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opNuevoActionPerformed

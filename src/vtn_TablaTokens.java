@@ -1,3 +1,8 @@
+
+import compilerTools.Functions;
+import compilerTools.Token;
+import java.util.ArrayList;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -15,6 +20,8 @@ public class vtn_TablaTokens extends javax.swing.JFrame {
     public vtn_TablaTokens() {
         initComponents();
     }
+    
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -25,17 +32,33 @@ public class vtn_TablaTokens extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        pnlFondo = new javax.swing.JPanel();
+        lblTitulo = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblTokens = new javax.swing.JTable();
-        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
-        setMaximumSize(new java.awt.Dimension(450, 450));
-        setMinimumSize(new java.awt.Dimension(450, 450));
-        setPreferredSize(new java.awt.Dimension(450, 450));
+        setMaximumSize(new java.awt.Dimension(600, 450));
+        setMinimumSize(new java.awt.Dimension(600, 450));
+        setPreferredSize(new java.awt.Dimension(600, 450));
         setResizable(false);
-        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        getContentPane().setLayout(null);
+
+        pnlFondo.setMaximumSize(new java.awt.Dimension(600, 450));
+        pnlFondo.setMinimumSize(new java.awt.Dimension(600, 450));
+        pnlFondo.setPreferredSize(new java.awt.Dimension(600, 450));
+        pnlFondo.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        lblTitulo.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
+        lblTitulo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTitulo.setText("Tabla de tokens");
+        lblTitulo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        pnlFondo.add(lblTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 610, -1));
+
+        jScrollPane2.setMaximumSize(new java.awt.Dimension(400, 350));
+        jScrollPane2.setMinimumSize(new java.awt.Dimension(400, 350));
+        jScrollPane2.setPreferredSize(new java.awt.Dimension(400, 350));
 
         tblTokens.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -46,25 +69,27 @@ public class vtn_TablaTokens extends javax.swing.JFrame {
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, true
+                false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
-        tblTokens.setMaximumSize(new java.awt.Dimension(300, 300));
-        tblTokens.setMinimumSize(new java.awt.Dimension(300, 300));
-        tblTokens.setPreferredSize(new java.awt.Dimension(300, 300));
+        tblTokens.setMaximumSize(new java.awt.Dimension(250, 200));
+        tblTokens.setMinimumSize(new java.awt.Dimension(250, 200));
+        tblTokens.setPreferredSize(new java.awt.Dimension(250, 200));
         jScrollPane2.setViewportView(tblTokens);
+        if (tblTokens.getColumnModel().getColumnCount() > 0) {
+            tblTokens.getColumnModel().getColumn(0).setResizable(false);
+            tblTokens.getColumnModel().getColumn(1).setResizable(false);
+            tblTokens.getColumnModel().getColumn(2).setResizable(false);
+        }
 
-        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, 410, 350));
+        pnlFondo.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 50, 400, 350));
 
-        jLabel1.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Tabla de tokens");
-        jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 450, -1));
+        getContentPane().add(pnlFondo);
+        pnlFondo.setBounds(0, 0, 600, 450);
 
         pack();
         setLocationRelativeTo(null);
@@ -106,8 +131,9 @@ public class vtn_TablaTokens extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel lblTitulo;
+    private javax.swing.JPanel pnlFondo;
     public javax.swing.JTable tblTokens;
     // End of variables declaration//GEN-END:variables
 }

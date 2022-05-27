@@ -1,34 +1,4 @@
-$temperatura = 23;
-if($temperatura < 25){
-    temp_subir(10); 
-}
-if($temperatura> "Hola"){
-    temp_subir(20);
-}
 
-$statusPuerta = puerta_status();
-if($statusPuerta){
-    //Si está abierta
-    puerta_cerrar();
+if ($tempera < 10) {
+    $turno = turno_actual();
 }
-if(turno_actual() == 600){
-     ilu_encender();   
-}
-if(34==temp_actual()){
-     temp_bajar(20);   
-}
-
-for(10){
-    temp_subir(1);
-}
-
-$temp_actual = temp_actual();
-while($temp_actual>30){
-    temp_bajar(1);
-}
-turno_nuevo();
-cita_cancelar(4021);
-$area = "Cajas";
-$hora = "12:40";
-$fecha = "2022-12-30";
-cita_agendar(5601,$area,$hora,$fecha,"Centro");
