@@ -127,5 +127,4 @@ return { return token(yytext(), "Return", yyline, yycolumn); }
     0{Numero} { return token(yytext(), "Error_1", yyline, yycolumn); }
     //Identificador erroneo
     {Identificador} { return token(yytext(), "Error_2", yyline, yycolumn); }
-
 . { return token(yytext(), "Error", yyline, yycolumn); }
