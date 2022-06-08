@@ -1,5 +1,4 @@
 
-
 import com.formdev.flatlaf.FlatIntelliJLaf;
 import compilerTools.Directory;
 import compilerTools.ErrorLSSL;
@@ -19,7 +18,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -28,11 +26,7 @@ import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.SimpleAttributeSet;
 import say.swing.JFontChooser;
-
 
 /**
  *
@@ -43,18 +37,24 @@ public class Compilador extends javax.swing.JFrame {
     private String title;
     private Directory directorio;
     private ArrayList<Token> tokens;
+    private ArrayList<String> ArreToken, ArreCompleto, ArreNomToken;
     private ArrayList<ErrorLSSL> errors;
     private ArrayList<TextColor> textsColor;
     private Timer timerKeyReleased;
-    private ArrayList<Production> identProd;
+    private ArrayList<Production> identProd, CadErrores, ProCorrectas;
     private HashMap<String, String> identificadores;
     private boolean codeHasBeenCompiled = false;
+    private GramaUsa err;
+    Automata auto;
+    VentanaErrores venErrores;
+    OpcionesGrama opcGrama ;
+
     public Compilador() {
         initComponents();
         init();
     }
-    
-    public void init(){
+
+    private void init() {
         title = "AICT - Compilador";
         setLocationRelativeTo(null);
         setTitle(title);
@@ -66,32 +66,38 @@ public class Compilador extends javax.swing.JFrame {
                 System.exit(0);
             }
         });
-        
+
         Functions.setLineNumberOnJTextComponent(txtCodigo); //Pone los numeros de linea
         timerKeyReleased = new Timer((int) (1000 * 0.3), (ActionEvent e) -> {
             timerKeyReleased.stop();
-            
+
             int posicion = txtCodigo.getCaretPosition();
             txtCodigo.setText(txtCodigo.getText().replaceAll("[\r]+", ""));
             txtCodigo.setCaretPosition(posicion);
-            
+
             colorAnalysis();
-            
+
         });
-        Functions.insertAsteriskInName(this, txtCodigo,() ->{
+        Functions.insertAsteriskInName(this, txtCodigo, () -> {
             timerKeyReleased.restart();
         });
         tokens = new ArrayList<>();
+        ArreNomToken = new ArrayList<>();
+        ArreToken = new ArrayList<>();
         errors = new ArrayList<>();
+        CadErrores = new ArrayList<>();
         textsColor = new ArrayList<>();
+        ProCorrectas = new ArrayList<>();
+        ArreCompleto = new ArrayList<>();
         identProd = new ArrayList<>(); //Identificadores de producción
         identificadores = new HashMap<>();
-        
-        Functions.setAutocompleterJTextComponent(new String[]{"color","numero","este","oeste","norte","sur","pintar"}, txtCodigo,() ->{
+
+        Functions.setAutocompleterJTextComponent(new String[]{"color", "numero", "este", "oeste", "norte", "sur", "pintar"}, txtCodigo, () -> {
             timerKeyReleased.restart();
         });
-        
+
     }
+
     private void colorAnalysis() {
         /* Limpiar el arreglo de colores */
         textsColor.clear();
@@ -118,16 +124,23 @@ public class Compilador extends javax.swing.JFrame {
         }
         Functions.colorTextPane(textsColor, txtCodigo, new Color(40, 40, 40));
     }
-    private void clearField(){
+
+    private void clearField() {
         //Functions.clearDataInTable(tblTokens);
         txtConsola.setText("");
         tokens.clear();
         errors.clear();
+        ArreToken.clear();
+        CadErrores.clear();
+        ArreNomToken.clear();
+        ProCorrectas.clear();
+        ArreCompleto.clear();
         identProd.clear();
         identificadores.clear();
         codeHasBeenCompiled = false;
     }
-    private void compile(){
+
+    private void compile() {
         clearField();
         lexicalAnalysis();
         //fillTablaTokens();
@@ -136,7 +149,8 @@ public class Compilador extends javax.swing.JFrame {
         printConsole();
         codeHasBeenCompiled = true;
     }
-    private void lexicalAnalysis(){
+
+    private void lexicalAnalysis() {
         Lexer lexer;
         try {
             File codigo = new File("code.encrypter");
@@ -157,151 +171,198 @@ public class Compilador extends javax.swing.JFrame {
         } catch (IOException ex) {
             System.out.println("Error al escribir en el archivo... " + ex.getMessage());
         }
-        
+
     }
-    private void fillTablaTokens(){
+
+    private void fillTablaTokens() {
         vtn_TablaTokens vtnTabla = new vtn_TablaTokens();
         Functions.clearDataInTable(vtnTabla.tblTokens);
         tokens.forEach(token -> {
             Object[] data = new Object[]{token.getLexicalComp(), token.getLexeme(), "[" + token.getLine() + ", " + token.getColumn() + "]"};
             Functions.addRowDataInTable(vtnTabla.tblTokens, data);
-            System.out.println(token.getLexicalComp()+ " " + token.getLexeme() + "[" + token.getLine() + ", " + token.getColumn() + "]");
+            System.out.println(token.getLexicalComp() + " " + token.getLexeme() + "[" + token.getLine() + ", " + token.getColumn() + "]");
         });
-        
+
         System.out.println("Tokens listos");
         vtnTabla.setVisible(true);
-        
-        
+
     }
-    private void syntacticAnalysis(){
-        Grammar gramatica = new Grammar(tokens,errors);
-        gramatica.delete(new String[]{"Error", "Error_1", "Error_2"},1);
-        
+
+    private void syntacticAnalysis() {
+        Grammar gramatica = new Grammar(tokens, errors);
+        gramatica.delete(new String[]{"Error", "Error_1", "Error_2"}, 1, "Error Lexico: No se reconoce el token [] [#, %]");
+
         /* Operaciones de retorno */
-        gramatica.group("OP_RETORNO", "OP_Retorno Parentesis_A Parentesis_C",true);
-        
-        gramatica.group("OP_RETORNO", "OP_Retorno Parentesis_C",true,
-                5,"Error sintáctico {}: Falta parantesis que abre \"(\" en la función [#,%]");
-        gramatica.group("OP_RETORNO", "OP_Retorno Parentesis_A",true,
-                6,"Error sintáctico {}: Falta parantesis que cierra \")\" en la función [#,%]");
-        gramatica.group("OP_RETORNO", "OP_Retorno",true,
-                7,"Error sintáctico {}: Falta parantesis que abre \"(\" y cierra \")\" en la función [#,%]");
-        
-        
-        /* Variables */ 
-        gramatica.group("VALOR", "(Cadena | Numero | OP_RETORNO)");
-        gramatica.group("VARIABLE", "Identificador Op_Asignacion VALOR",true);
-        gramatica.group("VARIABLE", "Op_Asignacion VALOR",true,
-                1,"Error sintáctico {}: Falta el identificador en la declaración de variable [#,%]");
-        gramatica.group("VARIABLE", "Identificador VALOR",true,
-                2,"Error sintáctico {}: Falta el operador de asignación (\"=\") en la declaración de variable [#,%]");
-        gramatica.group("VARIABLE", "Identificador Op_Asignacion",true,
-                3,"Error sintáctico {}: Falta el valor en la declaración de variable [#,%]");
-        gramatica.group("VARIABLE_PC", "VARIABLE Punto_Coma",true);
-        gramatica.group("VARIABLE_PC", "VARIABLE",true,
-                4,"Error sintáctico {}: Falta el ; al final de la declaración de variable [#,%]");
-        
+        gramatica.group("OP_RETORNO", "OP_Retorno Parentesis_A Parentesis_C", true, ProCorrectas);
+
+        gramatica.group("OP_RETORNO", "OP_Retorno Parentesis_C", true,
+                5, "Error sintáctico {}: Falta parantesis que abre \"(\" en la función [#,%]", CadErrores);
+        gramatica.group("OP_RETORNO", "OP_Retorno Parentesis_A", true,
+                6, "Error sintáctico {}: Falta parantesis que cierra \")\" en la función [#,%]", CadErrores);
+        gramatica.group("OP_RETORNO", "OP_Retorno", true,
+                7, "Error sintáctico {}: Falta parantesis que abre \"(\" y cierra \")\" en la función [#,%]", CadErrores);
+
+        /* Variables */
+        gramatica.group("VALOR", "(Cadena | Numero | OP_RETORNO)",ProCorrectas);
+        gramatica.group("VARIABLE", "Identificador Op_Asignacion VALOR", true,ProCorrectas);
+        gramatica.group("VARIABLE", "Op_Asignacion VALOR", true,
+                1, "Error sintáctico {}: Falta el identificador en la declaración de variable [#,%]", CadErrores);
+        gramatica.group("VARIABLE", "Identificador VALOR", true,
+                2, "Error sintáctico {}: Falta el operador de asignación (\"=\") en la declaración de variable [#,%]", CadErrores);
+        gramatica.group("VARIABLE", "Identificador Op_Asignacion", true,
+                3, "Error sintáctico {}: Falta el valor en la declaración de variable [#,%]", CadErrores);
+        gramatica.group("VARIABLE_PC", "VARIABLE Punto_Coma", true, ProCorrectas);
+        gramatica.group("VARIABLE_PC", "VARIABLE", true,
+                4, "Error sintáctico {}: Falta el ; al final de la declaración de variable [#,%]", CadErrores);
+
+        // Eliminación de operadores de asignación
+        gramatica.delete("Op_Asignacion",
+                40, "Error sintactica {}: El operador de asignación [] no está en una declaración [#,%]");
+
         /* Funciones */
-        gramatica.group("VALOR", "(VALOR | Identificador)");
-        gramatica.group("PARAMETROS", "VALOR (Coma VALOR)+");
-        gramatica.group("FUNCION", "(OP_Cita | OP_Turno | OP_Iluminacion | OP_Temperatura | OP_Puerta)",true);
-        gramatica.group("FUNCION_COMPLETA", "FUNCION Parentesis_A (PARAMETROS | VALOR)? Parentesis_C");
-        gramatica.group("FUNCION_COMPLETA", "FUNCION (PARAMETROS | VALOR)? Parentesis_C",
-                8,"Error sintáctico {}: Falta parantesis que abre \"(\" en la función [#,%]");
-        gramatica.group("FUNCION_COMPLETA", "FUNCION Parentesis_A (PARAMETROS | VALOR)?",
-                9,"Error sintáctico {}: Falta parantesis que cierra \")\" en la función[#,%]");
-        gramatica.group("FUNCION_COMPLETA", "FUNCION (PARAMETROS | VALOR)?",
-                10,"Error sintáctico {}: Falta parantesis que abre \"(\" y cierra \")\" en la función [#,%]");
-        gramatica.group("FUNCION_COMPLETA_PC", "FUNCION_COMPLETA Punto_Coma",true);
-        gramatica.group("FUNCION_COMPLETA_PC", "FUNCION_COMPLETA",true,
-                11,"Error sintáctico {}: Falta ; al final de la función [#,%]");
-        
-        /* Ciclo FOR */ 
-        gramatica.group("CICLO_FOR", "For Parentesis_A VALOR Parentesis_C",true);
-        gramatica.group("CICLO_FOR", "For VALOR Parentesis_C",true,
-                19,"Error sintáctico {}: Falta el parantesis que abre \"(\" en el ciclo FOR [#,%]");
-        gramatica.group("CICLO_FOR", "For Parentesis_A Parentesis_C",true,
-                20,"Error sintáctico {}: Falta el VALOR en el ciclo FOR [#,%]");
-        gramatica.group("CICLO_FOR", "For Parentesis_A VALOR",true,
-                21,"Error sintáctico {}: Falta el parantesis que cierra \")\" en el ciclo FOR [#,%]");
-        gramatica.group("CICLO_FOR", "For Parentesis_A ",true,
-                22,"Error sintáctico {}: Falta el VALOR y el parantesis que cierra \")\" en el ciclo FOR [#,%]");
-        gramatica.group("CICLO_FOR", "For Parentesis_C",true,
-                23,"Error sintáctico {}: Falta el parantesis que abre \"(\" y el VALOR en el ciclo FOR [#,%]");
-        gramatica.group("CICLO_FOR", "For VALOR",true,
-                24,"Error sintáctico {}: Falta el parantesis que abre \"(\" y el parentesis que cierra \")\" en el ciclo FOR [#,%]");
-        gramatica.group("CICLO_FOR", "For",true,
-                25,"Error sintáctico {}: Falta el parantesis que abre \"(\", el VALOR y el parantesis que cierra \")\" en el ciclo FOR [#,%]");
-        
+        gramatica.group("PARAMETROS", "(VALOR | Identificador) (Coma (VALOR | Identificador))+",ProCorrectas);
+        gramatica.group("FUNCION", "(OP_Cita | OP_Turno | OP_Iluminacion | OP_Temperatura | OP_Puerta)", true,ProCorrectas);
+        gramatica.group("FUNCION_COMPLETA", "FUNCION Parentesis_A (PARAMETROS | (VALOR | Identificador))? Parentesis_C",ProCorrectas);
+        gramatica.group("FUNCION_COMPLETA", "FUNCION (PARAMETROS | (VALOR | Identificador))? Parentesis_C",
+                8, "Error sintáctico {}: Falta parantesis que abre \"(\" en la función [#,%]", CadErrores);
+        gramatica.group("FUNCION_COMPLETA", "FUNCION Parentesis_A (PARAMETROS | (VALOR | Identificador))?",
+                9, "Error sintáctico {}: Falta parantesis que cierra \")\" en la función[#,%]", CadErrores);
+        gramatica.group("FUNCION_COMPLETA", "FUNCION (PARAMETROS | (VALOR | Identificador))?",
+                10, "Error sintáctico {}: Falta parantesis que abre \"(\" y cierra \")\" en la función [#,%]", CadErrores);
+        gramatica.group("FUNCION_COMPLETA_PC", "FUNCION_COMPLETA Punto_Coma", true,ProCorrectas);
+        gramatica.group("FUNCION_COMPLETA_PC", "FUNCION_COMPLETA", true,
+                11, "Error sintáctico {}: Falta ; al final de la función [#,%]", CadErrores);
+
+        // Eliminación del punto y coma
+        gramatica.delete("Punto_Coma",
+                35, "Error sintactico {}: El [] no está al final de una sentencia [#,%]");
+        // Eliminación de opretorno y función
+        gramatica.delete(new String[]{"OP_RETORNO", "FUNCION"},
+                39, "Error sintactico {}: La función [] está mal declarada [#,%]");
+
+        /* Ciclo FOR */
+        gramatica.group("CICLO_FOR", "For Parentesis_A (VALOR | Identificador) Parentesis_C", true, ProCorrectas);
+        gramatica.group("CICLO_FOR", "For (VALOR | Identificador) Parentesis_C", true,
+                19, "Error sintáctico {}: Falta el parantesis que abre \"(\" en el ciclo FOR [#,%]", CadErrores);
+        gramatica.group("CICLO_FOR", "For Parentesis_A Parentesis_C", true,
+                20, "Error sintáctico {}: Falta el VALOR en el ciclo FOR [#,%]", CadErrores);
+        gramatica.group("CICLO_FOR", "For Parentesis_A (VALOR | Identificador)", true,
+                21, "Error sintáctico {}: Falta el parantesis que cierra \")\" en el ciclo FOR [#,%]", CadErrores);
+        gramatica.group("CICLO_FOR", "For Parentesis_A ", true,
+                22, "Error sintáctico {}: Falta el VALOR y el parantesis que cierra \")\" en el ciclo FOR [#,%]", CadErrores);
+        gramatica.group("CICLO_FOR", "For Parentesis_C", true,
+                23, "Error sintáctico {}: Falta el parantesis que abre \"(\" y el VALOR en el ciclo FOR [#,%]", CadErrores);
+        gramatica.group("CICLO_FOR", "For (VALOR | Identificador)", true,
+                24, "Error sintáctico {}: Falta el parantesis que abre \"(\" y el parentesis que cierra \")\" en el ciclo FOR [#,%]", CadErrores);
+        gramatica.group("CICLO_FOR", "For", true,
+                25, "Error sintáctico {}: Falta el parantesis que abre \"(\", el VALOR y el parantesis que cierra \")\" en el ciclo FOR [#,%]", CadErrores);
+
         /* Expresiones lógicas */
-        gramatica.group("EXP_LOGICA", "VALOR (Op_Relacional VALOR)?");
-        gramatica.group("EXP_LOGICA", "VALOR (VALOR)?",
-                33,"Error sintáctico {}: Falta el operador relacional en la expresión lógica");
-        
+        gramatica.group("EXP_LOGICA", "(VALOR | Identificador) Op_Relacional (VALOR | Identificador)",ProCorrectas);
+        gramatica.group("EXP_LOGICA", "(VALOR | Identificador) Op_Relacional",
+                33, "Error sintáctico {}: Falta el segundo operador en la expresión lógica", CadErrores);
+        gramatica.group("EXP_LOGICA", "Op_Relacional (VALOR | Identificador)",
+                33, "Error sintáctico {}: Falta el primer operador en la expresión lógica", CadErrores);
+
         /* Condicionales */
-        gramatica.group("IF", "If Parentesis_A EXP_LOGICA Parentesis_C",true);
-        gramatica.group("IF", "If EXP_LOGICA Parentesis_C",true,
-                12,"Error sintáctico {}: Falta parantesis que abre \"(\" en la condición [#,%]");
-        gramatica.group("IF", "If Parentesis_A Parentesis_C",true,
-                13,"Error sintáctico {}: Falta la expresión lógica en la condición [#,%]");
-        gramatica.group("IF", "If Parentesis_A EXP_LOGICA",true,
-                14,"Error sintáctico {}: Falta parantesis que cierra \")\" en la condición [#,%]");
-        gramatica.group("IF", "If Parentesis_A ",true,
-                15,"Error sintáctico {}: Falta la expresión lógica y el parantesis que cierra \")\" en la condición [#,%]");
-        gramatica.group("IF", "If EXP_LOGICA ",true,
-                16,"Error sintáctico {}: Falta parantesis que abre \"(\" y parentesis que cierra \")\" en la condición [#,%] [#,%]");
-        gramatica.group("IF", "If Parentesis_C",true,
-                17,"Error sintáctico {}: Falta el parantesis que abre \"(\" y la expresión lógica en la condición [#,%]");
-        gramatica.group("IF", "If",true,
-                18,"Error sintáctico {}: Falta el parantesis que abre \"(\", la expresión lógica y parentesis que cierra \")\" en la condición [#,%]");
-        
+        gramatica.group("IF", "If Parentesis_A (EXP_LOGICA | Identificador) Parentesis_C", true, ProCorrectas);
+        gramatica.group("IF", "If (EXP_LOGICA | Identificador) Parentesis_C", true,
+                12, "Error sintáctico {}: Falta parantesis que abre \"(\" en la condición [#,%]", CadErrores);
+        gramatica.group("IF", "If Parentesis_A Parentesis_C", true,
+                13, "Error sintáctico {}: Falta la expresión lógica en la condición [#,%]", CadErrores);
+        gramatica.group("IF", "If Parentesis_A (EXP_LOGICA | Identificador)", true,
+                14, "Error sintáctico {}: Falta parantesis que cierra \")\" en la condición [#,%]", CadErrores);
+        gramatica.group("IF", "If Parentesis_A ", true,
+                15, "Error sintáctico {}: Falta la expresión lógica y el parantesis que cierra \")\" en la condición [#,%]", CadErrores);
+        gramatica.group("IF", "If (EXP_LOGICA | Identificador) ", true,
+                16, "Error sintáctico {}: Falta parantesis que abre \"(\" y parentesis que cierra \")\" en la condición [#,%] [#,%]", CadErrores);
+        gramatica.group("IF", "If Parentesis_C", true,
+                17, "Error sintáctico {}: Falta el parantesis que abre \"(\" y la expresión lógica en la condición [#,%]", CadErrores);
+        gramatica.group("IF", "If", true,
+                18, "Error sintáctico {}: Falta el parantesis que abre \"(\", la expresión lógica y parentesis que cierra \")\" en la condición [#,%]", CadErrores);
+
         /* Cliclo WHILE */
-        gramatica.group("CICLO_WHILE", "While Parentesis_A EXP_LOGICA Parentesis_C",true);
-        gramatica.group("CICLO_WHILE", "While EXP_LOGICA Parentesis_C",true,
-                26,"Error sintáctico {}: Falta parantesis que abre \"(\" en el ciclo WHILE [#,%]");
-        gramatica.group("CICLO_WHILE", "While Parentesis_A Parentesis_C",true,
-                27,"Error sintáctico {}: Falta la expresión lógica en el ciclo WHILE [#,%]");
-        gramatica.group("CICLO_WHILE", "While Parentesis_A EXP_LOGICA",true,
-                28,"Error sintáctico {}: Falta parantesis que cierra \")\" en el ciclo WHILE [#,%]");
-        gramatica.group("CICLO_WHILE", "While Parentesis_A ",true,
-                29,"Error sintáctico {}: Falta la expresión lógica y el parantesis que cierra \")\" en el ciclo WHILE [#,%]");
-        gramatica.group("CICLO_WHILE", "While EXP_LOGICA ",true,
-                30,"Error sintáctico {}: Falta parantesis que abre \"(\" y parentesis que cierra \")\" en el ciclo WHILE [#,%] [#,%]");
-        gramatica.group("CICLO_WHILE", "While Parentesis_C",true,
-                31,"Error sintáctico {}: Falta el parantesis que abre \"(\" y la expresión lógica en el ciclo WHILE [#,%]");
-        gramatica.group("CICLO_WHILE", "While",true,
-                32,"Error sintáctico {}: Falta el parantesis que abre \"(\", la expresión lógica y parentesis que cierra \")\" en el ciclo WHILE [#,%]");
-        
-        
+        gramatica.group("CICLO_WHILE", "While Parentesis_A (EXP_LOGICA | Identificador) Parentesis_C", true, ProCorrectas);
+        gramatica.group("CICLO_WHILE", "While (EXP_LOGICA | Identificador) Parentesis_C", true,
+                26, "Error sintáctico {}: Falta parantesis que abre \"(\" en el ciclo WHILE [#,%]", CadErrores);
+        gramatica.group("CICLO_WHILE", "While Parentesis_A Parentesis_C", true,
+                27, "Error sintáctico {}: Falta la expresión lógica en el ciclo WHILE [#,%]", CadErrores);
+        gramatica.group("CICLO_WHILE", "While Parentesis_A (EXP_LOGICA | Identificador)", true,
+                28, "Error sintáctico {}: Falta parantesis que cierra \")\" en el ciclo WHILE [#,%]", CadErrores);
+        gramatica.group("CICLO_WHILE", "While Parentesis_A ", true,
+                29, "Error sintáctico {}: Falta la expresión lógica y el parantesis que cierra \")\" en el ciclo WHILE [#,%]", CadErrores);
+        gramatica.group("CICLO_WHILE", "While (EXP_LOGICA | Identificador) ", true,
+                30, "Error sintáctico {}: Falta parantesis que abre \"(\" y parentesis que cierra \")\" en el ciclo WHILE [#,%] [#,%]", CadErrores);
+        gramatica.group("CICLO_WHILE", "While Parentesis_C", true,
+                31, "Error sintáctico {}: Falta el parantesis que abre \"(\" y la expresión lógica en el ciclo WHILE [#,%]", CadErrores);
+        gramatica.group("CICLO_WHILE", "While", true,
+                32, "Error sintáctico {}: Falta el parantesis que abre \"(\", la expresión lógica y parentesis que cierra \")\" en el ciclo WHILE [#,%]", CadErrores);
+
+        // Eliminación de expresiones lógicas
+        gramatica.delete("EXP_LOGICA",
+                33, "Error sintactico {}: La expresión lógica [] no está contenida dentro de una estructura de control [#,%]");
+
         /* Agrupación de sentencias */
         gramatica.group("SENTENCIAS", "(FUNCION_COMPLETA_PC | VARIABLE_PC)+");
         gramatica.group("EST_CONTROL_COMPLETA", "(CICLO_FOR | IF | CICLO_WHILE)");
-        gramatica.loopForFunExecUntilChangeNotDetected(()->{
-            gramatica.group("EST_CONTROL_COMPLETA_LALC", "EST_CONTROL_COMPLETA Llave_A (SENTENCIAS)? Llave_C",true);
-            gramatica.group("SENTENCIAS", "(EST_CONTROL_COMPLETA_LALC)");
+        gramatica.loopForFunExecUntilChangeNotDetected(() -> {
+            gramatica.group("EST_CONTROL_COMPLETA_LALC", "EST_CONTROL_COMPLETA Llave_A (SENTENCIAS)? Llave_C", true);
+            gramatica.group("SENTENCIAS", "(EST_CONTROL_COMPLETA_LALC | SENTENCIAS)+");
         });
-        gramatica.delete("EXP_LOGICA",
-                33,"Error sintactico {}: La expresión lógica [] no está contenida dentro de una estructura de control [#,%]");
-        gramatica.delete(new String[]{"Llave_A","Llave_C"},
-                34,"Error sintactico {}: La llave [] no está en el contenido de una agrupación");
-        gramatica.delete("Punto_Coma",
-                35,"Error sintactico {}: El [] no está al final de una sentencia [#,%]");
-        gramatica.delete(new String[]{"Parentesis_A","Parentesis_C"},
-                36,"Error sintactico {}: El parentesis [] no está contenido en una agrupación [#,%]");
+
+        // Eliminación de estructuras de control completas
         gramatica.delete("EST_CONTROL_COMPLETA",
-                37,"Error sintactico {}: La estructura de control no está declarada correctamente [#,%]");
-        gramatica.delete("Op_Logico",
-                38,"Error sintactico {}: El operador lógico [] no está dentro de una expresión");
-        gramatica.delete(new String[]{"OP_RETORNO","FUNCION"}, 
-                39, "Error sintactico {}: La función [] está mal declarada [#,%]");
-        gramatica.delete("Op_Asignacion",
-                40,"Error sintactica {}: El operador de asignación [] no está en una declaración [#,%]");
+                37, "Error sintactico {}: La estructura de control no está declarada correctamente [#,%]");
+
+        /* Agrupación de bloque principal y de inicio */
+        gramatica.group("BLOQUE_INICIO", "INICIO Identificador");
+        gramatica.group("BLOQUE_INICIO", "INICIO",
+                40, "Error sintactico {}: Falta el identificador después del bloque de inicio [#, %]", CadErrores);
+        gramatica.group("BLOQUE_PRINCIPAL", "PRINCIPAL Parentesis_A Parentesis_C");
+        gramatica.group("BLOQUE_PRINCIPAL", "PRINCIPAL Parentesis_C",
+                41, "Error sintactico {}: Falta el paréntesis que abre después del bloque principal [#, %]", CadErrores);
+        gramatica.group("BLOQUE_PRINCIPAL", "PRINCIPAL Parentesis_A",
+                42, "Error sintactico {}: Falta el paréntesis que cierra después del bloque principal [#, %]", CadErrores);
+        gramatica.group("BLOQUE_PRINCIPAL", "PRINCIPAL",
+                43, "Error sintactico {}: Falta el paréntesis que abre y que cierra después del bloque principal [#, %]", CadErrores);
+        gramatica.group("BLOQUE_PRINCIPAL_COMPLET", "BLOQUE_PRINCIPAL Llave_A (SENTENCIAS)* Llave_C");
+        gramatica.group("BLOQUE_PRINCIPAL_COMPLET", "BLOQUE_PRINCIPAL (SENTENCIAS)* Llave_C", 44,
+                "Error sintactico {}: Falta la llave que abre después del bloque principal [#, %]", CadErrores);
+        gramatica.finalLineColumn();
+        gramatica.group("BLOQUE_PRINCIPAL_COMPLET", "BLOQUE_PRINCIPAL Llave_A (SENTENCIAS)*", 45,
+                "Error sintactico {}: Falta la llave que cierra después del bloque principal [#, %]", CadErrores);
+        gramatica.initialLineColumn();
+        gramatica.group("BLOQUE_PRINCIPAL_COMPLET", "BLOQUE_PRINCIPAL (SENTENCIAS)*", 46,
+                "Error sintactico {}: Falta la llave que abre y que cierra después del bloque principal [#, %]", CadErrores);
+        gramatica.group("BLOQUE_INICIO_COMPLET", "BLOQUE_INICIO Llave_A BLOQUE_PRINCIPAL_COMPLET Llave_C");
+        gramatica.group("BLOQUE_INICIO_COMPLET", "BLOQUE_INICIO BLOQUE_PRINCIPAL_COMPLET Llave_C", 47,
+                "Error sintactico {}: Falta la llave que abre después del bloque de inicio [#, %]", CadErrores);
+        gramatica.finalLineColumn();
+        gramatica.group("BLOQUE_INICIO_COMPLET", "BLOQUE_INICIO Llave_A BLOQUE_PRINCIPAL_COMPLET", 48,
+                "Error sintactico {}: Falta la llave que cierra después del bloque de inicio [#, %]", CadErrores);
+        gramatica.initialLineColumn();
+        gramatica.group("BLOQUE_INICIO_COMPLET", "BLOQUE_INICIO BLOQUE_PRINCIPAL_COMPLET", 49,
+                "Error sintactico {}: Falta la llave que abre y que cierra después del bloque de inicio [#, %]", CadErrores);
+        gramatica.group("BLOQUE_INICIO_COMPLET_FIN", "BLOQUE_INICIO_COMPLET FINAL");
+        gramatica.finalLineColumn();
+        gramatica.group("BLOQUE_INICIO_COMPLET_FIN", "BLOQUE_INICIO_COMPLET", 50,
+                "Error sintáctico {}: Falta el bloque de fin al final del bloque de inicio [#, %]", CadErrores);
+
+        /* Eliminación de expresiones innecesarias */
+        gramatica.delete(new String[]{"Llave_A", "Llave_C"},
+                34, "Error sintactico {}: La llave [] no está en el contenido de una agrupación [#, %]");
+        gramatica.delete(new String[]{"Parentesis_A", "Parentesis_C"},
+                36, "Error sintactico {}: El parentesis [] no está contenido en una agrupación [#,%]");
+
         gramatica.show();
+
     }
-    private void semanticAnalysis(){
-        
+
+    private void semanticAnalysis() {
+
     }
-    private void printConsole(){
+
+    private void printConsole() {
         int sizeErrors = errors.size();
         if (sizeErrors > 0) {
             Functions.sortErrorsByLineAndColumn(errors);
@@ -315,9 +376,8 @@ public class Compilador extends javax.swing.JFrame {
             txtConsola.setText("Compilación terminada...");
         }
         txtConsola.setCaretPosition(0);
-        
+
     }
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -337,6 +397,9 @@ public class Compilador extends javax.swing.JFrame {
         imgGuardarComo = new javax.swing.JLabel();
         imgCompilar = new javax.swing.JLabel();
         imgEjecutar = new javax.swing.JLabel();
+        JAutomata = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        labGramaUsa = new javax.swing.JLabel();
         pnlCodigo = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         txtCodigo = new javax.swing.JTextPane();
@@ -376,7 +439,7 @@ public class Compilador extends javax.swing.JFrame {
         pnlFondo.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         pnlBarraHerramientas.setBackground(new java.awt.Color(255, 255, 255));
-        pnlBarraHerramientas.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
+        pnlBarraHerramientas.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, Color.white));
         pnlBarraHerramientas.setMaximumSize(new java.awt.Dimension(830, 30));
         pnlBarraHerramientas.setMinimumSize(new java.awt.Dimension(830, 30));
         pnlBarraHerramientas.setPreferredSize(new java.awt.Dimension(830, 30));
@@ -442,6 +505,30 @@ public class Compilador extends javax.swing.JFrame {
         });
         pnlBarraHerramientas.add(imgEjecutar, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 0, -1, -1));
 
+        JAutomata.setText("AUTOMATA");
+        JAutomata.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                JAutomataMousePressed(evt);
+            }
+        });
+        pnlBarraHerramientas.add(JAutomata, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 6, 70, 20));
+
+        jLabel2.setText("GRAMATICAS USADAS");
+        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jLabel2MousePressed(evt);
+            }
+        });
+        pnlBarraHerramientas.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 0, 130, 30));
+
+        labGramaUsa.setText("GRAMATICAS ");
+        labGramaUsa.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                labGramaUsaMousePressed(evt);
+            }
+        });
+        pnlBarraHerramientas.add(labGramaUsa, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 0, 130, 30));
+
         pnlFondo.add(pnlBarraHerramientas, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         pnlCodigo.setBackground(new java.awt.Color(204, 204, 204));
@@ -483,6 +570,11 @@ public class Compilador extends javax.swing.JFrame {
         txtConsola.setMaximumSize(new java.awt.Dimension(830, 130));
         txtConsola.setMinimumSize(new java.awt.Dimension(830, 130));
         txtConsola.setPreferredSize(new java.awt.Dimension(830, 130));
+        txtConsola.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                txtConsolaMouseReleased(evt);
+            }
+        });
         jScrollPane3.setViewportView(txtConsola);
 
         pnlError.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 810, 130));
@@ -491,15 +583,11 @@ public class Compilador extends javax.swing.JFrame {
 
         getContentPane().add(pnlFondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
-        menu.setBackground(new java.awt.Color(255, 255, 255));
         menu.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         menu.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
 
-        archivo.setBackground(new java.awt.Color(255, 255, 255));
-        archivo.setForeground(new java.awt.Color(0, 0, 0));
         archivo.setText("Archivo");
 
-        opNuevo.setForeground(new java.awt.Color(0, 0, 0));
         opNuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/nuevoArchivo20x20.png"))); // NOI18N
         opNuevo.setText("Nuevo...");
         opNuevo.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -510,7 +598,6 @@ public class Compilador extends javax.swing.JFrame {
         });
         archivo.add(opNuevo);
 
-        opAbrir.setForeground(new java.awt.Color(0, 0, 0));
         opAbrir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/abrirArchivo20x20.png"))); // NOI18N
         opAbrir.setText("Abrir...");
         opAbrir.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -521,7 +608,6 @@ public class Compilador extends javax.swing.JFrame {
         });
         archivo.add(opAbrir);
 
-        opGuardar.setForeground(new java.awt.Color(0, 0, 0));
         opGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/guardarArchivo20x20.png"))); // NOI18N
         opGuardar.setText("Guardar...");
         opGuardar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -532,7 +618,6 @@ public class Compilador extends javax.swing.JFrame {
         });
         archivo.add(opGuardar);
 
-        opGuardarComo.setForeground(new java.awt.Color(0, 0, 0));
         opGuardarComo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/guardarComo20x20.png"))); // NOI18N
         opGuardarComo.setText("Guardar como...");
         opGuardarComo.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -545,22 +630,18 @@ public class Compilador extends javax.swing.JFrame {
 
         menu.add(archivo);
 
-        editar.setForeground(new java.awt.Color(0, 0, 0));
         editar.setText("Editar");
 
-        opCortar.setForeground(new java.awt.Color(0, 0, 0));
         opCortar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/cortar20x20.png"))); // NOI18N
         opCortar.setText("Cortar");
         opCortar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         editar.add(opCortar);
 
-        opCopiar.setForeground(new java.awt.Color(0, 0, 0));
         opCopiar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/copiar20x20.png"))); // NOI18N
         opCopiar.setText("Copiar");
         opCopiar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         editar.add(opCopiar);
 
-        opPegar.setForeground(new java.awt.Color(0, 0, 0));
         opPegar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/pegar20x20.png"))); // NOI18N
         opPegar.setText("Pegar");
         opPegar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -568,10 +649,8 @@ public class Compilador extends javax.swing.JFrame {
 
         menu.add(editar);
 
-        correr.setForeground(new java.awt.Color(0, 0, 0));
         correr.setText("Correr");
 
-        opCompilar.setForeground(new java.awt.Color(0, 0, 0));
         opCompilar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/compilar20x20.png"))); // NOI18N
         opCompilar.setText("Compilar");
         opCompilar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -582,7 +661,6 @@ public class Compilador extends javax.swing.JFrame {
         });
         correr.add(opCompilar);
 
-        opEjecutar.setForeground(new java.awt.Color(0, 0, 0));
         opEjecutar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/ejecutar20x20.png"))); // NOI18N
         opEjecutar.setText("Ejecutar");
         opEjecutar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -595,12 +673,8 @@ public class Compilador extends javax.swing.JFrame {
 
         menu.add(correr);
 
-        opciones.setBackground(new java.awt.Color(255, 255, 255));
-        opciones.setForeground(new java.awt.Color(0, 0, 0));
         opciones.setText("Opciones");
 
-        opFuente.setBackground(new java.awt.Color(255, 255, 255));
-        opFuente.setForeground(new java.awt.Color(0, 0, 0));
         opFuente.setText("Fuente");
         opFuente.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -638,18 +712,18 @@ public class Compilador extends javax.swing.JFrame {
 
     private void imgEjecutarMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imgEjecutarMousePressed
         opCompilar.doClick();
-        if(codeHasBeenCompiled){
-            if(!errors.isEmpty()){
+        if (codeHasBeenCompiled) {
+            if (!errors.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Se encontró un error");
-            }else{
-                
+            } else {
+
             }
         }
     }//GEN-LAST:event_imgEjecutarMousePressed
 
     private void opFuenteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opFuenteActionPerformed
         JFontChooser fc = new JFontChooser();
-        JOptionPane.showMessageDialog(null, fc,"Elegir fuente",JOptionPane.PLAIN_MESSAGE);
+        JOptionPane.showMessageDialog(null, fc, "Elegir fuente", JOptionPane.PLAIN_MESSAGE);
         txtCodigo.setFont(fc.getSelectedFont());
     }//GEN-LAST:event_opFuenteActionPerformed
 
@@ -659,44 +733,39 @@ public class Compilador extends javax.swing.JFrame {
     }//GEN-LAST:event_imgNuevoMousePressed
 
     private void imgAbrirMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imgAbrirMousePressed
-        if(directorio.Open()){
+        if (directorio.Open()) {
             colorAnalysis();
             clearField();
         }
     }//GEN-LAST:event_imgAbrirMousePressed
 
     private void imgGuardarMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imgGuardarMousePressed
-        if(directorio.Save()){
+        if (directorio.Save()) {
             clearField();
         }
     }//GEN-LAST:event_imgGuardarMousePressed
 
     private void imgGuardarComoMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imgGuardarComoMousePressed
-        if(directorio.SaveAs()){
+        if (directorio.SaveAs()) {
             clearField();
         }
     }//GEN-LAST:event_imgGuardarComoMousePressed
 
     private void imgCompilarMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imgCompilarMousePressed
-        if(getTitle().contains("*") || getTitle().equals(title)){
-            if(directorio.Save()){
-                compile();
-            }
-        }else{
-            compile();
-        }
-        //txtConsola.setText("Compilando...");
+  
+      
+
     }//GEN-LAST:event_imgCompilarMousePressed
 
     private void txtCodigoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCodigoKeyTyped
-        
+
     }//GEN-LAST:event_txtCodigoKeyTyped
 
     private void txtCodigoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCodigoKeyReleased
-        if(evt.getKeyCode() == 9){
+        if (evt.getKeyCode() == 9) {
             int pos = txtCodigo.getCaretPosition();
             txtCodigo.setText(txtCodigo.getText().replaceAll("\t", "    "));
-            txtCodigo.setCaretPosition(pos+4);
+            txtCodigo.setCaretPosition(pos + 4);
 
         }
     }//GEN-LAST:event_txtCodigoKeyReleased
@@ -711,44 +780,200 @@ public class Compilador extends javax.swing.JFrame {
     }//GEN-LAST:event_opNuevoActionPerformed
 
     private void opAbrirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opAbrirActionPerformed
-        if(directorio.Open()){
+        if (directorio.Open()) {
             colorAnalysis();
             clearField();
         }
     }//GEN-LAST:event_opAbrirActionPerformed
 
     private void opGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opGuardarActionPerformed
-        if(directorio.Save()){
+        if (directorio.Save()) {
             clearField();
         }
     }//GEN-LAST:event_opGuardarActionPerformed
 
     private void opGuardarComoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opGuardarComoActionPerformed
-        if(directorio.SaveAs()){
+        if (directorio.SaveAs()) {
             clearField();
         }
     }//GEN-LAST:event_opGuardarComoActionPerformed
 
     private void opCompilarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opCompilarActionPerformed
-        if(getTitle().contains("*") || getTitle().equals(title)){
-            if(directorio.Save()){
+        if (getTitle().contains("*") || getTitle().equals(title)) {
+            if (directorio.Save()) {
                 compile();
             }
-        }else{
+        } else {
             compile();
         }
     }//GEN-LAST:event_opCompilarActionPerformed
 
     private void opEjecutarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opEjecutarActionPerformed
         //imgCompilar.doLayout();
-        if(codeHasBeenCompiled){
-            if(!errors.isEmpty()){
+        if (codeHasBeenCompiled) {
+            if (!errors.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Se encontró un error");
-            }else{
-                
+            } else {
+
             }
         }
     }//GEN-LAST:event_opEjecutarActionPerformed
+
+    private void txtConsolaMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtConsolaMouseReleased
+        int position = txtConsola.getCaretPosition();
+        if (position != -1) {
+            String console = txtConsola.getText();
+            int firstSaltLine = -1, ultimateSaltLine = -1;
+            for (int i = position - 1; i >= 0; i--) {
+                String character = console.substring(i, i + 1);
+                if (character.equals("\n")) {
+                    firstSaltLine = i;
+                    break;
+                }
+            }
+            for (int i = position; i < console.length(); i++) {
+                String character = console.substring(i, i + 1);
+                if (character.equals("\n")) {
+                    ultimateSaltLine = i;
+                    break;
+                }
+            }
+            int contador = -2;
+            for (int i = 0; i < console.length(); i++) {
+                String character = console.substring(i, i + 1);
+                if (character.equals("\n")) {
+                    contador++;
+                }
+                if ((i >= firstSaltLine) && (i <= ultimateSaltLine) && (contador >= 0) && (contador < errors.size())) {
+                    ErrorLSSL error = errors.get(contador);
+                    boolean existAutomata = false;
+                    for (Production er : CadErrores) {
+                        if ((er.getLine() == error.getLine() || er.getFinalLine() == error.getLine())
+                                && (er.getColumn() == error.getColumn() || er.getFinalColumn() == error.getColumn())) {
+                            System.out.println(er.getName());
+                            System.out.println(er.lexicalCompRank(0, -1));
+                            System.out.println(er.lexemeRank(0, -1));
+                            System.out.println(error);
+                            existAutomata = true;
+                                                                      
+                            if (err != null) {
+                                err.dispose();
+                            }
+                            if (auto != null) {
+                                auto.dispose();
+                            }
+                            if (venErrores != null) {
+                                venErrores.dispose();
+                            }
+
+                            if (opcGrama != null) {
+                                opcGrama.dispose();
+                            }
+
+                            venErrores = new VentanaErrores(er.getName(), er.lexicalCompRank(0, -1), er.lexemeRank(0, -1));
+                            venErrores.setVisible(true);
+                            //pintar(firstSaltLine, ultimateSaltLine);
+                            break;
+                        }
+                    }
+                    if (!existAutomata) {
+                        System.out.println("no existe el automata de esa expresión");
+                    }
+                    break;
+                }
+            }
+        }
+    }//GEN-LAST:event_txtConsolaMouseReleased
+
+    private void JAutomataMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_JAutomataMousePressed
+        for (Token token : tokens) {
+            ArreToken.add(token.getLexeme());
+            ArreNomToken.add(token.getLexicalComp());
+        }
+        if (err != null) {
+            err.dispose();
+        }
+        if (auto != null) {
+            auto.dispose();
+        }
+          if (venErrores != null) {
+            venErrores.dispose();
+        }
+          
+       if (opcGrama != null) {
+            opcGrama.dispose();
+        }
+        
+           
+        auto = new Automata(ArreToken, ArreNomToken);
+        auto.setVisible(true);
+
+    }//GEN-LAST:event_JAutomataMousePressed
+
+    private void labGramaUsaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labGramaUsaMousePressed
+        for (int i = 0; i < ProCorrectas.size(); i++) {
+            for (int j = i + 1; j < ProCorrectas.size(); j++) {
+                Production ProdCorrecta_i = ProCorrectas.get(i), ProdCorrecta_j = ProCorrectas.get(j);
+                if (ProdCorrecta_i.getLine() > ProdCorrecta_j.getLine()) {
+                    ProCorrectas.set(j, ProdCorrecta_i);
+                    ProCorrectas.set(i, ProdCorrecta_j);
+                }
+            }
+        }
+        for (Production ProdCorrecta : ProCorrectas) {
+            ArreCompleto.add("[" + ProdCorrecta.getLine() + ", " + ProdCorrecta.getColumn() + "]    " + ProdCorrecta.getName() + " ---> " + ProdCorrecta.lexicalCompRank(0, -1));
+        }
+      if (err != null) {
+            err.dispose();
+        }
+        if (auto != null) {
+            auto.dispose();
+        }
+          if (venErrores != null) {
+            venErrores.dispose();
+        }
+          
+       if (opcGrama != null) {
+            opcGrama.dispose();
+        }
+      
+        err = new GramaUsa(ArreCompleto);
+        err.setVisible(true);
+    }//GEN-LAST:event_labGramaUsaMousePressed
+
+    private void jLabel2MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MousePressed
+       for (int i = 0; i < ProCorrectas.size(); i++) {
+            for (int j = i + 1; j < ProCorrectas.size(); j++) {
+                Production ProdCorrecta_i = ProCorrectas.get(i), ProdCorrecta_j = ProCorrectas.get(j);
+                if (ProdCorrecta_i.getLine() > ProdCorrecta_j.getLine()) {
+                    ProCorrectas.set(j, ProdCorrecta_i);
+                    ProCorrectas.set(i, ProdCorrecta_j);
+                }
+            }
+        }
+        for (Production ProdCorrecta : ProCorrectas) {
+            ArreCompleto.add(ProdCorrecta.getName());
+        }
+          
+       if (err != null) {
+            err.dispose();
+        }
+        if (auto != null) {
+            auto.dispose();
+        }
+          if (venErrores != null) {
+            venErrores.dispose();
+        }
+          
+       if (opcGrama != null) {
+            opcGrama.dispose();
+        }
+      
+        
+        
+       opcGrama=new OpcionesGrama(ArreCompleto);
+        opcGrama.setVisible(true); 
+    }//GEN-LAST:event_jLabel2MousePressed
 
     /**
      * @param args the command line arguments
@@ -778,19 +1003,18 @@ public class Compilador extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    UIManager.setLookAndFeel(new FlatIntelliJLaf());
-                    new Compilador().setVisible(true);
-                } catch (UnsupportedLookAndFeelException ex) {
-                    Logger.getLogger(Compilador.class.getName()).log(Level.SEVERE, null, ex);
-                }
+        java.awt.EventQueue.invokeLater(() -> {
+            try {
+                UIManager.setLookAndFeel(new FlatIntelliJLaf());
+                new Compilador().setVisible(true);
+            } catch (UnsupportedLookAndFeelException ex) {
+                Logger.getLogger(Compilador.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel JAutomata;
     private javax.swing.JMenu archivo;
     private javax.swing.JMenu correr;
     private javax.swing.JMenu editar;
@@ -801,9 +1025,11 @@ public class Compilador extends javax.swing.JFrame {
     private javax.swing.JLabel imgGuardarComo;
     private javax.swing.JLabel imgNuevo;
     private say.swing.JFontChooser jFontChooser1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JLabel labGramaUsa;
     private javax.swing.JMenuBar menu;
     private javax.swing.JMenuItem opAbrir;
     private javax.swing.JMenuItem opCompilar;

@@ -48,6 +48,13 @@ cita_agendar | cita_cancelar | turno_nuevo | turno_actual | turno_proximo | turn
 puerta_status | temp_actual | ilu_status { return textColor(yychar, yylength(), new Color(22, 196, 59)); } // VERDE
 /* --------------------------------- */
 
+/* INICIO Y FINAL*/
+
+INICIO | FINAL { return textColor(yychar, yylength(), new Color(255, 121, 255)); } // morado 
+
+/* PRINCIPAL*/
+PRINCIPAL { return textColor(yychar, yylength(), new Color(75, 203, 204)); } // AZUL
+
 /* Condicionales */
 
 if |
@@ -55,10 +62,8 @@ while |
 for |
 return { return textColor(yychar, yylength(), new Color(138, 22, 196)); } // MORADO
 
-/* Operadores logicos */
+/* Operadores relacionales */
 
-"&&" |
-"||" |
 ">" |
 "<" |
 ">=" |

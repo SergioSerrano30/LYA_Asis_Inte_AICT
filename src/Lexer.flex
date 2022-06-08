@@ -40,6 +40,15 @@ import compilerTools.Token;
 
 
 /* ------------ PALABRAS RESERVADAS ------------ */
+/*INICIO*/
+INICIO { return token(yytext(), "INICIO", yyline, yycolumn); }
+
+/*FINAL*/
+FINAL { return token(yytext(), "FINAL", yyline, yycolumn); }
+
+/*PRINCIPAL*/
+PRINCIPAL { return token(yytext(), "PRINCIPAL", yyline, yycolumn); }
+
 /* Opciones cita */
 cita_agendar |
 cita_cancelar { return token(yytext(), "OP_Cita", yyline, yycolumn); }
@@ -83,11 +92,6 @@ for { return token(yytext(), "For", yyline, yycolumn); }
 /* Return */
 
 return { return token(yytext(), "Return", yyline, yycolumn); }
-
-/* Operadores logicos */
-
-"&&" |
-"||" { return token(yytext(), "Op_Logico", yyline, yycolumn); }
 
 /* Operadores Relacional */
 

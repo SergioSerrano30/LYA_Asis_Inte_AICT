@@ -34,7 +34,7 @@ public class vtn_TablaTokens extends javax.swing.JFrame {
 
         pnlFondo = new javax.swing.JPanel();
         lblTitulo = new javax.swing.JLabel();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        jScrollPane1 = new javax.swing.JScrollPane();
         tblTokens = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -56,16 +56,12 @@ public class vtn_TablaTokens extends javax.swing.JFrame {
         lblTitulo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         pnlFondo.add(lblTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 610, -1));
 
-        jScrollPane2.setMaximumSize(new java.awt.Dimension(400, 350));
-        jScrollPane2.setMinimumSize(new java.awt.Dimension(400, 350));
-        jScrollPane2.setPreferredSize(new java.awt.Dimension(400, 350));
-
         tblTokens.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Componente léxico", "Lexema", "[Linea, Columna]"
+                "Componente léxico", "Lexema", "[Línea, Columna]"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -76,17 +72,9 @@ public class vtn_TablaTokens extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        tblTokens.setMaximumSize(new java.awt.Dimension(250, 200));
-        tblTokens.setMinimumSize(new java.awt.Dimension(250, 200));
-        tblTokens.setPreferredSize(new java.awt.Dimension(250, 200));
-        jScrollPane2.setViewportView(tblTokens);
-        if (tblTokens.getColumnModel().getColumnCount() > 0) {
-            tblTokens.getColumnModel().getColumn(0).setResizable(false);
-            tblTokens.getColumnModel().getColumn(1).setResizable(false);
-            tblTokens.getColumnModel().getColumn(2).setResizable(false);
-        }
+        jScrollPane1.setViewportView(tblTokens);
 
-        pnlFondo.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 50, 400, 350));
+        pnlFondo.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 70, -1, 340));
 
         getContentPane().add(pnlFondo);
         pnlFondo.setBounds(0, 0, 600, 450);
@@ -131,7 +119,7 @@ public class vtn_TablaTokens extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblTitulo;
     private javax.swing.JPanel pnlFondo;
     public javax.swing.JTable tblTokens;
