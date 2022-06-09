@@ -12,12 +12,15 @@ import java.util.ArrayList;
  *
  * @author sergi
  */
-public class vtn_TablaTokens extends javax.swing.JFrame {
+public class vtn_TablaTokensEstatica extends javax.swing.JFrame {
 
     /**
      * Creates new form vtn_TablaTokens
      */
-    public vtn_TablaTokens() {
+    private String[] tokensComp = {"OP_Cita","OP_Cita","OP_Turno"};
+    private String[] tokensLexema = {"cita_agendar","cita_cancelar","turno_nuevo"};
+    
+    public vtn_TablaTokensEstatica() {
         initComponents();
     }
     
@@ -39,9 +42,7 @@ public class vtn_TablaTokens extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
-        setMaximumSize(new java.awt.Dimension(550, 650));
         setMinimumSize(new java.awt.Dimension(550, 650));
-        setPreferredSize(new java.awt.Dimension(550, 650));
         setResizable(false);
         getContentPane().setLayout(null);
 
@@ -52,21 +53,21 @@ public class vtn_TablaTokens extends javax.swing.JFrame {
 
         lblTitulo.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
         lblTitulo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblTitulo.setText("Tabla de tokens ");
+        lblTitulo.setText("Tabla de tokens estática");
         lblTitulo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         pnlFondo.add(lblTitulo);
-        lblTitulo.setBounds(0, 10, 550, 40);
+        lblTitulo.setBounds(0, 10, 550, 29);
 
         tblTokens.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Componente léxico", "Lexema", "[Línea, Columna]"
+                "Componente léxico", "Lexema"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false
+                false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -74,9 +75,13 @@ public class vtn_TablaTokens extends javax.swing.JFrame {
             }
         });
         jScrollPane1.setViewportView(tblTokens);
+        if (tblTokens.getColumnModel().getColumnCount() > 0) {
+            tblTokens.getColumnModel().getColumn(0).setResizable(false);
+            tblTokens.getColumnModel().getColumn(1).setResizable(false);
+        }
 
         pnlFondo.add(jScrollPane1);
-        jScrollPane1.setBounds(60, 70, 420, 520);
+        jScrollPane1.setBounds(50, 70, 420, 500);
 
         getContentPane().add(pnlFondo);
         pnlFondo.setBounds(0, 0, 550, 650);

@@ -39,6 +39,8 @@ import java.awt.Color;
 {EspacioEnBlanco} {/*Ignorar*/}
 {Cadena} { return textColor(yychar, yylength(), new Color(51, 119, 255)); } //Azul
 
+
+
 /* IDENTIFICADOR */
 \${Identificador} { return textColor(yychar, yylength(), new Color(255, 0, 255)); }
 
@@ -70,6 +72,8 @@ return { return textColor(yychar, yylength(), new Color(138, 22, 196)); } // MOR
 "<=" |
 "==" |
 "!=" { return textColor(yychar, yylength(), new Color(196, 115, 22)); } // NARANJA
+
+
 
 
 . {/* Ignorar */}

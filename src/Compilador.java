@@ -8,6 +8,7 @@ import compilerTools.Production;
 import compilerTools.TextColor;
 import compilerTools.Token;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -52,6 +53,7 @@ public class Compilador extends javax.swing.JFrame {
     public Compilador() {
         initComponents();
         init();
+        //a_dOpciones();
     }
 
     private void init() {
@@ -148,6 +150,7 @@ public class Compilador extends javax.swing.JFrame {
         //semanticAnalysis();
         printConsole();
         codeHasBeenCompiled = true;
+        //a_dOpciones();
     }
 
     private void lexicalAnalysis() {
@@ -326,27 +329,27 @@ public class Compilador extends javax.swing.JFrame {
         gramatica.group("BLOQUE_PRINCIPAL", "PRINCIPAL",
                 43, "Error sintactico {}: Falta el paréntesis que abre y que cierra después del bloque principal [#, %]", CadErrores);
         gramatica.group("BLOQUE_PRINCIPAL_COMPLET", "BLOQUE_PRINCIPAL Llave_A (SENTENCIAS)* Llave_C");
-        gramatica.group("BLOQUE_PRINCIPAL_COMPLET", "BLOQUE_PRINCIPAL (SENTENCIAS)* Llave_C", 44,
-                "Error sintactico {}: Falta la llave que abre después del bloque principal [#, %]", CadErrores);
+        gramatica.group("BLOQUE_PRINCIPAL_COMPLET", "BLOQUE_PRINCIPAL (SENTENCIAS)* Llave_C", 
+                44, "Error sintactico {}: Falta la llave que abre después del bloque principal [#, %]", CadErrores);
         gramatica.finalLineColumn();
-        gramatica.group("BLOQUE_PRINCIPAL_COMPLET", "BLOQUE_PRINCIPAL Llave_A (SENTENCIAS)*", 45,
-                "Error sintactico {}: Falta la llave que cierra después del bloque principal [#, %]", CadErrores);
+        gramatica.group("BLOQUE_PRINCIPAL_COMPLET", "BLOQUE_PRINCIPAL Llave_A (SENTENCIAS)*", 
+                45, "Error sintactico {}: Falta la llave que cierra después del bloque principal [#, %]", CadErrores);
         gramatica.initialLineColumn();
-        gramatica.group("BLOQUE_PRINCIPAL_COMPLET", "BLOQUE_PRINCIPAL (SENTENCIAS)*", 46,
-                "Error sintactico {}: Falta la llave que abre y que cierra después del bloque principal [#, %]", CadErrores);
+        gramatica.group("BLOQUE_PRINCIPAL_COMPLET", "BLOQUE_PRINCIPAL (SENTENCIAS)*", 
+                46, "Error sintactico {}: Falta la llave que abre y que cierra después del bloque principal [#, %]", CadErrores);
         gramatica.group("BLOQUE_INICIO_COMPLET", "BLOQUE_INICIO Llave_A BLOQUE_PRINCIPAL_COMPLET Llave_C");
-        gramatica.group("BLOQUE_INICIO_COMPLET", "BLOQUE_INICIO BLOQUE_PRINCIPAL_COMPLET Llave_C", 47,
-                "Error sintactico {}: Falta la llave que abre después del bloque de inicio [#, %]", CadErrores);
+        gramatica.group("BLOQUE_INICIO_COMPLET", "BLOQUE_INICIO BLOQUE_PRINCIPAL_COMPLET Llave_C", 
+                47, "Error sintactico {}: Falta la llave que abre después del bloque de inicio [#, %]", CadErrores);
         gramatica.finalLineColumn();
-        gramatica.group("BLOQUE_INICIO_COMPLET", "BLOQUE_INICIO Llave_A BLOQUE_PRINCIPAL_COMPLET", 48,
-                "Error sintactico {}: Falta la llave que cierra después del bloque de inicio [#, %]", CadErrores);
+        gramatica.group("BLOQUE_INICIO_COMPLET", "BLOQUE_INICIO Llave_A BLOQUE_PRINCIPAL_COMPLET", 
+                48, "Error sintactico {}: Falta la llave que cierra después del bloque de inicio [#, %]", CadErrores);
         gramatica.initialLineColumn();
-        gramatica.group("BLOQUE_INICIO_COMPLET", "BLOQUE_INICIO BLOQUE_PRINCIPAL_COMPLET", 49,
-                "Error sintactico {}: Falta la llave que abre y que cierra después del bloque de inicio [#, %]", CadErrores);
+        gramatica.group("BLOQUE_INICIO_COMPLET", "BLOQUE_INICIO BLOQUE_PRINCIPAL_COMPLET", 
+                49, "Error sintactico {}: Falta la llave que abre y que cierra después del bloque de inicio [#, %]", CadErrores);
         gramatica.group("BLOQUE_INICIO_COMPLET_FIN", "BLOQUE_INICIO_COMPLET FINAL");
         gramatica.finalLineColumn();
-        gramatica.group("BLOQUE_INICIO_COMPLET_FIN", "BLOQUE_INICIO_COMPLET", 50,
-                "Error sintáctico {}: Falta el bloque de fin al final del bloque de inicio [#, %]", CadErrores);
+        gramatica.group("BLOQUE_INICIO_COMPLET_FIN", "BLOQUE_INICIO_COMPLET", 
+                50, "Error sintáctico {}: Falta el bloque de fin al final del bloque de inicio [#, %]", CadErrores);
 
         /* Eliminación de expresiones innecesarias */
         gramatica.delete(new String[]{"Llave_A", "Llave_C"},
@@ -361,6 +364,7 @@ public class Compilador extends javax.swing.JFrame {
     private void semanticAnalysis() {
 
     }
+    
 
     private void printConsole() {
         int sizeErrors = errors.size();
@@ -372,8 +376,10 @@ public class Compilador extends javax.swing.JFrame {
                 strErrors += strError + "\n";
             }
             txtConsola.setText("Compilación terminada...\n" + strErrors + "\nLa compilación terminó con errores...");
+            txtConsola.setForeground(Color.red);
         } else {
             txtConsola.setText("Compilación terminada...");
+            txtConsola.setForeground(Color.green);
         }
         txtConsola.setCaretPosition(0);
 
@@ -389,6 +395,7 @@ public class Compilador extends javax.swing.JFrame {
     private void initComponents() {
 
         jMenu1 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
         pnlFondo = new javax.swing.JPanel();
         pnlBarraHerramientas = new javax.swing.JPanel();
         imgNuevo = new javax.swing.JLabel();
@@ -397,9 +404,6 @@ public class Compilador extends javax.swing.JFrame {
         imgGuardarComo = new javax.swing.JLabel();
         imgCompilar = new javax.swing.JLabel();
         imgEjecutar = new javax.swing.JLabel();
-        JAutomata = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        labGramaUsa = new javax.swing.JLabel();
         pnlCodigo = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         txtCodigo = new javax.swing.JTextPane();
@@ -422,9 +426,18 @@ public class Compilador extends javax.swing.JFrame {
         opEjecutar = new javax.swing.JMenuItem();
         opciones = new javax.swing.JMenu();
         opFuente = new javax.swing.JMenuItem();
-        opTablaTokens = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        opTokens = new javax.swing.JMenu();
+        opTablaTokensD = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        opGramatica = new javax.swing.JMenu();
+        opAutomata = new javax.swing.JMenuItem();
+        opGramaticaG = new javax.swing.JMenuItem();
+        opGramaticaU = new javax.swing.JMenuItem();
 
         jMenu1.setText("jMenu1");
+
+        jMenuItem1.setText("jMenuItem1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("AICT Compilador");
@@ -505,30 +518,6 @@ public class Compilador extends javax.swing.JFrame {
         });
         pnlBarraHerramientas.add(imgEjecutar, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 0, -1, -1));
 
-        JAutomata.setText("AUTOMATA");
-        JAutomata.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                JAutomataMousePressed(evt);
-            }
-        });
-        pnlBarraHerramientas.add(JAutomata, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 6, 70, 20));
-
-        jLabel2.setText("GRAMATICAS USADAS");
-        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                jLabel2MousePressed(evt);
-            }
-        });
-        pnlBarraHerramientas.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 0, 130, 30));
-
-        labGramaUsa.setText("GRAMATICAS ");
-        labGramaUsa.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                labGramaUsaMousePressed(evt);
-            }
-        });
-        pnlBarraHerramientas.add(labGramaUsa, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 0, 130, 30));
-
         pnlFondo.add(pnlBarraHerramientas, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         pnlCodigo.setBackground(new java.awt.Color(204, 204, 204));
@@ -565,8 +554,11 @@ public class Compilador extends javax.swing.JFrame {
         pnlError.setPreferredSize(new java.awt.Dimension(830, 130));
         pnlError.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        txtConsola.setEditable(false);
         txtConsola.setColumns(20);
+        txtConsola.setFont(new java.awt.Font("Roboto", 0, 18)); // NOI18N
         txtConsola.setRows(5);
+        txtConsola.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         txtConsola.setMaximumSize(new java.awt.Dimension(830, 130));
         txtConsola.setMinimumSize(new java.awt.Dimension(830, 130));
         txtConsola.setPreferredSize(new java.awt.Dimension(830, 130));
@@ -588,6 +580,7 @@ public class Compilador extends javax.swing.JFrame {
 
         archivo.setText("Archivo");
 
+        opNuevo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         opNuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/nuevoArchivo20x20.png"))); // NOI18N
         opNuevo.setText("Nuevo...");
         opNuevo.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -598,6 +591,7 @@ public class Compilador extends javax.swing.JFrame {
         });
         archivo.add(opNuevo);
 
+        opAbrir.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         opAbrir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/abrirArchivo20x20.png"))); // NOI18N
         opAbrir.setText("Abrir...");
         opAbrir.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -608,6 +602,7 @@ public class Compilador extends javax.swing.JFrame {
         });
         archivo.add(opAbrir);
 
+        opGuardar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         opGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/guardarArchivo20x20.png"))); // NOI18N
         opGuardar.setText("Guardar...");
         opGuardar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -618,6 +613,7 @@ public class Compilador extends javax.swing.JFrame {
         });
         archivo.add(opGuardar);
 
+        opGuardarComo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
         opGuardarComo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/guardarComo20x20.png"))); // NOI18N
         opGuardarComo.setText("Guardar como...");
         opGuardarComo.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -632,16 +628,19 @@ public class Compilador extends javax.swing.JFrame {
 
         editar.setText("Editar");
 
+        opCortar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         opCortar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/cortar20x20.png"))); // NOI18N
         opCortar.setText("Cortar");
         opCortar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         editar.add(opCortar);
 
+        opCopiar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         opCopiar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/copiar20x20.png"))); // NOI18N
         opCopiar.setText("Copiar");
         opCopiar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         editar.add(opCopiar);
 
+        opPegar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         opPegar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/pegar20x20.png"))); // NOI18N
         opPegar.setText("Pegar");
         opPegar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -651,6 +650,7 @@ public class Compilador extends javax.swing.JFrame {
 
         correr.setText("Correr");
 
+        opCompilar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F5, 0));
         opCompilar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/compilar20x20.png"))); // NOI18N
         opCompilar.setText("Compilar");
         opCompilar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -661,6 +661,7 @@ public class Compilador extends javax.swing.JFrame {
         });
         correr.add(opCompilar);
 
+        opEjecutar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F6, 0));
         opEjecutar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/ejecutar20x20.png"))); // NOI18N
         opEjecutar.setText("Ejecutar");
         opEjecutar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -687,14 +688,48 @@ public class Compilador extends javax.swing.JFrame {
             }
         });
         opciones.add(opFuente);
+        opciones.add(jSeparator2);
 
-        opTablaTokens.setText("Tabla de tokens");
-        opTablaTokens.addActionListener(new java.awt.event.ActionListener() {
+        opTokens.setText("Tokens");
+
+        opTablaTokensD.setText("Tabla de tokens");
+        opTablaTokensD.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                opTablaTokensActionPerformed(evt);
+                opTablaTokensDActionPerformed(evt);
             }
         });
-        opciones.add(opTablaTokens);
+        opTokens.add(opTablaTokensD);
+
+        opciones.add(opTokens);
+        opciones.add(jSeparator1);
+
+        opGramatica.setText("Gramática");
+
+        opAutomata.setText("Autómata");
+        opAutomata.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                opAutomataActionPerformed(evt);
+            }
+        });
+        opGramatica.add(opAutomata);
+
+        opGramaticaG.setText("Gramáticas");
+        opGramaticaG.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                opGramaticaGActionPerformed(evt);
+            }
+        });
+        opGramatica.add(opGramaticaG);
+
+        opGramaticaU.setText("Gramáticas usadas");
+        opGramaticaU.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                opGramaticaUActionPerformed(evt);
+            }
+        });
+        opGramatica.add(opGramaticaU);
+
+        opciones.add(opGramatica);
 
         menu.add(opciones);
 
@@ -752,8 +787,13 @@ public class Compilador extends javax.swing.JFrame {
     }//GEN-LAST:event_imgGuardarComoMousePressed
 
     private void imgCompilarMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imgCompilarMousePressed
-  
-      
+        if (getTitle().contains("*") || getTitle().equals(title)) {
+                  if (directorio.Save()) {
+                      compile();
+                  }
+              } else {
+                  compile();
+              }
 
     }//GEN-LAST:event_imgCompilarMousePressed
 
@@ -770,9 +810,9 @@ public class Compilador extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_txtCodigoKeyReleased
 
-    private void opTablaTokensActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opTablaTokensActionPerformed
+    private void opTablaTokensDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opTablaTokensDActionPerformed
         fillTablaTokens();
-    }//GEN-LAST:event_opTablaTokensActionPerformed
+    }//GEN-LAST:event_opTablaTokensDActionPerformed
 
     private void opNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opNuevoActionPerformed
         directorio.New();
@@ -819,8 +859,10 @@ public class Compilador extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_opEjecutarActionPerformed
 
+    
     private void txtConsolaMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtConsolaMouseReleased
         int position = txtConsola.getCaretPosition();
+        //txtConsola.setCursor(new Cursor(Cursor.HAND_CURSOR));
         if (position != -1) {
             String console = txtConsola.getText();
             int firstSaltLine = -1, ultimateSaltLine = -1;
@@ -883,9 +925,10 @@ public class Compilador extends javax.swing.JFrame {
                 }
             }
         }
+        //txtConsola.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_txtConsolaMouseReleased
 
-    private void JAutomataMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_JAutomataMousePressed
+    private void opAutomataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opAutomataActionPerformed
         for (Token token : tokens) {
             ArreToken.add(token.getLexeme());
             ArreNomToken.add(token.getLexicalComp());
@@ -908,9 +951,9 @@ public class Compilador extends javax.swing.JFrame {
         auto = new Automata(ArreToken, ArreNomToken);
         auto.setVisible(true);
 
-    }//GEN-LAST:event_JAutomataMousePressed
+    }//GEN-LAST:event_opAutomataActionPerformed
 
-    private void labGramaUsaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labGramaUsaMousePressed
+    private void opGramaticaGActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opGramaticaGActionPerformed
         for (int i = 0; i < ProCorrectas.size(); i++) {
             for (int j = i + 1; j < ProCorrectas.size(); j++) {
                 Production ProdCorrecta_i = ProCorrectas.get(i), ProdCorrecta_j = ProCorrectas.get(j);
@@ -939,10 +982,10 @@ public class Compilador extends javax.swing.JFrame {
       
         err = new GramaUsa(ArreCompleto);
         err.setVisible(true);
-    }//GEN-LAST:event_labGramaUsaMousePressed
+    }//GEN-LAST:event_opGramaticaGActionPerformed
 
-    private void jLabel2MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MousePressed
-       for (int i = 0; i < ProCorrectas.size(); i++) {
+    private void opGramaticaUActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opGramaticaUActionPerformed
+        for (int i = 0; i < ProCorrectas.size(); i++) {
             for (int j = i + 1; j < ProCorrectas.size(); j++) {
                 Production ProdCorrecta_i = ProCorrectas.get(i), ProdCorrecta_j = ProCorrectas.get(j);
                 if (ProdCorrecta_i.getLine() > ProdCorrecta_j.getLine()) {
@@ -973,7 +1016,7 @@ public class Compilador extends javax.swing.JFrame {
         
        opcGrama=new OpcionesGrama(ArreCompleto);
         opcGrama.setVisible(true); 
-    }//GEN-LAST:event_jLabel2MousePressed
+    }//GEN-LAST:event_opGramaticaUActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1014,7 +1057,6 @@ public class Compilador extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel JAutomata;
     private javax.swing.JMenu archivo;
     private javax.swing.JMenu correr;
     private javax.swing.JMenu editar;
@@ -1025,23 +1067,29 @@ public class Compilador extends javax.swing.JFrame {
     private javax.swing.JLabel imgGuardarComo;
     private javax.swing.JLabel imgNuevo;
     private say.swing.JFontChooser jFontChooser1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JLabel labGramaUsa;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JMenuBar menu;
     private javax.swing.JMenuItem opAbrir;
+    private javax.swing.JMenuItem opAutomata;
     private javax.swing.JMenuItem opCompilar;
     private javax.swing.JMenuItem opCopiar;
     private javax.swing.JMenuItem opCortar;
     private javax.swing.JMenuItem opEjecutar;
     private javax.swing.JMenuItem opFuente;
+    private javax.swing.JMenu opGramatica;
+    private javax.swing.JMenuItem opGramaticaG;
+    private javax.swing.JMenuItem opGramaticaU;
     private javax.swing.JMenuItem opGuardar;
     private javax.swing.JMenuItem opGuardarComo;
     private javax.swing.JMenuItem opNuevo;
     private javax.swing.JMenuItem opPegar;
-    private javax.swing.JMenuItem opTablaTokens;
+    private javax.swing.JMenuItem opTablaTokensD;
+    private javax.swing.JMenu opTokens;
     private javax.swing.JMenu opciones;
     private javax.swing.JPanel pnlBarraHerramientas;
     private javax.swing.JPanel pnlCodigo;

@@ -27,12 +27,12 @@ public class Automata extends javax.swing.JFrame {
      */
     public Automata() {
         initComponents();
-        this.pintarImagen(this.jLabel, "src/imagenes/automataas.png");
+        //this.pintarImagen(this.jLabel, "src/imagenes/automataas.png");
     }
 
     public Automata(ArrayList<String> tokens, ArrayList<String> nombres) {
         initComponents();
-        this.pintarImagen(this.jLabel, "src/imagenes/automataas.png");
+        //this.pintarImagen(this.jLabel, "src/imagenes/automataas.png");
         NombreToken = nombres;
         Tokens = tokens;
         Validar(NombreToken, Tokens);
@@ -221,54 +221,49 @@ public class Automata extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        pnlFondo = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
         jLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setMaximumSize(new java.awt.Dimension(550, 650));
+        setMinimumSize(new java.awt.Dimension(550, 650));
+        setResizable(false);
+        getContentPane().setLayout(null);
 
+        pnlFondo.setMaximumSize(new java.awt.Dimension(550, 650));
+        pnlFondo.setMinimumSize(new java.awt.Dimension(550, 650));
+        pnlFondo.setPreferredSize(new java.awt.Dimension(550, 650));
+        pnlFondo.setLayout(null);
+
+        jTextArea1.setEditable(false);
         jTextArea1.setColumns(20);
         jTextArea1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jTextArea1.setRows(5);
         jScrollPane1.setViewportView(jTextArea1);
 
+        pnlFondo.add(jScrollPane1);
+        jScrollPane1.setBounds(20, 80, 500, 244);
+
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(0, 153, 0));
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("AUTOMATA");
+        pnlFondo.add(jLabel2);
+        jLabel2.setBounds(0, 20, 550, 47);
 
-        jLabel.setText("jLabel1");
+        jLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/automata.png"))); // NOI18N
+        pnlFondo.add(jLabel);
+        jLabel.setBounds(50, 350, 450, 240);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(20, 20, 20)
-                        .addComponent(jLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 936, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 936, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(380, 380, 380)
-                        .addComponent(jLabel2)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(19, 19, 19)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 464, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(12, Short.MAX_VALUE))
-        );
+        getContentPane().add(pnlFondo);
+        pnlFondo.setBounds(0, 0, 550, 650);
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     /**
@@ -311,5 +306,6 @@ public class Automata extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JPanel pnlFondo;
     // End of variables declaration//GEN-END:variables
 }
