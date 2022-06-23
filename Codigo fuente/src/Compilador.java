@@ -27,6 +27,7 @@ import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import jflex.logging.Out;
 import say.swing.JFontChooser;
 
 /**
@@ -38,14 +39,16 @@ public class Compilador extends javax.swing.JFrame {
     private String title;
     private Directory directorio;
     private ArrayList<Token> tokens;
-    private ArrayList<String> ArreToken, ArreCompleto, ArreNomToken;
+    private ArrayList<String> ArreToken, ArreCompleto, ArreNomToken,ArreFilaColumnaToken;
     private ArrayList<ErrorLSSL> errors;
+    private ArrayList<String> errores;
     private ArrayList<TextColor> textsColor;
     private Timer timerKeyReleased;
     private ArrayList<Production> identProd, CadErrores, ProCorrectas;
     private HashMap<String, String> identificadores;
     private boolean codeHasBeenCompiled = false;
     private GramaUsa err;
+    private int pos;
     Automata auto;
     VentanaErrores venErrores;
     OpcionesGrama opcGrama ;
@@ -86,7 +89,9 @@ public class Compilador extends javax.swing.JFrame {
         tokens = new ArrayList<>();
         ArreNomToken = new ArrayList<>();
         ArreToken = new ArrayList<>();
+        ArreFilaColumnaToken = new ArrayList<>();
         errors = new ArrayList<>();
+        errores = new ArrayList<>();
         CadErrores = new ArrayList<>();
         textsColor = new ArrayList<>();
         ProCorrectas = new ArrayList<>();
@@ -146,7 +151,8 @@ public class Compilador extends javax.swing.JFrame {
         clearField();
         lexicalAnalysis();
         //fillTablaTokens();
-        syntacticAnalysis();
+        //syntacticAnalysis();
+        sintactico();
         //semanticAnalysis();
         printConsole();
         codeHasBeenCompiled = true;
@@ -368,20 +374,35 @@ public class Compilador extends javax.swing.JFrame {
 
     private void printConsole() {
         int sizeErrors = errors.size();
-        if (sizeErrors > 0) {
-            Functions.sortErrorsByLineAndColumn(errors);
-            String strErrors = "\n";
-            for (ErrorLSSL error : errors) {
-                String strError = String.valueOf(error);
-                strErrors += strError + "\n";
+        int numErrores = errores.size();
+        if (numErrores > 0){
+            String strErrores = "\n\n";
+            for(int i = 0; i<numErrores; i++){
+                strErrores = errores.get(i) + "\n";
             }
-            txtConsola.setText("Compilación terminada...\n" + strErrors + "\nLa compilación terminó con errores...");
+            txtConsola.setText("Compilación terminada...\n" + strErrores + "\nLa compilación terminó con errores...");
             txtConsola.setForeground(Color.red);
-        } else {
+        }
+        else {
             txtConsola.setText("Compilación terminada...");
             txtConsola.setForeground(Color.green);
         }
         txtConsola.setCaretPosition(0);
+        
+//        if (sizeErrors > 0) {
+//            Functions.sortErrorsByLineAndColumn(errors);
+//            String strErrors = "\n";
+//            for (ErrorLSSL error : errors) {
+//                String strError = String.valueOf(error);
+//                strErrors += strError + "\n";
+//            }
+//            txtConsola.setText("Compilación terminada...\n" + strErrors + "\nLa compilación terminó con errores...");
+//            txtConsola.setForeground(Color.red);
+//        } else {
+//            txtConsola.setText("Compilación terminada...");
+//            txtConsola.setForeground(Color.green);
+//        }
+//        txtConsola.setCaretPosition(0);
 
     }
 
@@ -1098,4 +1119,186 @@ public class Compilador extends javax.swing.JFrame {
     private javax.swing.JTextPane txtCodigo;
     private javax.swing.JTextArea txtConsola;
     // End of variables declaration//GEN-END:variables
+
+    private void sintactico() {
+
+        pos = 0;
+        ArreToken.clear();
+        ArreNomToken.clear();
+        ArreFilaColumnaToken.clear();
+        errores.clear();
+        for (Token token : tokens) {
+                    ArreToken.add(token.getLexeme());
+                    ArreNomToken.add(token.getLexicalComp());
+                    ArreFilaColumnaToken.add("["+ token.getLine()+","+token.getColumn()+"]");
+                }
+                if (err != null) {
+                    err.dispose();
+                }
+                if (auto != null) {
+                    auto.dispose();
+                }
+                  if (venErrores != null) {
+                    venErrores.dispose();
+                }
+
+               if (opcGrama != null) {
+                    opcGrama.dispose();
+                }
+        /* Variables */  
+        String msg = "";
+        if(hayOtro()){
+           switch (ArreNomToken.get(pos)) {
+            case "Identificador":
+                System.out.println("Identificador encontrado");
+                pos++;
+                if(hayOtro()){
+                    identificadorCorrecto();
+                }
+                else{
+                    errores.add("Error [2], se esperaba operador de asignacion "+ArreFilaColumnaToken.get(pos-1));
+                }
+                
+                
+                break;
+            default:
+                errores.add("Error [1]: No se encontró ninguna palabra reservada");
+            } 
+        }
+        else{
+            errores.add("Error [1]: No se encontró ninguna palabra reservada");
+        }
+        
+        
+    }
+
+    private void identificadorCorrecto() {
+        String error = "";
+            if(ArreNomToken.get(pos).equals("Op_Asignacion")){
+                pos++;
+                System.out.println("Operador de asignacion encontrado");
+                if(hayOtro()){
+                   switch (ArreNomToken.get(pos)) {
+                    case "Numero":
+                        pos++;
+                        System.out.println("Numero encontrado");
+                        if(hayOtro()){
+                           if(ArreNomToken.get(pos).equals("Punto_Coma")){
+                            pos++;
+                            System.out.println("Punto y Coma encontrado IDENTIFICADOR correcto");
+                            }
+                            else{
+                                error = "Error [4], se esperaba punto y coma ';' "+ArreFilaColumnaToken.get(pos);
+                                errores.add(error);
+                            } 
+                        }
+                        else{
+                            error = "Error [4], se esperaba punto y coma ';' "+ArreFilaColumnaToken.get(pos-1);
+                            errores.add(error);
+                        }
+                        
+                        break;
+                    case "Cadena":
+                        pos++;
+                        System.out.println("Cadena encontrada");
+                        if(hayOtro()){
+                            if(ArreNomToken.get(pos).equals("Punto_Coma")){
+                            pos++;
+                            System.out.println("Punto y Coma encontrado IDENTIFICADOR correcto");
+                            }
+                            else{
+                                error = "Error [4], se esperaba punto y coma ';' "+ArreFilaColumnaToken.get(pos);
+                                errores.add(error);
+                            }
+                        }
+                        else{
+                            error = "Error [4], se esperaba punto y coma ';' "+ArreFilaColumnaToken.get(pos-1);
+                            errores.add(error);
+                        }
+                        
+                        break;
+                    case "OP_Retorno":
+                        pos++;
+                        System.out.println("OP_Retorno encontrada");
+                        if(hayOtro()){
+                            op_RetornoCorrecto();
+                        } //Hay otro
+                        else{
+                            error = "Error [5], se esperaba parentesis que abre '(' "+ArreFilaColumnaToken.get(pos-1);
+                            errores.add(error);
+                        }
+                        break;
+                    default:
+                        error = "Error [3], se esperaba numero, cadena u op_retorno "+ArreFilaColumnaToken.get(pos);
+                        errores.add(error);
+                    } 
+                }
+                else{
+                    error = "Error [3], se esperaba numero, cadena u op_retorno "+ArreFilaColumnaToken.get(pos-1);
+                    errores.add(error);
+                }
+                
+
+            }
+            else{
+                error = "Error [2], se esperaba operador de asignacion "+ArreFilaColumnaToken.get(pos);
+                errores.add(error);
+            }    
+               
+    }
+    
+
+    private boolean hayOtro() {
+//        System.out.println("Cant NomToken: "+ArreNomToken.size());
+//        System.out.println("Cant pos: "+pos);
+        if(ArreNomToken.size()>pos){
+            return true;
+        }
+        else{
+          errores.add("No hay más tokens para analizar");
+          return false;
+        }
+    }
+
+    private void op_RetornoCorrecto() {
+        String error = "";
+        if(ArreNomToken.get(pos).equals("Parentesis_A")){
+            pos++;
+            System.out.println("Parentecis que abre encontrado");
+            if(hayOtro()){
+                if(ArreNomToken.get(pos).equals("Parentesis_C")){
+                    pos++;
+                    System.out.println("Parentesis que cierra encontrado");
+                    if(hayOtro()){
+                        if(ArreNomToken.get(pos).equals("Punto_Coma")){
+                            pos++;
+                            System.out.println("Punto y Coma encontrado");
+                        }
+                        else{
+                            error = "Error [4], se esperaba punto y coma ';' "+ArreFilaColumnaToken.get(pos);
+                            errores.add(error);
+                        }
+                    }//Hay otro
+                    else{
+                        error = "Error [4], se esperaba punto y coma ';' "+ArreFilaColumnaToken.get(pos-1);
+                        errores.add(error);
+                    }
+                    
+                }
+                else{
+                    error = "Error [6], se esperaba parentesis que cierra ')' "+ArreFilaColumnaToken.get(pos);
+                    errores.add(error);
+                } 
+            }//Hay otro
+            else{
+                error = "Error [6], se esperaba parentesis que cierra ')' "+ArreFilaColumnaToken.get(pos-1);
+                errores.add(error);
+            }
+            
+        }
+        else{
+            error = "Error [5], se esperaba parentesis que abre '(' "+ArreFilaColumnaToken.get(pos);
+            errores.add(error);
+        }
+    }
 }
