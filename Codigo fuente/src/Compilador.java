@@ -1145,10 +1145,10 @@ public class Compilador extends javax.swing.JFrame {
                if (opcGrama != null) {
                     opcGrama.dispose();
                 }
-        /* Variables */  
-        String msg = "";
+        
         if(hayOtro()){
            switch (ArreNomToken.get(pos)) {
+            /* Variables */  
             case "Identificador":
                 System.out.println("Identificador encontrado");
                 pos++;
@@ -1160,6 +1160,8 @@ public class Compilador extends javax.swing.JFrame {
                 }
                 
                 
+                break;
+            case "For":
                 break;
             default:
                 errores.add("Error [1]: No se encontró ninguna palabra reservada");
