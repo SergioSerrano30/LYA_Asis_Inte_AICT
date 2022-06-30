@@ -1,1 +1,24 @@
-$hola = ilu_status();
+INICIO $iluminacion {
+    PRINCIPAL() {
+        cita_agendar("");
+
+
+
+/*
+        $test =10;
+        $test2="";
+        for($test){
+            $test3 =10;
+            $test4="";
+            $test5=ilu_status();
+            for(8){
+                $test6=5;
+                cita_agendar();
+
+            }//for anidado
+        }//for
+*/
+    } //PRINCIPAL
+} //INICIO
+FINAL
+//$test3 = "esto es un error";

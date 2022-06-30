@@ -39,7 +39,7 @@ public class Compilador extends javax.swing.JFrame {
     private String title;
     private Directory directorio;
     private ArrayList<Token> tokens;
-    private ArrayList<String> ArreToken, ArreCompleto, ArreNomToken,ArreFilaColumnaToken;
+    private ArrayList<String> ArreToken, ArreCompleto, ArreNomToken, ArreFilaColumnaToken;
     private ArrayList<ErrorLSSL> errors;
     private ArrayList<String> errores;
     private ArrayList<TextColor> textsColor;
@@ -51,7 +51,7 @@ public class Compilador extends javax.swing.JFrame {
     private int pos;
     Automata auto;
     VentanaErrores venErrores;
-    OpcionesGrama opcGrama ;
+    OpcionesGrama opcGrama;
 
     public Compilador() {
         initComponents();
@@ -212,8 +212,8 @@ public class Compilador extends javax.swing.JFrame {
                 7, "Error sintáctico {}: Falta parantesis que abre \"(\" y cierra \")\" en la función [#,%]", CadErrores);
 
         /* Variables */
-        gramatica.group("VALOR", "(Cadena | Numero | OP_RETORNO)",ProCorrectas);
-        gramatica.group("VARIABLE", "Identificador Op_Asignacion VALOR", true,ProCorrectas);
+        gramatica.group("VALOR", "(Cadena | Numero | OP_RETORNO)", ProCorrectas);
+        gramatica.group("VARIABLE", "Identificador Op_Asignacion VALOR", true, ProCorrectas);
         gramatica.group("VARIABLE", "Op_Asignacion VALOR", true,
                 1, "Error sintáctico {}: Falta el identificador en la declaración de variable [#,%]", CadErrores);
         gramatica.group("VARIABLE", "Identificador VALOR", true,
@@ -229,16 +229,16 @@ public class Compilador extends javax.swing.JFrame {
                 40, "Error sintactica {}: El operador de asignación [] no está en una declaración [#,%]");
 
         /* Funciones */
-        gramatica.group("PARAMETROS", "(VALOR | Identificador) (Coma (VALOR | Identificador))+",ProCorrectas);
-        gramatica.group("FUNCION", "(OP_Cita | OP_Turno | OP_Iluminacion | OP_Temperatura | OP_Puerta)", true,ProCorrectas);
-        gramatica.group("FUNCION_COMPLETA", "FUNCION Parentesis_A (PARAMETROS | (VALOR | Identificador))? Parentesis_C",ProCorrectas);
+        gramatica.group("PARAMETROS", "(VALOR | Identificador) (Coma (VALOR | Identificador))+", ProCorrectas);
+        gramatica.group("FUNCION", "(OP_Cita | OP_Turno | OP_Iluminacion | OP_Temperatura | OP_Puerta)", true, ProCorrectas);
+        gramatica.group("FUNCION_COMPLETA", "FUNCION Parentesis_A (PARAMETROS | (VALOR | Identificador))? Parentesis_C", ProCorrectas);
         gramatica.group("FUNCION_COMPLETA", "FUNCION (PARAMETROS | (VALOR | Identificador))? Parentesis_C",
                 8, "Error sintáctico {}: Falta parantesis que abre \"(\" en la función [#,%]", CadErrores);
         gramatica.group("FUNCION_COMPLETA", "FUNCION Parentesis_A (PARAMETROS | (VALOR | Identificador))?",
                 9, "Error sintáctico {}: Falta parantesis que cierra \")\" en la función[#,%]", CadErrores);
         gramatica.group("FUNCION_COMPLETA", "FUNCION (PARAMETROS | (VALOR | Identificador))?",
                 10, "Error sintáctico {}: Falta parantesis que abre \"(\" y cierra \")\" en la función [#,%]", CadErrores);
-        gramatica.group("FUNCION_COMPLETA_PC", "FUNCION_COMPLETA Punto_Coma", true,ProCorrectas);
+        gramatica.group("FUNCION_COMPLETA_PC", "FUNCION_COMPLETA Punto_Coma", true, ProCorrectas);
         gramatica.group("FUNCION_COMPLETA_PC", "FUNCION_COMPLETA", true,
                 11, "Error sintáctico {}: Falta ; al final de la función [#,%]", CadErrores);
 
@@ -267,7 +267,7 @@ public class Compilador extends javax.swing.JFrame {
                 25, "Error sintáctico {}: Falta el parantesis que abre \"(\", el VALOR y el parantesis que cierra \")\" en el ciclo FOR [#,%]", CadErrores);
 
         /* Expresiones lógicas */
-        gramatica.group("EXP_LOGICA", "(VALOR | Identificador) Op_Relacional (VALOR | Identificador)",ProCorrectas);
+        gramatica.group("EXP_LOGICA", "(VALOR | Identificador) Op_Relacional (VALOR | Identificador)", ProCorrectas);
         gramatica.group("EXP_LOGICA", "(VALOR | Identificador) Op_Relacional",
                 33, "Error sintáctico {}: Falta el segundo operador en la expresión lógica", CadErrores);
         gramatica.group("EXP_LOGICA", "Op_Relacional (VALOR | Identificador)",
@@ -335,26 +335,26 @@ public class Compilador extends javax.swing.JFrame {
         gramatica.group("BLOQUE_PRINCIPAL", "PRINCIPAL",
                 43, "Error sintactico {}: Falta el paréntesis que abre y que cierra después del bloque principal [#, %]", CadErrores);
         gramatica.group("BLOQUE_PRINCIPAL_COMPLET", "BLOQUE_PRINCIPAL Llave_A (SENTENCIAS)* Llave_C");
-        gramatica.group("BLOQUE_PRINCIPAL_COMPLET", "BLOQUE_PRINCIPAL (SENTENCIAS)* Llave_C", 
+        gramatica.group("BLOQUE_PRINCIPAL_COMPLET", "BLOQUE_PRINCIPAL (SENTENCIAS)* Llave_C",
                 44, "Error sintactico {}: Falta la llave que abre después del bloque principal [#, %]", CadErrores);
         gramatica.finalLineColumn();
-        gramatica.group("BLOQUE_PRINCIPAL_COMPLET", "BLOQUE_PRINCIPAL Llave_A (SENTENCIAS)*", 
+        gramatica.group("BLOQUE_PRINCIPAL_COMPLET", "BLOQUE_PRINCIPAL Llave_A (SENTENCIAS)*",
                 45, "Error sintactico {}: Falta la llave que cierra después del bloque principal [#, %]", CadErrores);
         gramatica.initialLineColumn();
-        gramatica.group("BLOQUE_PRINCIPAL_COMPLET", "BLOQUE_PRINCIPAL (SENTENCIAS)*", 
+        gramatica.group("BLOQUE_PRINCIPAL_COMPLET", "BLOQUE_PRINCIPAL (SENTENCIAS)*",
                 46, "Error sintactico {}: Falta la llave que abre y que cierra después del bloque principal [#, %]", CadErrores);
         gramatica.group("BLOQUE_INICIO_COMPLET", "BLOQUE_INICIO Llave_A BLOQUE_PRINCIPAL_COMPLET Llave_C");
-        gramatica.group("BLOQUE_INICIO_COMPLET", "BLOQUE_INICIO BLOQUE_PRINCIPAL_COMPLET Llave_C", 
+        gramatica.group("BLOQUE_INICIO_COMPLET", "BLOQUE_INICIO BLOQUE_PRINCIPAL_COMPLET Llave_C",
                 47, "Error sintactico {}: Falta la llave que abre después del bloque de inicio [#, %]", CadErrores);
         gramatica.finalLineColumn();
-        gramatica.group("BLOQUE_INICIO_COMPLET", "BLOQUE_INICIO Llave_A BLOQUE_PRINCIPAL_COMPLET", 
+        gramatica.group("BLOQUE_INICIO_COMPLET", "BLOQUE_INICIO Llave_A BLOQUE_PRINCIPAL_COMPLET",
                 48, "Error sintactico {}: Falta la llave que cierra después del bloque de inicio [#, %]", CadErrores);
         gramatica.initialLineColumn();
-        gramatica.group("BLOQUE_INICIO_COMPLET", "BLOQUE_INICIO BLOQUE_PRINCIPAL_COMPLET", 
+        gramatica.group("BLOQUE_INICIO_COMPLET", "BLOQUE_INICIO BLOQUE_PRINCIPAL_COMPLET",
                 49, "Error sintactico {}: Falta la llave que abre y que cierra después del bloque de inicio [#, %]", CadErrores);
         gramatica.group("BLOQUE_INICIO_COMPLET_FIN", "BLOQUE_INICIO_COMPLET FINAL");
         gramatica.finalLineColumn();
-        gramatica.group("BLOQUE_INICIO_COMPLET_FIN", "BLOQUE_INICIO_COMPLET", 
+        gramatica.group("BLOQUE_INICIO_COMPLET_FIN", "BLOQUE_INICIO_COMPLET",
                 50, "Error sintáctico {}: Falta el bloque de fin al final del bloque de inicio [#, %]", CadErrores);
 
         /* Eliminación de expresiones innecesarias */
@@ -370,25 +370,23 @@ public class Compilador extends javax.swing.JFrame {
     private void semanticAnalysis() {
 
     }
-    
 
     private void printConsole() {
         int sizeErrors = errors.size();
         int numErrores = errores.size();
-        if (numErrores > 0){
+        if (numErrores > 0) {
             String strErrores = "\n\n";
-            for(int i = 0; i<numErrores; i++){
+            for (int i = 0; i < numErrores; i++) {
                 strErrores = errores.get(i) + "\n";
             }
             txtConsola.setText("Compilación terminada...\n" + strErrores + "\nLa compilación terminó con errores...");
             txtConsola.setForeground(Color.red);
-        }
-        else {
+        } else {
             txtConsola.setText("Compilación terminada...");
             txtConsola.setForeground(Color.green);
         }
         txtConsola.setCaretPosition(0);
-        
+
 //        if (sizeErrors > 0) {
 //            Functions.sortErrorsByLineAndColumn(errors);
 //            String strErrors = "\n";
@@ -403,7 +401,6 @@ public class Compilador extends javax.swing.JFrame {
 //            txtConsola.setForeground(Color.green);
 //        }
 //        txtConsola.setCaretPosition(0);
-
     }
 
     /**
@@ -809,12 +806,12 @@ public class Compilador extends javax.swing.JFrame {
 
     private void imgCompilarMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imgCompilarMousePressed
         if (getTitle().contains("*") || getTitle().equals(title)) {
-                  if (directorio.Save()) {
-                      compile();
-                  }
-              } else {
-                  compile();
-              }
+            if (directorio.Save()) {
+                compile();
+            }
+        } else {
+            compile();
+        }
 
     }//GEN-LAST:event_imgCompilarMousePressed
 
@@ -880,7 +877,7 @@ public class Compilador extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_opEjecutarActionPerformed
 
-    
+
     private void txtConsolaMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtConsolaMouseReleased
         int position = txtConsola.getCaretPosition();
         //txtConsola.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -918,7 +915,7 @@ public class Compilador extends javax.swing.JFrame {
                             System.out.println(er.lexemeRank(0, -1));
                             System.out.println(error);
                             existAutomata = true;
-                                                                      
+
                             if (err != null) {
                                 err.dispose();
                             }
@@ -960,15 +957,14 @@ public class Compilador extends javax.swing.JFrame {
         if (auto != null) {
             auto.dispose();
         }
-          if (venErrores != null) {
+        if (venErrores != null) {
             venErrores.dispose();
         }
-          
-       if (opcGrama != null) {
+
+        if (opcGrama != null) {
             opcGrama.dispose();
         }
-        
-           
+
         auto = new Automata(ArreToken, ArreNomToken);
         auto.setVisible(true);
 
@@ -987,20 +983,20 @@ public class Compilador extends javax.swing.JFrame {
         for (Production ProdCorrecta : ProCorrectas) {
             ArreCompleto.add("[" + ProdCorrecta.getLine() + ", " + ProdCorrecta.getColumn() + "]    " + ProdCorrecta.getName() + " ---> " + ProdCorrecta.lexicalCompRank(0, -1));
         }
-      if (err != null) {
+        if (err != null) {
             err.dispose();
         }
         if (auto != null) {
             auto.dispose();
         }
-          if (venErrores != null) {
+        if (venErrores != null) {
             venErrores.dispose();
         }
-          
-       if (opcGrama != null) {
+
+        if (opcGrama != null) {
             opcGrama.dispose();
         }
-      
+
         err = new GramaUsa(ArreCompleto);
         err.setVisible(true);
     }//GEN-LAST:event_opGramaticaGActionPerformed
@@ -1018,25 +1014,23 @@ public class Compilador extends javax.swing.JFrame {
         for (Production ProdCorrecta : ProCorrectas) {
             ArreCompleto.add(ProdCorrecta.getName());
         }
-          
-       if (err != null) {
+
+        if (err != null) {
             err.dispose();
         }
         if (auto != null) {
             auto.dispose();
         }
-          if (venErrores != null) {
+        if (venErrores != null) {
             venErrores.dispose();
         }
-          
-       if (opcGrama != null) {
+
+        if (opcGrama != null) {
             opcGrama.dispose();
         }
-      
-        
-        
-       opcGrama=new OpcionesGrama(ArreCompleto);
-        opcGrama.setVisible(true); 
+
+        opcGrama = new OpcionesGrama(ArreCompleto);
+        opcGrama.setVisible(true);
     }//GEN-LAST:event_opGramaticaUActionPerformed
 
     /**
@@ -1128,179 +1122,591 @@ public class Compilador extends javax.swing.JFrame {
         ArreFilaColumnaToken.clear();
         errores.clear();
         for (Token token : tokens) {
-                    ArreToken.add(token.getLexeme());
-                    ArreNomToken.add(token.getLexicalComp());
-                    ArreFilaColumnaToken.add("["+ token.getLine()+","+token.getColumn()+"]");
-                }
-                if (err != null) {
-                    err.dispose();
-                }
-                if (auto != null) {
-                    auto.dispose();
-                }
-                  if (venErrores != null) {
-                    venErrores.dispose();
-                }
+            ArreToken.add(token.getLexeme());
+            ArreNomToken.add(token.getLexicalComp());
+            ArreFilaColumnaToken.add("[" + token.getLine() + "," + token.getColumn() + "]");
+        }
+        if (err != null) {
+            err.dispose();
+        }
+        if (auto != null) {
+            auto.dispose();
+        }
+        if (venErrores != null) {
+            venErrores.dispose();
+        }
 
-               if (opcGrama != null) {
-                    opcGrama.dispose();
-                }
-        
-        if(hayOtro()){
-           switch (ArreNomToken.get(pos)) {
-            /* Variables */  
-            case "Identificador":
-                System.out.println("Identificador encontrado");
-                pos++;
-                if(hayOtro()){
-                    identificadorCorrecto();
-                }
-                else{
-                    errores.add("Error [2], se esperaba operador de asignacion "+ArreFilaColumnaToken.get(pos-1));
-                }
-                
-                
-                break;
-            case "For":
-                break;
-            default:
-                errores.add("Error [1]: No se encontró ninguna palabra reservada");
-            } 
+        if (opcGrama != null) {
+            opcGrama.dispose();
         }
-        else{
-            errores.add("Error [1]: No se encontró ninguna palabra reservada");
+        if (hayOtro()) {
+            if (!inicioCorrecto()) {
+                return;
+            }
+        }//Hay otro
+        else {
+            errores.add("Error [1]: No hay tokens para analizar");
         }
-        
-        
+
     }
 
-    private void identificadorCorrecto() {
+    private boolean identificadorCorrecto() {
         String error = "";
-            if(ArreNomToken.get(pos).equals("Op_Asignacion")){
-                pos++;
-                System.out.println("Operador de asignacion encontrado");
-                if(hayOtro()){
-                   switch (ArreNomToken.get(pos)) {
+        if (ArreNomToken.get(pos).equals("Op_Asignacion")) {
+            pos++;
+            System.out.println("Operador de asignacion encontrado");
+            if (hayOtro()) {
+                switch (ArreNomToken.get(pos)) {
                     case "Numero":
                         pos++;
                         System.out.println("Numero encontrado");
-                        if(hayOtro()){
-                           if(ArreNomToken.get(pos).equals("Punto_Coma")){
-                            pos++;
-                            System.out.println("Punto y Coma encontrado IDENTIFICADOR correcto");
-                            }
-                            else{
-                                error = "Error [4], se esperaba punto y coma ';' "+ArreFilaColumnaToken.get(pos);
+                        if (hayOtro()) {
+                            if (ArreNomToken.get(pos).equals("Punto_Coma")) {
+                                pos++;
+                                System.out.println("Punto y Coma encontrado");
+                                return true;
+                            } else {
+                                error = "Error [4], se esperaba punto y coma ';' en el identificador " + ArreFilaColumnaToken.get(pos - 1);
                                 errores.add(error);
-                            } 
-                        }
-                        else{
-                            error = "Error [4], se esperaba punto y coma ';' "+ArreFilaColumnaToken.get(pos-1);
+                            }
+                        } else {
+                            error = "Error [4], se esperaba punto y coma ';' en el identificador " + ArreFilaColumnaToken.get(pos - 1);
                             errores.add(error);
                         }
-                        
+
                         break;
                     case "Cadena":
                         pos++;
                         System.out.println("Cadena encontrada");
-                        if(hayOtro()){
-                            if(ArreNomToken.get(pos).equals("Punto_Coma")){
-                            pos++;
-                            System.out.println("Punto y Coma encontrado IDENTIFICADOR correcto");
-                            }
-                            else{
-                                error = "Error [4], se esperaba punto y coma ';' "+ArreFilaColumnaToken.get(pos);
+                        if (hayOtro()) {
+                            if (ArreNomToken.get(pos).equals("Punto_Coma")) {
+                                pos++;
+                                System.out.println("Punto y Coma encontrado");
+                                return true;
+                            } else {
+                                error = "Error [4], se esperaba punto y coma ';' en el identificador " + ArreFilaColumnaToken.get(pos - 1);
                                 errores.add(error);
                             }
-                        }
-                        else{
-                            error = "Error [4], se esperaba punto y coma ';' "+ArreFilaColumnaToken.get(pos-1);
+                        } else {
+                            error = "Error [4], se esperaba punto y coma ';' en el identificador " + ArreFilaColumnaToken.get(pos - 1);
                             errores.add(error);
                         }
-                        
+
                         break;
                     case "OP_Retorno":
-                        pos++;
                         System.out.println("OP_Retorno encontrada");
-                        if(hayOtro()){
-                            op_RetornoCorrecto();
-                        } //Hay otro
-                        else{
-                            error = "Error [5], se esperaba parentesis que abre '(' "+ArreFilaColumnaToken.get(pos-1);
-                            errores.add(error);
+                        pos++;
+                        if (hayOtro()) {
+                            if (!op_RetornoCorrecto()) {
+                                System.out.println("OP_Retorno incorrecta");
+                            }//No está correcta
+                            else {
+                                if (hayOtro()) {
+                                    if (ArreNomToken.get(pos).equals("Punto_Coma")) {
+                                        pos++;
+                                        System.out.println("Punto y Coma encontrado");
+                                        return true;
+                                    } else {
+                                        error = "Error [4], se esperaba punto y coma ';' en el identificador " + ArreFilaColumnaToken.get(pos - 1);
+                                        errores.add(error);
+                                    }
+                                }//Hay otro
+                                else {
+                                    error = "Error [4], se esperaba punto y coma ';' en el identificador " + ArreFilaColumnaToken.get(pos - 1);
+                                    errores.add(error);
+                                }
+                            }//Si está correcta
+                        }//Hay otro
+                        else {
+                            errores.add("Error [5], se esperaba parentesis que abre '(' en la OP_Retorno " + ArreFilaColumnaToken.get(pos - 1));
                         }
+
                         break;
                     default:
-                        error = "Error [3], se esperaba numero, cadena u op_retorno "+ArreFilaColumnaToken.get(pos);
+                        error = "Error [3], se esperaba numero, cadena u op_retorno en el identificador " + ArreFilaColumnaToken.get(pos - 1);
                         errores.add(error);
-                    } 
                 }
-                else{
-                    error = "Error [3], se esperaba numero, cadena u op_retorno "+ArreFilaColumnaToken.get(pos-1);
-                    errores.add(error);
-                }
-                
-
-            }
-            else{
-                error = "Error [2], se esperaba operador de asignacion "+ArreFilaColumnaToken.get(pos);
+            } else {
+                error = "Error [3], se esperaba numero, cadena u op_retorno en el identificador " + ArreFilaColumnaToken.get(pos - 1);
                 errores.add(error);
-            }    
-               
+            }
+
+        } else {
+            error = "Error [2], se esperaba operador de asignacion en el identificador " + ArreFilaColumnaToken.get(pos - 1);
+            errores.add(error);
+        }
+        return false;
     }
-    
 
     private boolean hayOtro() {
 //        System.out.println("Cant NomToken: "+ArreNomToken.size());
 //        System.out.println("Cant pos: "+pos);
-        if(ArreNomToken.size()>pos){
+        if (ArreNomToken.size() > pos) {
             return true;
-        }
-        else{
-          errores.add("No hay más tokens para analizar");
-          return false;
+        } else {
+            errores.add("No hay más tokens para analizar");
+            return false;
         }
     }
 
-    private void op_RetornoCorrecto() {
+    private boolean op_RetornoCorrecto() {
         String error = "";
-        if(ArreNomToken.get(pos).equals("Parentesis_A")){
+        if (ArreNomToken.get(pos).equals("Parentesis_A")) {
             pos++;
             System.out.println("Parentecis que abre encontrado");
-            if(hayOtro()){
-                if(ArreNomToken.get(pos).equals("Parentesis_C")){
+            if (hayOtro()) {
+                if (ArreNomToken.get(pos).equals("Parentesis_C")) {
                     pos++;
                     System.out.println("Parentesis que cierra encontrado");
-                    if(hayOtro()){
-                        if(ArreNomToken.get(pos).equals("Punto_Coma")){
-                            pos++;
-                            System.out.println("Punto y Coma encontrado");
-                        }
-                        else{
-                            error = "Error [4], se esperaba punto y coma ';' "+ArreFilaColumnaToken.get(pos);
-                            errores.add(error);
-                        }
-                    }//Hay otro
-                    else{
-                        error = "Error [4], se esperaba punto y coma ';' "+ArreFilaColumnaToken.get(pos-1);
-                        errores.add(error);
-                    }
-                    
-                }
-                else{
-                    error = "Error [6], se esperaba parentesis que cierra ')' "+ArreFilaColumnaToken.get(pos);
+                    return true;
+                    //Es corrrecto
+                } else {
+                    error = "Error [6], se esperaba parentesis que cierra ')' en la OP_Retorno " + ArreFilaColumnaToken.get(pos - 1);
                     errores.add(error);
-                } 
+                }
             }//Hay otro
-            else{
-                error = "Error [6], se esperaba parentesis que cierra ')' "+ArreFilaColumnaToken.get(pos-1);
+            else {
+                error = "Error [6], se esperaba parentesis que cierra ')' en la OP_Retorno " + ArreFilaColumnaToken.get(pos - 1);
                 errores.add(error);
             }
-            
-        }
-        else{
-            error = "Error [5], se esperaba parentesis que abre '(' "+ArreFilaColumnaToken.get(pos);
+
+        } else {
+            error = "Error [5], se esperaba parentesis que abre '(' en la OP_Retorno " + ArreFilaColumnaToken.get(pos - 1);
             errores.add(error);
         }
+        return false;
     }
+
+    private boolean forCorrecto() {
+        String error = "";
+        if (ArreNomToken.get(pos).equals("Parentesis_A")) {
+            pos++;
+            System.out.println("Parentecis que abre encontrado");
+            if (hayOtro()) {
+                if (ArreNomToken.get(pos).equals("Numero") || ArreNomToken.get(pos).equals("Identificador")) {
+                    pos++;
+                    System.out.println("Numero o identificador encontrado");
+                    if (hayOtro()) {
+                        if (ArreNomToken.get(pos).equals("Parentesis_C")) {
+                            pos++;
+                            System.out.println("Parentesis que cierra encontrado");
+                            if (hayOtro()) {
+                                if (ArreNomToken.get(pos).equals("Llave_A")) {
+                                    pos++;
+                                    System.out.println("Llave que abre encontrada");
+                                    if (hayOtro()) {
+
+                                        boolean test;
+                                        do {
+                                            System.out.println("Analiznado el codigo dentro de estructura for");
+                                            test = operacionCorrecta();
+                                            if (errores.size() > 0) {
+                                                System.out.println("Se encontro un error dentro del codigo en el for");
+                                                return false;
+                                            }
+                                        } while (test);
+                                        System.out.println("Saliendo de analizar el codigo dentro de la estructura de for");
+
+//                                        while (operacionCorrecta()) {
+//                                            System.out.println("Analizando codigo dentro de for");
+//                                        }
+//                                        System.out.println("Saliendo de analizar el código");
+                                        if (hayOtro()) {
+                                            if (ArreNomToken.get(pos).equals("Llave_C")) {
+                                                pos++;
+                                                System.out.println("Llave que cierra encontrada");
+                                                return true;
+                                            } // }
+                                            else {
+                                                error = "Error [11], se esperaba llave que cierra '}' en el ciclo For " + ArreFilaColumnaToken.get(pos - 1);
+                                                errores.add(error);
+                                            } // }
+                                        }//Hay otro
+                                        else {
+                                            error = "Error [11], se esperaba llave que cierra '}' en el ciclo For " + ArreFilaColumnaToken.get(pos - 1);
+                                            errores.add(error);
+                                        }
+                                    }//Hay otro
+                                    else {
+                                        error = "Error [], se esperaba   " + ArreFilaColumnaToken.get(pos - 1);
+                                        errores.add(error);
+                                    }
+
+                                } // {
+                                else {
+                                    error = "Error [10], se esperaba llave que abre '{' en el ciclo For " + ArreFilaColumnaToken.get(pos - 1);
+                                    errores.add(error);
+                                } // {
+                            }//Hay otro
+                            else {
+                                error = "Error [10], se esperaba llave que abre '{' en el ciclo For " + ArreFilaColumnaToken.get(pos - 1);
+                                errores.add(error);
+                            }
+                        }// )
+                        else {
+                            error = "Error [9], se esperaba parentesis que cierra ')' en el ciclo For " + ArreFilaColumnaToken.get(pos - 1);
+                            errores.add(error);
+                        }// )
+                    }//Hay otro
+                    else {
+                        error = "Error [9], se esperaba parentesis que cierra ')' en el ciclo For " + ArreFilaColumnaToken.get(pos - 1);
+                        errores.add(error);
+                    }
+
+                }//Es valor o identificador
+                else {
+                    error = "Error [8], se esperaba numero o identificador en el ciclo For " + ArreFilaColumnaToken.get(pos - 1);
+                    errores.add(error);
+                }//No es valor o identificador
+
+            }//Hay otro
+            else {
+                error = "Error [8], se esperaba numero o identificador en el ciclo For " + ArreFilaColumnaToken.get(pos - 1);
+                errores.add(error);
+            }
+        } else {
+            error = "Error [7], se esperaba parentesis que abre '(' en el ciclo For " + ArreFilaColumnaToken.get(pos - 1);
+            errores.add(error);
+        }
+        return false;
+    }
+
+    private boolean operacionCorrecta() {
+        if (hayOtro()) {
+            switch (ArreNomToken.get(pos)) {
+                /* Variables */
+                case "Identificador":
+                    System.out.println("Identificador encontrado");
+                    pos++;
+                    if (hayOtro()) {
+                        if (identificadorCorrecto()) {
+                            return true;
+                        }
+                    }//Hay otro
+                    else {
+                        errores.add("Error [2], se esperaba operador de asignacion en el identificador " + ArreFilaColumnaToken.get(pos - 1));
+                    }
+
+                    break;
+                case "For":
+                    System.out.println("For encontrado");
+                    pos++;
+                    if (hayOtro()) {
+                        if (forCorrecto()) {
+                            return true;
+                        }
+
+                    } else {
+                        errores.add("Error [7], se esperaba parentesis que abre '(' en el ciclo For " + ArreFilaColumnaToken.get(pos - 1));
+                    }
+                    break;
+                /* FUNCIONES */
+                case "OP_Cita":
+                    System.out.println("Funcion encontrada");
+                    pos++;
+                    if (hayOtro()) {
+                        if (funcionCorrecta()) {
+                            return true;
+                        }
+
+                    } else {
+                        errores.add("Error [22], se esperaba parentesis que abre '(' en la funcion " + ArreFilaColumnaToken.get(pos - 1));
+                    }
+                    break;
+
+                default:
+                //errores.add("Error [99]: No se encontró ninguna palabra reservada valida");
+
+            }
+        } else {
+            errores.add("Error [1]: No hay tokens para analizar");
+        }
+        return false;
+    }
+
+    private boolean inicioCorrecto() {
+        String error = "";
+        if (hayOtro()) {
+            if (ArreNomToken.get(pos).equals("INICIO")) {
+                pos++;
+                System.out.println("INICIO encontrado");
+                if (hayOtro()) {
+                    if (ArreNomToken.get(pos).equals("Identificador")) {
+                        pos++;
+                        System.out.println("Identificador encontrado");
+                        if (hayOtro()) {
+                            if (ArreNomToken.get(pos).equals("Llave_A")) {
+                                pos++;
+                                System.out.println("Llave que abre encontrada");
+                                if (hayOtro()) {
+                                    if (ArreNomToken.get(pos).equals("PRINCIPAL")) {
+                                        pos++;
+                                        System.out.println("PRINCIPAL encontrado");
+                                        if (hayOtro()) {
+                                            if (ArreNomToken.get(pos).equals("Parentesis_A")) {
+                                                pos++;
+                                                System.out.println("Parentesis que abre encontrado");
+                                                if (hayOtro()) {
+                                                    if (ArreNomToken.get(pos).equals("Parentesis_C")) {
+                                                        pos++;
+                                                        System.out.println("Parentesis que cierra encontrado");
+                                                        if (hayOtro()) {
+                                                            if (ArreNomToken.get(pos).equals("Llave_A")) {
+                                                                pos++;
+                                                                System.out.println("Llave que abre encontrada");
+                                                                if (hayOtro()) {
+                                                                    boolean test;
+                                                                    do {
+                                                                        System.out.println("Analiznado el codigo dentro de estructura inicial");
+                                                                        test = operacionCorrecta();
+                                                                        if (errores.size() > 0) {
+                                                                            System.out.println("Se encontro un error dentro del codigo");
+                                                                            return false;
+                                                                        }
+                                                                    } while (test);
+                                                                    System.out.println("Saliendo de analizar el codigo dentro de la estructura de inicio");
+                                                                    /* Continua con el bloque de inicio */
+                                                                    if (hayOtro()) {
+                                                                        if (ArreNomToken.get(pos).equals("Llave_C")) {
+                                                                            pos++;
+                                                                            System.out.println("Llave que cierra encontrada");
+                                                                            if (hayOtro()) {
+                                                                                if (ArreNomToken.get(pos).equals("Llave_C")) {
+                                                                                    pos++;
+                                                                                    System.out.println("Llave que cierra encontrada");
+                                                                                    if (hayOtro()) {
+                                                                                        if (ArreNomToken.get(pos).equals("FINAL")) {
+                                                                                            pos++;
+                                                                                            System.out.println("FINAL encontrado");
+                                                                                            if (ArreNomToken.size() > pos) {
+                                                                                                error = "Error [20], se encontraron tokens despues de 'FINAL' eliminalos " + ArreFilaColumnaToken.get(pos - 1);
+                                                                                                errores.add(error);
+                                                                                            } else {
+                                                                                                System.out.println("Todo el código es correcto");
+                                                                                                return true;
+                                                                                            }
+                                                                                        } // FINAL
+                                                                                        else {
+                                                                                            error = "Error [19], se esperaba 'FINAL' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                                                                                            errores.add(error);
+                                                                                        } // FINAL
+                                                                                    }//Hay otro
+                                                                                    else {
+                                                                                        error = "Error [19], se esperaba 'FINAL' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                                                                                        errores.add(error);
+                                                                                    }
+                                                                                } // } FINAL
+                                                                                else {
+                                                                                    error = "Error [18], se esperaba llave que cierra '}' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                                                                                    errores.add(error);
+                                                                                } // } FINAL
+                                                                            }//Hay otro
+                                                                            else {
+                                                                                error = "Error [18], se esperaba llave que cierra '}' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                                                                                errores.add(error);
+                                                                            }
+                                                                        } // } PRINCIPAL
+                                                                        else {
+                                                                            error = "Errorxx [18], se esperaba llave que cierra '}' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                                                                            errores.add(error);
+                                                                        } // } PRINCIPAL
+                                                                    }//Hay otro
+                                                                    else {
+                                                                        error = "Error [18], se esperaba llave que cierra '}' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                                                                        errores.add(error);
+                                                                    }
+                                                                }//hay otro
+                                                                else {
+                                                                    error = "Error[21], se esperaba codigo para analizar en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                                                                    errores.add(error);
+                                                                }
+
+//                                                                /* Analiza el código dentro del bloque de inicio */
+//                                                                do {
+////                                                                            System.out.println("");            
+////                                                                            System.out.println("Entrando a validar");
+////                                                                            System.out.println("Valor de pos: "+pos);
+////                                                                            System.out.println("Tamaño nombres: "+ArreNomToken.size()+"\n");
+//
+//                                                                    if (!operacionCorrecta()) {
+//                                                                        break;
+//                                                                    }
+//                                                                } while (pos <= ArreNomToken.size() - 4);
+//                                                                /* Fin del analizis */
+                                                            } // { PRINCIPAL
+                                                            else {
+                                                                error = "Error [14], se esperaba llave que abre '{' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                                                                errores.add(error);
+                                                            } // { PRINCIPAL
+                                                        }//Hay otro
+                                                        else {
+                                                            error = "Error [14], se esperaba llave que abre '{' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                                                            errores.add(error);
+                                                        }
+                                                    } // )
+                                                    else {
+                                                        error = "Error [17], se esperaba parentesis que cierra ')' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                                                        errores.add(error);
+                                                    } // )
+                                                }//Hay otro
+                                                else {
+                                                    error = "Error [17], se esperaba parentesis que cierra ')' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                                                    errores.add(error);
+                                                }
+                                            } // (
+                                            else {
+                                                error = "Error [16], se esperaba parentesis que abre '(' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                                                errores.add(error);
+                                            } // (
+                                        }//Hay otro
+                                        else {
+                                            error = "Error [16], se esperaba parentesis que abre '(' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                                            errores.add(error);
+                                        }
+                                    } // PRINCIPAL
+                                    else {
+                                        error = "Error [15], se esperaba 'PRINCIPAL' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                                        errores.add(error);
+                                    } // PRINCIPAL
+                                }//Hay otro
+                                else {
+                                    error = "Error [15], se esperaba 'PRINCIPAL' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                                    errores.add(error);
+                                }
+                            } // {
+                            else {
+                                error = "Error [14], se esperaba llave que abre '{' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                                errores.add(error);
+                            } // {
+                        }//Hay otro
+                        else {
+                            error = "Error [14], se esperaba llave que abre '{' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                            errores.add(error);
+                        }
+                    } // Identificador
+                    else {
+                        error = "Error [13], se esperaba un identificador en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                        errores.add(error);
+                    } // Identificador
+                }//Hay otro
+                else {
+                    error = "Error [13], se esperaba un identificador en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                    errores.add(error);
+                }
+            } // INICIO
+            else {
+                error = "Error [12], se esperaba 'INICIO' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                errores.add(error);
+            } // INICIO
+        }//Hay otro
+        else {
+            error = "Error [12], se esperaba 'INICIO' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+            errores.add(error);
+        }
+        return false;
+    }
+
+    private boolean funcionCorrecta() {
+        String error = "";
+        if (ArreNomToken.get(pos).equals("Parentesis_A")) {
+            pos++;
+            System.out.println("Parentecis que abre encontrado");
+            /* Verifica parametros */
+            if (hayOtro()) {
+                if (finFuncion()) {
+                    return true;
+                }//No se metió ningun valor y se encontró un parentesis que cierra
+                else if (valorCorrecto()) {
+                    errores.clear();
+                    if (hayOtro()) {
+                        if (finFuncion()) {
+                            return true;
+                        }
+
+                    }//Hay otro
+                    else {
+                        error = "Error [23], se esperaba parentesis que cierra ')' en la funcion " + ArreFilaColumnaToken.get(pos - 1);
+                        errores.add(error);
+                    }
+                }//Valor correcto.
+                else {
+                    error = "Error [25], se esperaba un valor en la funcion " + ArreFilaColumnaToken.get(pos - 1);
+                    errores.add(error);
+                }
+
+            } else {
+                error = "Error [25], se esperaba un valor en la funcion " + ArreFilaColumnaToken.get(pos - 1);
+                errores.add(error);
+            }
+
+        } else {
+            error = "Error [22], se esperaba parentesis que abre '(' en la funcion " + ArreFilaColumnaToken.get(pos - 1);
+            errores.add(error);
+        }
+        return false;
+    }
+
+    private boolean valorCorrecto() {
+        String error = "";
+        switch (ArreNomToken.get(pos)) {
+            case "Numero":
+                pos++;
+                System.out.println("Numero encontrado");
+
+                return true;
+            case "Cadena":
+                pos++;
+                System.out.println("Cadena encontrada");
+
+                return true;
+            case "OP_Retorno":
+                System.out.println("OP_Retorno encontrada");
+                pos++;
+                if (hayOtro()) {
+                    if (!op_RetornoCorrecto()) {
+                        System.out.println("OP_Retorno incorrecta");
+                    }//No está correcta
+                    else {
+                        return true;
+                    }//Si está correcta
+                }//Hay otro
+                else {
+                    errores.add("Error [5], se esperaba parentesis que abre '(' en la OP_Retorno " + ArreFilaColumnaToken.get(pos - 1));
+                }
+
+                break;
+            default:
+
+        }//Switch
+
+        return false;
+    }
+
+    private boolean finFuncion() {
+        String error = "";
+        if (ArreNomToken.get(pos).equals("Parentesis_C")) {
+            pos++;
+            System.out.println("Parentesis que cierra encontrado");
+            if (hayOtro()) {
+                if (ArreNomToken.get(pos).equals("Punto_Coma")) {
+                    pos++;
+                    System.out.println("Punto y Coma encontrado");
+                    return true;
+                    //Es correcto
+                } else {
+                    error = "Error [24], se esperaba punto y coma ';' en la funcion " + ArreFilaColumnaToken.get(pos - 1);
+                    errores.add(error);
+                }
+            } else {
+                error = "Error [24], se esperaba punto y coma ';' en la funcion " + ArreFilaColumnaToken.get(pos - 1);
+                errores.add(error);
+            }
+
+        } else {
+            error = "Error [23], se esperaba parentesis que cierra ')' en la funcion " + ArreFilaColumnaToken.get(pos - 1);
+            errores.add(error);
+        }
+        return false;
+    }
+
 }

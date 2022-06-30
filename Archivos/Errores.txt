@@ -1,0 +1,69 @@
+----> Variables <----
+Identificador
+Op_Asignacion
+Numero | Cadena | Op_Retorno
+Punto_Coma
+
+Op_Retorno --> Op_Retorno Parentesis_A Parentesis_C
+
+----> Errores generales <----
+Error [1]: No hay tokens para analizar
+
+----> Errores identificador <----
+
+Error [2], se esperaba operador de asignacion en el identificador 
+Error [3], se esperaba numero, cadena u op_retorno en el identificador 
+Error [4], se esperaba punto y coma ';' en el identificador 
+
+
+----> Errores op_Retorno <----
+
+Error [5], se esperaba parentesis que abre '(' en la OP_Retorno 
+Error [6], se esperaba parentesis que cierra ')' en la OP_Retorno 
+ 
+
+----> Errores for <----
+
+Error [7], se esperaba parentesis que abre '(' en el ciclo For 
+Error [8], se esperaba numero o identificador en el ciclo For 
+Error [9], se esperaba parentesis que cierra ')' en el ciclo For 
+Error [10], se esperaba llave que abre '{' en el ciclo For 
+Error [11], se esperaba llave que cierra '}' en el ciclo For 
+
+----> Errores inicio <----
+Error [12], se esperaba 'INICIO' en el bloque inicial 
+Error [13], se esperaba un identificador en el bloque inicial 
+Error [14], se esperaba llave que abre '{' en el bloque inicial 
+Error [15], se esperaba 'PRINCIPAL' en el bloque inicial 
+Error [16], se esperaba parentesis que abre '(' en el bloque inicial 
+Error [17], se esperaba parentesis que cierra ')' en el bloque inicial 
+Error [18], se esperaba llave que cierra '}' en el bloque inicial 
+Error [19], se esperaba 'FINAL' en el bloque inicial 
+Error [20], se encontraron tokens despues de 'FINAL' eliminalos 
+Error [21], se esperaba codigo para analizar en el bloque inicial 
+
+----> Errores funcion <----
+Error [22], se esperaba parentesis que abre '(' en la funcion 
+Error [23], se esperaba parentesis que cierra ')' en la funcion 
+Error [24], se esperaba punto y coma ';' en la funcion 
+Error [25], se esperaba un valor en la funcion 
+Error [26], se esperaba coma ',' en la funcion 
+
+
+----> Errores valor <----
+
+if(hayOtro()){
+    if(ArreNomToken.get(pos).equals("")){
+        pos++;
+        System.out.println(" encontrada");
+		
+    } // 
+    else{
+        error = "Error [], se esperaba   "+ArreFilaColumnaToken.get(pos-1);
+            errores.add(error);
+    } // 
+}//Hay otro
+else{
+    error = "Error [], se esperaba   "+ArreFilaColumnaToken.get(pos-1);
+    errores.add(error);
+}
