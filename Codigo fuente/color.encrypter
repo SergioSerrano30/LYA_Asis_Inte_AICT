@@ -1,12 +1,13 @@
-INICIO $iluminacion {
+INICIO $iluminacion  {
     PRINCIPAL() {
-        cita_agendar("");
-
-
-
-/*
         $test =10;
+
         $test2="";
+
+        if($x<1){
+            puerta_abrir("");
+        } //if
+
         for($test){
             $test3 =10;
             $test4="";
@@ -17,8 +18,12 @@ INICIO $iluminacion {
 
             }//for anidado
         }//for
-*/
+
+        while($x==$y){
+            $tesx="bien";
+        } // while
+
     } //PRINCIPAL
 } //INICIO
 FINAL
-//$test3 = "esto es un error";
+//$ejemplo="error";

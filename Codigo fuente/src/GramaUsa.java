@@ -5,46 +5,104 @@ import java.util.ArrayList;
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
 /**
  *
  * @author 52311
  */
 public class GramaUsa extends javax.swing.JFrame {
-      ArrayList<String> lexema;
-      String grama="";
-      int cont=0;
-      
+
+    ArrayList<String> lexema;
+    String grama = "";
+    int cont = 0;
 
     /**
      * Creates new form GramaUsa
      */
     public GramaUsa() {
         initComponents();
+
+        String cadena = "";
+        cadena += " Operaciones de retorno\n"
+                + "OP_RETORNO\n"
+                + "( (Parentesis_A)\n"
+                + "Valor (identificador|Numero|Cadena)\n"
+                + ") (Parentesis_C)\n"
+                + "; (Punto_Coma) \n";
+
+        cadena += "\n";
+
+        cadena += "Variables\n"
+                + "Valor = Cadena|Numero|OP_RETORNO\n"
+                + "IDENTIFICADOR $cadena\n"
+                + "= (Operador de asignación)\n"
+                + "VALOR (Cadena| Numero |OP_RETORNO)\n"
+                + "; (Punto y coma) \n";
+
+        cadena += "\n";
+
+        cadena += "Funciones\n"
+                + "Correctas\n"
+                + "Parametros: Valor(Cadena| Numero |OP_RETORNO) | IDENTIFICADOR , Valor(Cadena| Numero |OP_RETORNO) IDENTIFICADOR\n"
+                + "OP_Cita(cita_agendar | cita_cencelar) | OP_Turno(turno_nuevo)|OP_Ilumunacion( ilu_encender| ilu_apagar) | OP_Temperatura(temp_establecer| temp_subir| temp_bajar) | OP_Puerta(puerta_abrir| puerta_cerrar)\n"
+                + "FUNCION (Función completa)\n"
+                + "( (Parentesis_A)\n"
+                + "PARAMETOS (Valor | IDENTIFICADOR)\n"
+                + ") (Parentesis que cierra)         	\n"
+                + "; (Punto y coma)         	\n"
+                + "FUNCION_COMPLETA (Función completa PC)\n"
+                + "; (Punto y coma) \n";
+
+        cadena += "\n";
+
+        cadena += "Ciclo FOR\n"
+                + "Correctas\n"
+                + "For (Ciclo)\n"
+                + "( (Parentesis_A)\n"
+                + "Valor(Cadena| Numero |OP_RETORNO) | IDENTIFICADOR\n"
+                + ") (Parentesis_C) \n";
+
+        cadena += "\n";
+
+        cadena += "Condicionales\n"
+                + "Correctas\n"
+                + "IF (Condicional)\n"
+                + "( (Parentesis_A)\n"
+                + "EXP_LOGICA(> | < | >= | <= | == | !=) | IDENTIFICADOR\n"
+                + ") (Parentesis_C)\n"
+                + "{ (Llave que abre)\n"
+                + "} (Llave que cierra) \n";
+
+        cadena += "\n";
+
+        cadena += "Ciclo While\n"
+                + "Correctas\n"
+                + "While (While)\n"
+                + "( (Parentesis_A)\n"
+                + "EXP_LOGICA(> | < | >= | <= | == | !=) | IDENTIFICADOR\n"
+                + ") (Parentesis_C)\n"
+                + "{ (Llave que abre)\n"
+                + "} (Llave que cierra)";
+
+        txtGramaticas.setText(cadena);
     }
 
-    
     public GramaUsa(ArrayList<String> lexe) {
         this();
-        lexema=lexe;
-        JGrama.setText(MostrarTokens());
-        lexe.clear();
+//        lexema = lexe;
+//        txtGramaticas.setText(MostrarTokens());
+//        lexe.clear();
     }
 
-    
-    private String MostrarTokens(){
-        while(cont<=lexema.size()-1){
-        grama+=lexema.get(cont)+"\n";
-        grama+="\n";   
-        cont++;
+    private String MostrarTokens() {
+        while (cont <= lexema.size() - 1) {
+            grama += lexema.get(cont) + "\n";
+            grama += "\n";
+            cont++;
         }
         return grama;
-  
-    
+
     }
-    
-    
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -55,9 +113,9 @@ public class GramaUsa extends javax.swing.JFrame {
     private void initComponents() {
 
         pnlFondo = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        JGrama = new javax.swing.JTextArea();
         jLabel1 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        txtGramaticas = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMaximumSize(new java.awt.Dimension(550, 650));
@@ -71,21 +129,6 @@ public class GramaUsa extends javax.swing.JFrame {
         pnlFondo.setPreferredSize(new java.awt.Dimension(550, 650));
         pnlFondo.setLayout(null);
 
-        jScrollPane1.setMaximumSize(new java.awt.Dimension(480, 550));
-        jScrollPane1.setMinimumSize(new java.awt.Dimension(480, 550));
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(480, 550));
-
-        JGrama.setEditable(false);
-        JGrama.setColumns(20);
-        JGrama.setRows(5);
-        JGrama.setMaximumSize(new java.awt.Dimension(480, 550));
-        JGrama.setMinimumSize(new java.awt.Dimension(480, 550));
-        JGrama.setPreferredSize(new java.awt.Dimension(480, 550));
-        jScrollPane1.setViewportView(JGrama);
-
-        pnlFondo.add(jScrollPane1);
-        jScrollPane1.setBounds(39, 74, 460, 490);
-
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(0, 0, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -93,6 +136,14 @@ public class GramaUsa extends javax.swing.JFrame {
         jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         pnlFondo.add(jLabel1);
         jLabel1.setBounds(4, 6, 540, 62);
+
+        txtGramaticas.setEditable(false);
+        txtGramaticas.setColumns(20);
+        txtGramaticas.setRows(5);
+        jScrollPane1.setViewportView(txtGramaticas);
+
+        pnlFondo.add(jScrollPane1);
+        jScrollPane1.setBounds(30, 90, 480, 490);
 
         getContentPane().add(pnlFondo);
         pnlFondo.setBounds(0, 0, 550, 650);
@@ -137,9 +188,9 @@ public class GramaUsa extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextArea JGrama;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel pnlFondo;
+    public javax.swing.JTextArea txtGramaticas;
     // End of variables declaration//GEN-END:variables
 }

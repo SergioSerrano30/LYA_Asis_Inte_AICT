@@ -2,7 +2,7 @@
     recepción y  del restaurant 
     comparando la temperatura actual
 */
- INICIO $control {
+ INICIO  $control{
      PRINCIPAL(){
     //Identificadores
     $lugar = "Recepcion";
@@ -10,7 +10,7 @@
     $tempIdeal = 32;
     if($tempAc <$tempIdeal){
         for(10){
-            temp_subir($lugar);
+            temp_subir();
         }
     }
     if($tempAc >=32){

@@ -7,7 +7,9 @@ Punto_Coma
 Op_Retorno --> Op_Retorno Parentesis_A Parentesis_C
 
 ----> Errores generales <----
+
 Error [1]: No hay tokens para analizar
+
 
 ----> Errores identificador <----
 
@@ -30,7 +32,9 @@ Error [9], se esperaba parentesis que cierra ')' en el ciclo For
 Error [10], se esperaba llave que abre '{' en el ciclo For 
 Error [11], se esperaba llave que cierra '}' en el ciclo For 
 
+
 ----> Errores inicio <----
+
 Error [12], se esperaba 'INICIO' en el bloque inicial 
 Error [13], se esperaba un identificador en el bloque inicial 
 Error [14], se esperaba llave que abre '{' en el bloque inicial 
@@ -42,7 +46,9 @@ Error [19], se esperaba 'FINAL' en el bloque inicial
 Error [20], se encontraron tokens despues de 'FINAL' eliminalos 
 Error [21], se esperaba codigo para analizar en el bloque inicial 
 
+
 ----> Errores funcion <----
+
 Error [22], se esperaba parentesis que abre '(' en la funcion 
 Error [23], se esperaba parentesis que cierra ')' en la funcion 
 Error [24], se esperaba punto y coma ';' en la funcion 
@@ -50,7 +56,26 @@ Error [25], se esperaba un valor en la funcion
 Error [26], se esperaba coma ',' en la funcion 
 
 
-----> Errores valor <----
+----> Errores if <----
+
+Error [27], se esperaba parentesis que abre '(' en el if 
+Error [28], se esperaba valor o identificador en el if 
+Error [29], se esperaba operador relacional en el if 
+Error [30], se esperaba parentesis que cierra ')' en el if  
+Error [31], se esperaba llave que abre '{' en el if 
+Error [32], se esperaba llave que cierra '}' en el if 
+
+
+----> Errores while <----
+
+Error [33], se esperaba parentesis que abre '(' en el while 
+Error [34], se esperaba valor o identificador en el while  
+Error [35], se esperaba operador relacional en el while  
+Error [36], se esperaba parentesis que cierra ')' en el while   
+Error [37], se esperaba llave que abre '{' en el while  
+Error [38], se esperaba llave que cierra '}' en el while  
+
+
 
 if(hayOtro()){
     if(ArreNomToken.get(pos).equals("")){
@@ -67,3 +92,18 @@ else{
     error = "Error [], se esperaba   "+ArreFilaColumnaToken.get(pos-1);
     errores.add(error);
 }
+
+
+
+
+boolean test;
+do {
+ System.out.println("Analiznado el codigo dentro de estructura for");
+ test = operacionCorrecta();
+ if (errores.size() > 0) {
+  System.out.println("Se encontro un error dentro del codigo en el for");
+  return false;
+ }
+} while (test);
+System.out.println("Saliendo de analizar el codigo dentro de la estructura de for");
+

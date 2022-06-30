@@ -23,14 +23,6 @@ public class VentanaErrores extends javax.swing.JFrame {
     public VentanaErrores() {
         initComponents();
     }
-   public VentanaErrores(String NombreGra,String Grama,String TokenGrama) {
-        initComponents();
-        NombreGrama=NombreGra;
-        Gramatica=Grama;
-        TokenGramatica=TokenGrama;
-        Mostrar();
-        
-      }
     public void Mostrar(){
      String cadena="";
      cadena="******GRAMATICA\n"
@@ -42,7 +34,7 @@ public class VentanaErrores extends javax.swing.JFrame {
              +"******SOLUCIONES\n"
              +soluciones(NombreGrama);
      
-     jTextArea1.setText(cadena);
+     txtError.setText(cadena);
     }  
     
     
@@ -112,7 +104,7 @@ public class VentanaErrores extends javax.swing.JFrame {
 
         pnlFondo = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        txtError = new javax.swing.JTextArea();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -127,11 +119,11 @@ public class VentanaErrores extends javax.swing.JFrame {
         pnlFondo.setPreferredSize(new java.awt.Dimension(550, 650));
         pnlFondo.setLayout(null);
 
-        jTextArea1.setEditable(false);
-        jTextArea1.setColumns(20);
-        jTextArea1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        txtError.setEditable(false);
+        txtError.setColumns(20);
+        txtError.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txtError.setRows(5);
+        jScrollPane1.setViewportView(txtError);
 
         pnlFondo.add(jScrollPane1);
         jScrollPane1.setBounds(46, 79, 450, 490);
@@ -188,7 +180,7 @@ public class VentanaErrores extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JPanel pnlFondo;
+    public javax.swing.JTextArea txtError;
     // End of variables declaration//GEN-END:variables
 }

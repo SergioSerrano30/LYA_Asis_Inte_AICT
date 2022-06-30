@@ -14,7 +14,7 @@ public class OpcionesGrama extends javax.swing.JFrame {
     ArrayList<String> lexema, lexemaSinRep;
     String grama = "";
     int cont = 0;
-    int inc=1;
+    int inc = 1;
 
     /**
      * Creates new form OpcionesGrama
@@ -25,66 +25,70 @@ public class OpcionesGrama extends javax.swing.JFrame {
 
     public OpcionesGrama(ArrayList<String> lexe) {
         this();
-        lexema = lexe;
-        lexemaSinRep = new ArrayList<>();
-        Gramaticas();
-        lexe.clear();
-
+//        lexema = lexe;
+//        lexemaSinRep = new ArrayList<>();
+//        Gramaticas();
+//        lexe.clear();
+        String cadena = "";
+        for (int i = 0; i <= lexe.size() - 1; i++) {
+            cadena += lexe.get(i) + "\n";
+        }
+        txtGramaticas.setText(cadena);
         // JArea.setText(MostrarTokens());
         // lexe.clear();
     }
 
     public void Gramaticas() {
-        for(String lex:lexema){
-            if(!lexemaSinRep.contains(lex)){
+        for (String lex : lexema) {
+            if (!lexemaSinRep.contains(lex)) {
                 lexemaSinRep.add(lex);
             }
         }
-        for(String lexSinRep: lexemaSinRep){
+        for (String lexSinRep : lexemaSinRep) {
             switch (lexSinRep) {
                 case "IF":
-                    grama+="\n "+(inc++)+" IF-> If Parentesis_A (EXP_LOGICA | Identificador) Parentesis_C \n" ;
+                    grama += "\n " + (inc++) + " IF-> If Parentesis_A (EXP_LOGICA | Identificador) Parentesis_C \n";
                     break;
                 case "OP_RETORNO":
-                    grama+="\n "+(inc++)+" OP_RETORNO-> OP_Retorno Parentesis_A Parentesis_C \n" ;
+                    grama += "\n " + (inc++) + " OP_RETORNO-> OP_Retorno Parentesis_A Parentesis_C \n";
                     break;
                 case "VARIABLE_PC":
-                    grama+="\n "+(inc++)+" VARIABLE_PC-> VARIABLE Punto_Coma \n" ;
+                    grama += "\n " + (inc++) + " VARIABLE_PC-> VARIABLE Punto_Coma \n";
                     break;
                 case "FUNCION_COMPLETA_PC":
-                    grama+="\n "+(inc++)+" FUNCION_COMPLETA_PC-> FUNCION_COMPLETA Punto_Coma \n" ;
+                    grama += "\n " + (inc++) + " FUNCION_COMPLETA_PC-> FUNCION_COMPLETA Punto_Coma \n";
                     break;
                 case "CICLO_FOR":
-                    grama+="\n "+(inc++)+" CICLO_FOR-> For Parentesis_A (VALOR | Identificador) Parentesis_C \n" ;
+                    grama += "\n " + (inc++) + " CICLO_FOR-> For Parentesis_A (VALOR | Identificador) Parentesis_C \n";
                     break;
                 case "CICLO_WHILE":
-                    grama+="\n "+(inc++)+"  CICLO_WHILE-> While Parentesis_A (EXP_LOGICA | Identificador) Parentesis_C \n" ;
+                    grama += "\n " + (inc++) + "  CICLO_WHILE-> While Parentesis_A (EXP_LOGICA | Identificador) Parentesis_C \n";
                     break;
                 case "VALOR":
-                    grama+="\n "+(inc++)+" VALOR-> (Cadena | Numero | OP_RETORNO) \n" ;
-                    break;    
+                    grama += "\n " + (inc++) + " VALOR-> (Cadena | Numero | OP_RETORNO) \n";
+                    break;
                 case "VARIABLE":
-                    grama+="\n "+(inc++)+" VARIABLE-> Identificador Op_Asignacion VALOR \n" ;
+                    grama += "\n " + (inc++) + " VARIABLE-> Identificador Op_Asignacion VALOR \n";
                     break;
                 case "FUNCION":
-                    grama+="\n "+(inc++)+" FUNCION-> (OP_Cita | OP_Turno | OP_Iluminacion | OP_Temperatura | OP_Puerta) \n" ;
-                    break;   
+                    grama += "\n " + (inc++) + " FUNCION-> (OP_Cita | OP_Turno | OP_Iluminacion | OP_Temperatura | OP_Puerta) \n";
+                    break;
                 case "EXP_LOGICA":
-                    grama+="\n "+(inc++)+" EXP_LOGICA-> (VALOR | Identificador) Op_Relacional (VALOR | Identificador) \n" ;
-                    break;  
+                    grama += "\n " + (inc++) + " EXP_LOGICA-> (VALOR | Identificador) Op_Relacional (VALOR | Identificador) \n";
+                    break;
                 case "FUNCION_COMPLETA":
-                    grama+="\n "+(inc++)+" FUNCION_COMPLETA-> FUNCION Parentesis_A (PARAMETROS | (VALOR | Identificador))? Parentesis_C \n" ;
-                    break;     
+                    grama += "\n " + (inc++) + " FUNCION_COMPLETA-> FUNCION Parentesis_A (PARAMETROS | (VALOR | Identificador))? Parentesis_C \n";
+                    break;
                 case "PARAMETROS":
-                    grama+="\n "+(inc++)+" PARAMETROS-> (VALOR | Identificador) (Coma (VALOR | Identificador))+ \n" ;
-                    break;      
+                    grama += "\n " + (inc++) + " PARAMETROS-> (VALOR | Identificador) (Coma (VALOR | Identificador))+ \n";
+                    break;
                 default:
                     break;
             }
-           
+
         }
-        JArea.setText(grama);
-        
+        txtGramaticas.setText(grama);
+
     }
 
     private String MostrarTokens() {
@@ -107,7 +111,7 @@ public class OpcionesGrama extends javax.swing.JFrame {
 
         pnlFondo = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        JArea = new javax.swing.JTextArea();
+        txtGramaticas = new javax.swing.JTextArea();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -121,10 +125,10 @@ public class OpcionesGrama extends javax.swing.JFrame {
         pnlFondo.setPreferredSize(new java.awt.Dimension(550, 650));
         pnlFondo.setLayout(null);
 
-        JArea.setEditable(false);
-        JArea.setColumns(20);
-        JArea.setRows(5);
-        jScrollPane1.setViewportView(JArea);
+        txtGramaticas.setEditable(false);
+        txtGramaticas.setColumns(20);
+        txtGramaticas.setRows(5);
+        jScrollPane1.setViewportView(txtGramaticas);
 
         pnlFondo.add(jScrollPane1);
         jScrollPane1.setBounds(30, 90, 480, 490);
@@ -179,9 +183,9 @@ public class OpcionesGrama extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextArea JArea;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel pnlFondo;
+    public javax.swing.JTextArea txtGramaticas;
     // End of variables declaration//GEN-END:variables
 }
