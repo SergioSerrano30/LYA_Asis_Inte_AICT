@@ -1,29 +1,17 @@
-INICIO $iluminacion  {
-    PRINCIPAL() {
-        $test =10;
+INICIO $puertas{
+        PRINCIPAL(){
+            puerta_abrir("salon");
+            $identificador="comedor";
+            for(3){
+                $status = puerta_status();
+            }//for
 
-        $test2="";
-
-        if($x<1){
-            puerta_abrir("");
-        } //if
-
-        for($test){
-            $test3 =10;
-            $test4="";
-            $test5=ilu_status();
-            for(8){
-                $test6=5;
-                cita_agendar();
-
-            }//for anidado
-        }//for
-
-        while($x==$y){
-            $tesx="bien";
-        } // while
-
-    } //PRINCIPAL
-} //INICIO
+            if($identificador == "comedor"){
+                while($status != "abierto"){
+                    temp_establecer ("dasdasda");
+                }//while
+            }//if
+       } //PRINCIPAL
+    }//INICIO
 FINAL
-//$ejemplo="error";
+//error generado
