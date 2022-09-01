@@ -1,17 +1,3 @@
-INICIO $puertas{
-        PRINCIPAL(){
-            puerta_abrir("salon");
-            $identificador="comedor";
-            for(3){
-                $status = puerta_status();
-            }//for
-
-            if($identificador == "comedor"){
-                while($status != "abierto"){
-                    temp_establecer ("dasdasda");
-                }//while
-            }//if
-       } //PRINCIPAL
-    }//INICIO
-FINAL
-//error generado
+INICIO $test {
+    PRINCIPAL(){
+    for
