@@ -69,7 +69,7 @@ public class Compilador extends javax.swing.JFrame {
         /* 11 */ "Solución: \n" + "Escriba una llave ‘}’ de cierre para ciclar el código escrito en el FOR \n" + "\n" + "Resultado esperado:  \n" + "For Parentesis_A (Numero | Identificador) Parentesis_C Llave_A CODIGO Llave_C \n" + "for(Numero | Identificador){ CODIGO } \n" + "\nEjemplo \n" + "for($ejemplo){ \n" + "CODIGO \n" + "}",
         /* 12 */ "Solución: \n" + "Escriba el identificador ‘INICIO’ en el comienzo de la hoja en blanco o del código \n" + "\n" + "Resultado esperado:  \n" + "INICIO Identificador Llave_A PRINCIPAL Parentesis_A Parentesis_C Llave_A CODIGO Llave_C Llave_C FINAL \n" + "INICIO Identificador { PRINCIPAL() { CODIGO }}Final \n" + "\nEjemplo \n" + "INICIO $ejemplo { \n" + "   PRINCIPAL(){ \n" + "      CODIGO \n" + "   } \n" + "}  \n" + "FINAL ",
         /* 13 */ "Solución: \n" + "Escriba un identificador para dar nombre al bloque de código \n" + "\n" + "Resultado esperado:  \n" + "INICIO Identificador Llave_A PRINCIPAL Parentesis_A Parentesis_C Llave_A CODIGO Llave_C Llave_C FINAL \n" + "INICIO Identificador { PRINCIPAL() { CODIGO }}Final \n" + "\nEjemplo \n" + "INICIO $ejemplo { \n" + "   PRINCIPAL(){ \n" + "      CODIGO \n" + "   } \n" + "}  \n" + "FINAL ",
-        /* 14 */ "Solución: \n" + "Escriba la llave ‘{‘ que abre el bloque de escritura de código \n" + "\n" + "Resultado esperado:  \n" + "INICIO Identificador Llave_A PRINCIPAL Parentesis_A Parentesis_C Llave_A CODIGO Llave_C Llave_C FINAL \n" + "INICIO Identificador { PRINCIPAL() { CODIGO }}Final \n" + "\nEjemplo \n" + "INICIO $ejemplo { \n" + "   PRINCIPAL(){ \n" + "      CODIGO \n" + "   } \n" + "}  \n" + "FINAL ",
+        /* 14 */ "Solución: \n" + "Escriba la llave ‘{‘ que abre el bloque de inicio \n" + "\n" + "Resultado esperado:  \n" + "INICIO Identificador Llave_A PRINCIPAL Parentesis_A Parentesis_C Llave_A CODIGO Llave_C Llave_C FINAL \n" + "INICIO Identificador { PRINCIPAL() { CODIGO }}Final \n" + "\nEjemplo \n" + "INICIO $ejemplo { \n" + "   PRINCIPAL(){ \n" + "      CODIGO \n" + "   } \n" + "}  \n" + "FINAL ",
         /* 15 */ "Solución: \n" + "Escriba la palabra reservada ‘PRINCIPAL’ para asignar un main \n" + "\n" + "Resultado esperado:  \n" + "INICIO Identificador Llave_A PRINCIPAL Parentesis_A Parentesis_C Llave_A CODIGO Llave_C Llave_C FINAL \n" + "INICIO Identificador { PRINCIPAL() { CODIGO }}Final \n" + "\nEjemplo \n" + "INICIO $ejemplo { \n" + "   PRINCIPAL(){ \n" + "      CODIGO \n" + "   } \n" + "}  \n" + "FINAL ",
         /* 16 */ "Solución: \n" + "Escriba el paréntesis ‘(’ que abre el bloque inicial \n" + "\n" + "Resultado esperado:  \n" + "INICIO Identificador Llave_A PRINCIPAL Parentesis_A Parentesis_C Llave_A CODIGO Llave_C Llave_C FINAL \n" + "INICIO Identificador { PRINCIPAL() { CODIGO }}Final \n" + "\nEjemplo \n" + "INICIO $ejemplo { \n" + "   PRINCIPAL(){ \n" + "      CODIGO \n" + "   } \n" + "}  \n" + "FINAL ",
         /* 17 */ "Solución: \n" + "Escriba el paréntesis ‘)’ que cierra el bloque inicial \n" + "\n" + "Resultado esperado:  \n" + "INICIO Identificador Llave_A PRINCIPAL Parentesis_A Parentesis_C Llave_A CODIGO Llave_C Llave_C FINAL \n" + "INICIO Identificador { PRINCIPAL() { CODIGO }}Final \n" + "\nEjemplo \n" + "INICIO $ejemplo { \n" + "   PRINCIPAL(){ \n" + "      CODIGO \n" + "   } \n" + "}  \n" + "FINAL ",
@@ -93,7 +93,13 @@ public class Compilador extends javax.swing.JFrame {
         /* 35 */ "Solución: \n" + "Escriba el operador relacional (<=, <, >=, >, ==, <>) que compara los parámetros en el WHILE \n" + "\n" + "Resultado esperado:  \n" + "While Parentesis_A (Valor | Identificador) Op_Relacional (Valor | Identificador) Llave_A CODIGO Llave_C \n" + "\nEjemplo \n" + "While ($ejemplo >= “ejemplo”){ \n" + "CODIGO \n" + "}",
         /* 36 */ "Solución: \n" + "Escriba el paréntesis ‘)’ que cierra los parámetros asignados en el WHILE \n" + "\n" + "Resultado esperado:  \n" + "While Parentesis_A (Valor | Identificador) Op_Relacional (Valor | Identificador) Llave_A CODIGO Llave_C \n" + "\nEjemplo \n" + "While ($ejemplo >= “ejemplo”){ \n" + "CODIGO \n" + "}",
         /* 37 */ "Solución: \n" + "Escriba la llave ‘{’ que abre sentencias de código dentro del WHILE \n" + "\n" + "Resultado esperado:  \n" + "While Parentesis_A (Valor | Identificador) Op_Relacional (Valor | Identificador) Llave_A CODIGO Llave_C \n" + "\nEjemplo \n" + "While ($ejemplo >= “ejemplo”){ \n" + "CODIGO \n" + "}",
-        /* 38 */ "Solución: \n" + "Escriba la llave ‘}’ que cierra sentencias de código dentro del WHILE \n" + "\n" + "Resultado esperado:  \n" + "While Parentesis_A (Valor | Identificador) Op_Relacional (Valor | Identificador) Llave_A CODIGO Llave_C \n" + "\nEjemplo \n" + "While ($ejemplo >= “ejemplo”){ \n" + "CODIGO \n" + "}"
+        /* 38 */ "Solución: \n" + "Escriba la llave ‘}’ que cierra sentencias de código dentro del WHILE \n" + "\n" + "Resultado esperado:  \n" + "While Parentesis_A (Valor | Identificador) Op_Relacional (Valor | Identificador) Llave_A CODIGO Llave_C \n" + "\nEjemplo \n" + "While ($ejemplo >= “ejemplo”){ \n" + "CODIGO \n" + "}",
+        /* 39 */ "Solución: \n" + "Escriba la llave ‘}‘ que cierra el bloque de escritura de código del bloque PRINCIPAL \n" + "\n" + "Resultado esperado:  \n" + "INICIO Identificador Llave_A PRINCIPAL Parentesis_A Parentesis_C Llave_A CODIGO Llave_C \n" + "INICIO Identificador { PRINCIPAL() { CODIGO }  \n" + "\nEjemplo \n" + "INICIO $ejemplo { \n" + "   PRINCIPAL(){ \n" + "      CODIGO \n" + "   } \n",
+        /* 40 */ "Solución: \n" + "Escriba el paréntesis ‘(’ que abre el bloque PRINCIPAL \n" + "\n" + "Resultado esperado:  \n" + "INICIO Identificador Llave_A PRINCIPAL Parentesis_A Parentesis_C Llave_A CODIGO Llave_C Llave_C FINAL \n" + "INICIO Identificador { PRINCIPAL() { CODIGO }}Final \n" + "\nEjemplo \n" + "INICIO $ejemplo { \n" + "   PRINCIPAL(){ \n" + "      CODIGO \n" + "   } \n" + "}  \n" + "FINAL ",
+        /* 41 */ "Solución: \n" + "Escriba el paréntesis ‘)’ que cierra el bloque PRINCIPAL \n" + "\n" + "Resultado esperado:  \n" + "INICIO Identificador Llave_A PRINCIPAL Parentesis_A Parentesis_C Llave_A CODIGO Llave_C Llave_C FINAL \n" + "INICIO Identificador { PRINCIPAL() { CODIGO }}Final \n" + "\nEjemplo \n" + "INICIO $ejemplo { \n" + "   PRINCIPAL(){ \n" + "      CODIGO \n" + "   } \n" + "}  \n" + "FINAL ",
+        /* 42 */ "Solución: \n" + "Escriba la llave ‘{‘ que abre el bloque de escritura de código \n" + "\n" + "Resultado esperado:  \n" + "INICIO Identificador Llave_A PRINCIPAL Parentesis_A Parentesis_C Llave_A CODIGO Llave_C Llave_C FINAL \n" + "INICIO Identificador { PRINCIPAL() { CODIGO }}Final \n" + "\nEjemplo \n" + "INICIO $ejemplo { \n" + "   PRINCIPAL(){ \n" + "      CODIGO \n" + "   } \n" + "}  \n" + "FINAL ",
+        
+
     };
 
     public Compilador() {
@@ -142,7 +148,7 @@ public class Compilador extends javax.swing.JFrame {
         ArreCompleto = new ArrayList<>();
         identProd = new ArrayList<>(); //Identificadores de producción
         identificadores = new HashMap<>();
-        esteXO=this.getX();
+        esteXO = this.getX();
 
         Functions.setAutocompleterJTextComponent(new String[]{"color", "numero", "este", "oeste", "norte", "sur", "pintar"}, txtCodigo, () -> {
             timerKeyReleased.restart();
@@ -420,10 +426,10 @@ public class Compilador extends javax.swing.JFrame {
         int sizeErrors = errors.size();
         int numErrores = errores.size();
         if (numErrores > 0) {
-            String strErrores = "\n\n";
-            for (int i = 0; i < numErrores; i++) {
-                strErrores = errores.get(i) + "\n";
-            }
+            String strErrores = errores.get(0);
+//            for (int i = 0; i < numErrores; i++) {
+//                strErrores = errores.get(i) + "\n";
+//            }            
             txtConsola.setText("Compilación terminada...\n" + strErrores + "\nLa compilación terminó con errores...");
             txtConsola.setForeground(Color.red);
         } else {
@@ -933,13 +939,17 @@ public class Compilador extends javax.swing.JFrame {
     private void txtConsolaMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtConsolaMouseReleased
         if (txtConsola.getText().length() != 24) {
             System.out.println("Tamaño errores: " + errores.size());
+            for (int i = 0; i < errores.size(); i++) {
+                System.out.println("Error " + i + " " + errores.get(i));
+            }
+            System.out.println("");
             System.out.println("Error 0 " + errores.get(0));
             String cadena = errores.get(0);
             String[] parts = null;
             parts = cadena.split("\\[");
-            System.out.println("Error split parte 1" + parts[1]);
+            System.out.println("Error split parte 1 " + parts[1]);
             String[] parts2 = parts[1].split("\\]");
-            System.out.println("Error split parte 2" + parts2[0]);
+            System.out.println("Error split parte 2 " + parts2[0]);
             numeroError = Integer.parseInt(parts2[0]);
             venErrores = new VentanaErrores();
             venErrores.setVisible(true);
@@ -1610,7 +1620,7 @@ public class Compilador extends javax.swing.JFrame {
 
             }
         } else {
-            errores.add("Error [18], se esperaba llave que cierra '}' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1));
+            errores.add("Error [39], se esperaba llave que cierra '}' en el bloque PRINCIPAL " + ArreFilaColumnaToken.get(pos - 1));
         }
         return false;
     }
@@ -1657,12 +1667,20 @@ public class Compilador extends javax.swing.JFrame {
                                                                 do {
                                                                     System.out.println("Analiznado el codigo dentro de estructura inicial");
                                                                     test = operacionCorrecta();
-                                                                    if (errores.size() > 0) {
-                                                                        System.out.println("Se encontro un error dentro del codigo");
-                                                                        gramaticas.add("El Token: " + ArreToken.get(pos) + " no es un 'TERMINAL'");
-                                                                        System.out.println("El Token:" + ArreToken.get(pos) + " no es un 'TERMINAL'");
-                                                                        return false;
+                                                                    if (hayOtro()) {
+                                                                        if (errores.size() > 0) {
+                                                                            System.out.println("Se encontro un error dentro del codigo");
+                                                                            //gramaticas.add("El Token: " + ArreToken.get(pos) + " no es un 'TERMINAL'");
+                                                                            //System.out.println("El Token:" + ArreToken.get(pos) + " no es un 'TERMINAL'");
+                                                                            return false;
+                                                                        }
+                                                                    }//hay otro
+                                                                    else {
+                                                                        //error = "Error[XX], No hay tokens para analizar " + ArreFilaColumnaToken.get(pos - 1);
+                                                                        //errores.add(error);
+                                                                        System.out.println("Error[XX], No hay tokens para analizar" + ArreFilaColumnaToken.get(pos - 1));
                                                                     }
+
                                                                 } while (test);
                                                                 System.out.println("Saliendo de analizar el codigo dentro de la estructura de inicio");
                                                                 /* Continua con el bloque de inicio */
@@ -1711,12 +1729,12 @@ public class Compilador extends javax.swing.JFrame {
                                                                         }
                                                                     } // } PRINCIPAL
                                                                     else {
-                                                                        error = "Error [18], se esperaba llave que cierra '}' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                                                                        error = "Error [39], se esperaba llave que cierra '}' en el bloque PRINCIPAL " + ArreFilaColumnaToken.get(pos - 1);
                                                                         errores.add(error);
                                                                     } // } PRINCIPAL
                                                                 }//Hay otro
                                                                 else {
-                                                                    error = "Error [18], se esperaba llave que cierra '}' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                                                                    error = "Error [39], se esperaba llave que cierra '}' en el bloque PRINCIPAL " + ArreFilaColumnaToken.get(pos - 1);
                                                                     errores.add(error);
                                                                 }
                                                             }//hay otro
@@ -1726,32 +1744,32 @@ public class Compilador extends javax.swing.JFrame {
                                                             }
                                                         } // { PRINCIPAL
                                                         else {
-                                                            error = "Error [14], se esperaba llave que abre '{' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                                                            error = "Error [42], se esperaba llave que abre '{' en el bloque PRINCIPAL " + ArreFilaColumnaToken.get(pos - 1);
                                                             errores.add(error);
                                                         } // { PRINCIPAL
                                                     }//Hay otro
                                                     else {
-                                                        error = "Error [14], se esperaba llave que abre '{' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                                                        error = "Error [42], se esperaba llave que abre '{' en el bloque PRINCIPAL " + ArreFilaColumnaToken.get(pos - 1);
                                                         errores.add(error);
                                                     }
                                                 } // )
                                                 else {
-                                                    error = "Error [17], se esperaba parentesis que cierra ')' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                                                    error = "Error [41], se esperaba parentesis que cierra ')' en el bloque PRINCIPAL " + ArreFilaColumnaToken.get(pos - 1);
                                                     errores.add(error);
                                                 } // )
                                             }//Hay otro
                                             else {
-                                                error = "Error [17], se esperaba parentesis que cierra ')' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                                                error = "Error [41], se esperaba parentesis que cierra ')' en el bloque PRINCIPAL " + ArreFilaColumnaToken.get(pos - 1);
                                                 errores.add(error);
                                             }
                                         } // (
                                         else {
-                                            error = "Error [16], se esperaba parentesis que abre '(' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                                            error = "Error [40], se esperaba parentesis que abre '(' en el bloque PRINCIPAL " + ArreFilaColumnaToken.get(pos - 1);
                                             errores.add(error);
                                         } // (
                                     }//Hay otro
                                     else {
-                                        error = "Error [16], se esperaba parentesis que abre '(' en el bloque inicial " + ArreFilaColumnaToken.get(pos - 1);
+                                        error = "Error [40], se esperaba parentesis que abre '(' en el bloque PRINCIPAL " + ArreFilaColumnaToken.get(pos - 1);
                                         errores.add(error);
                                     }
                                 } // PRINCIPAL
@@ -1968,7 +1986,7 @@ public class Compilador extends javax.swing.JFrame {
                                                         }
                                                     }//Hay otro
                                                     else {
-                                                        error = "Error [], se esperaba   " + ArreFilaColumnaToken.get(pos - 1);
+                                                        error = "Error [32], se esperaba llave que cierra '}' en el if " + ArreFilaColumnaToken.get(pos - 1);
                                                         errores.add(error);
                                                     }
                                                 } // 

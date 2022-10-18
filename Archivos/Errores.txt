@@ -45,7 +45,10 @@ Error [18], se esperaba llave que cierra '}' en el bloque inicial
 Error [19], se esperaba 'FINAL' en el bloque inicial 
 Error [20], se encontraron tokens despues de 'FINAL' eliminalos 
 Error [21], se esperaba codigo para analizar en el bloque inicial 
-
+Error [39], se esperaba llave que cierra '}' en el bloque PRINCIPAL
+Error [40], se esperaba parentesis que abre '(' en el bloque PRINCIPAL 
+Error [41], se esperaba parentesis que cierra ')' en el bloque PRINCIPAL
+Error [42], se esperaba llave que abre '{' en el bloque PRINCIPAL
 
 ----> Errores funcion <----
 

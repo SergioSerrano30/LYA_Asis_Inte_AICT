@@ -49,34 +49,47 @@ FINAL { return token(yytext(), "FINAL", yyline, yycolumn); }
 /*PRINCIPAL*/
 PRINCIPAL { return token(yytext(), "PRINCIPAL", yyline, yycolumn); }
 
-/* Opciones cita */
-cita_agendar |
-cita_cancelar { return token(yytext(), "OP_Cita", yyline, yycolumn); }
+/* Opciones cortadora */
+cortadora_activar |
+cortadora_apagar { return token(yytext(), "OP_Cortadora", yyline, yycolumn); }
 
-/* Opciones turnos */
+/* Opciones aspersores */
 
-turno_nuevo { return token(yytext(), "OP_Turno", yyline, yycolumn); }
+aspersor_activar |
+aspersor_apagar { return token(yytext(), "OP_Aspersor", yyline, yycolumn); }
 
-/* Opciones iluminacion */
-ilu_encender |
-ilu_apagar { return token(yytext(), "OP_Iluminacion", yyline, yycolumn); }
+/* Opciones ventiladores */
+ventilador_activar |
+ventilador_apagar { return token(yytext(), "OP_Ventilador", yyline, yycolumn); }
 
-/* Opciones temperatura */
-temp_establecer |
-temp_subir |
-temp_bajar  { return token(yytext(), "OP_Temperatura", yyline, yycolumn); }
+/* Opciones iluminación */
+iluminacion_activar |
+iluminacion_apagar { return token(yytext(), "OP_Iluminacion", yyline, yycolumn); }
 
 /* Opciones puerta */
 puerta_abrir |
 puerta_cerrar { return token(yytext(), "OP_Puerta", yyline, yycolumn); }
 
-/* Opciones de retorno */
-turno_actual |
-turno_proximo |
-turno_tiempo |
-ilu_status |
-temp_actual | 
-puerta_status { return token(yytext(), "OP_Retorno", yyline, yycolumn); }
+/* Opciones banda transportadora */
+banda_activar |
+banda_apagar  { return token(yytext(), "OP_Banda", yyline, yycolumn); }
+
+/* Opciones TV's */
+tv_encender |
+tv_apagar  { return token(yytext(), "OP_TV", yyline, yycolumn); }
+
+/* Opciones alarmas de seguridad */
+alarma_activar |
+alarma_apagar  { return token(yytext(), "OP_Alarma", yyline, yycolumn); }
+
+/* Opciones caja fuerte */
+cajafuerte_activar |
+cajafuerte_desactivar  { return token(yytext(), "OP_Caja", yyline, yycolumn); }
+
+/* Opciones panel solar */
+panel_activar |
+panel_apagar |
+panel_girar  { return token(yytext(), "OP_Panel", yyline, yycolumn); }
 
 /* --------------------------------- */
 

@@ -46,8 +46,12 @@ import java.awt.Color;
 
 /* ------------ PALABRAS RESERVADAS ------------ */
 /* Opciones cita */
-cita_agendar | cita_cancelar | turno_nuevo | turno_actual | turno_proximo | turno_tiempo | ilu_encender | ilu_apagar | temp_establecer | temp_subir | temp_bajar | puerta_abrir | puerta_cerrar | 
-puerta_status | temp_actual | ilu_status { return textColor(yychar, yylength(), new Color(22, 196, 59)); } // VERDE
+cortadora_activar | cortadora_apagar | aspersor_activar | aspersor_apagar |
+ventilador_activar | ventilador_apagar | iluminacion_activar | iluminacion_apagar |
+puerta_abrir | puerta_cerrar | banda_activar | banda_apagar | tv_encender | tv_apagar |
+alarma_activar | alarma_apagar | cajafuerte_activar | cajafuerte_desactivar | panel_activar |
+panel_apagar | panel_girar
+{ return textColor(yychar, yylength(), new Color(22, 196, 59)); } // VERDE
 /* --------------------------------- */
 
 /* INICIO Y FINAL*/

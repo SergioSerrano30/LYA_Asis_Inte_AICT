@@ -8,7 +8,7 @@ if($temperatura >=15){
     temp_subir(20);  
 }
 $statusPuerta = puerta_status();
-if($statusPuerta){
+if($statusPuerta==1){
     //Si está abierta
     puerta_cerrar();
 }
@@ -32,6 +32,6 @@ cita_cancelar(4021);
 $area = "Cajas";
 $hora = "12:40";
 $fecha = "2022-12-30";
-cita_agendar(5601,$area,$hora,$fecha,"Centro");
+cita_agendar(5601);
 }
 } FINAL
