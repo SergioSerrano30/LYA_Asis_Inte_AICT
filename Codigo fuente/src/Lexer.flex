@@ -85,7 +85,7 @@ alarma_apagar  { return token(yytext(), "OP_Alarma", yyline, yycolumn); }
 /* Opciones caja fuerte */
 cajafuerte_activar |
 cajafuerte_desactivar  { return token(yytext(), "OP_Caja", yyline, yycolumn); }
-
+ /* Test cambio en git */
 /* Opciones panel solar */
 panel_activar |
 panel_apagar |
