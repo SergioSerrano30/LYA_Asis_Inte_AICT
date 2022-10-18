@@ -1,30 +1,17 @@
-cortadora_activar
-cortadora_apagar
+INICIO $puertas{
+        PRINCIPAL(){
+            puerta_abrir("salon");
+            $identificador="comedor";
+            for(3){
+                $status = puerta_status();
+            }//for
 
-aspersor_activar
-aspersor_apagar
-
-ventilador_activar
-ventilador_apagar
-
-iluminacion_activar
-iluminacion_apagar
-
-puerta_abrir
-puerta_cerrar
-
-banda_activar
-banda_apagar
-
-tv_encender
-tv_apagar
-
-alarma_activar
-alarma_apagar
-
-cajafuerte_activar
-cajafuerte_desactivar
-
-panel_activar
-panel_apagar
-panel_girar
+            if($identificador == "comedor"){
+                while($status != "abierto"){
+                    temp_establecer ("dasdasda");
+                }//while
+            }//if
+       } //PRINCIPAL
+    }//INICIO
+FINAL
+//error generado

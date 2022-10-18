@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 cortadora_activar
 cortadora_apagar
 
@@ -28,3 +29,8 @@ cajafuerte_desactivar
 panel_activar
 panel_apagar
 panel_girar
+=======
+INICIO $test {
+    PRINCIPAL(){
+    for
+>>>>>>> 32ab85c83bf24cf0b229c2bfcf3fd27adb36566c
