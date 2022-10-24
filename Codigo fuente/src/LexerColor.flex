@@ -46,11 +46,16 @@ import java.awt.Color;
 
 /* ------------ PALABRAS RESERVADAS ------------ */
 /* Opciones cita */
-cortadora_activar | cortadora_apagar | aspersor_activar | aspersor_apagar |
-ventilador_activar | ventilador_apagar | iluminacion_activar | iluminacion_apagar |
-puerta_abrir | puerta_cerrar | banda_activar | banda_apagar | tv_encender | tv_apagar |
-alarma_activar | alarma_apagar | cajafuerte_activar | cajafuerte_desactivar | panel_activar |
-panel_apagar | panel_girar
+cortadora_activar | cortadora_desactivar | 
+aspersor_activar | aspersor_desactivar |
+ventilador_activar | ventilador_desactivar | 
+iluminacion_encender | iluminacion_apagar |
+puerta_abrir | puerta_cerrar | 
+banda_activar | banda_desactivar | 
+tv_encender | tv_apagar |
+alarma_activar | alarma_desactivar | 
+cajafuerte_activar | cajafuerte_desactivar | 
+panel_girar
 { return textColor(yychar, yylength(), new Color(22, 196, 59)); } // VERDE
 /* --------------------------------- */
 

@@ -51,19 +51,19 @@ PRINCIPAL { return token(yytext(), "PRINCIPAL", yyline, yycolumn); }
 
 /* Opciones cortadora */
 cortadora_activar |
-cortadora_apagar { return token(yytext(), "OP_Cortadora", yyline, yycolumn); }
+cortadora_desactivar { return token(yytext(), "OP_Cortadora", yyline, yycolumn); }
 
 /* Opciones aspersores */
 
 aspersor_activar |
-aspersor_apagar { return token(yytext(), "OP_Aspersor", yyline, yycolumn); }
+aspersor_desactivar { return token(yytext(), "OP_Aspersor", yyline, yycolumn); }
 
 /* Opciones ventiladores */
 ventilador_activar |
-ventilador_apagar { return token(yytext(), "OP_Ventilador", yyline, yycolumn); }
+ventilador_desactivar { return token(yytext(), "OP_Ventilador", yyline, yycolumn); }
 
 /* Opciones iluminación */
-iluminacion_activar |
+iluminacion_encender |
 iluminacion_apagar { return token(yytext(), "OP_Iluminacion", yyline, yycolumn); }
 
 /* Opciones puerta */
@@ -72,7 +72,7 @@ puerta_cerrar { return token(yytext(), "OP_Puerta", yyline, yycolumn); }
 
 /* Opciones banda transportadora */
 banda_activar |
-banda_apagar  { return token(yytext(), "OP_Banda", yyline, yycolumn); }
+banda_desactivar  { return token(yytext(), "OP_Banda", yyline, yycolumn); }
 
 /* Opciones TV's */
 tv_encender |
@@ -80,15 +80,13 @@ tv_apagar  { return token(yytext(), "OP_TV", yyline, yycolumn); }
 
 /* Opciones alarmas de seguridad */
 alarma_activar |
-alarma_apagar  { return token(yytext(), "OP_Alarma", yyline, yycolumn); }
+alarma_desactivar  { return token(yytext(), "OP_Alarma", yyline, yycolumn); }
 
 /* Opciones caja fuerte */
 cajafuerte_activar |
 cajafuerte_desactivar  { return token(yytext(), "OP_Caja", yyline, yycolumn); }
- /* Test cambio en git */
+
 /* Opciones panel solar */
-panel_activar |
-panel_apagar |
 panel_girar  { return token(yytext(), "OP_Panel", yyline, yycolumn); }
 
 /* --------------------------------- */

@@ -54,6 +54,17 @@ public class Compilador extends javax.swing.JFrame {
     OpcionesGrama opcGrama;
     private int esteXO;
 
+    //Colores
+    public static final String ANSI_BLACK = "\u001B[30m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_BLUE = "\u001B[34m";
+    public static final String ANSI_PURPLE = "\u001B[35m";
+    public static final String ANSI_CYAN = "\u001B[36m";
+    public static final String ANSI_WHITE = "\u001B[37m";
+    public static final String ANSI_RESET = "\u001B[0m";
+
     public int numeroError = 0;
     public String[] soluciones = {
         /* 1 */"Solución: \n" + "Se espera escritura de código. \n" + "\n" + "Resultado esperado: \n" + "Agregue la estructura inicial para comenzar con el programa \n" + "Estructura inicial: \n" + "INICIO $ejemplo { \n" + "  PRINCIPAL(){ \n" + "     //Código \n" + "  } \n" + "} ",
@@ -97,10 +108,7 @@ public class Compilador extends javax.swing.JFrame {
         /* 39 */ "Solución: \n" + "Escriba la llave ‘}‘ que cierra el bloque de escritura de código del bloque PRINCIPAL \n" + "\n" + "Resultado esperado:  \n" + "INICIO Identificador Llave_A PRINCIPAL Parentesis_A Parentesis_C Llave_A CODIGO Llave_C \n" + "INICIO Identificador { PRINCIPAL() { CODIGO }  \n" + "\nEjemplo \n" + "INICIO $ejemplo { \n" + "   PRINCIPAL(){ \n" + "      CODIGO \n" + "   } \n",
         /* 40 */ "Solución: \n" + "Escriba el paréntesis ‘(’ que abre el bloque PRINCIPAL \n" + "\n" + "Resultado esperado:  \n" + "INICIO Identificador Llave_A PRINCIPAL Parentesis_A Parentesis_C Llave_A CODIGO Llave_C Llave_C FINAL \n" + "INICIO Identificador { PRINCIPAL() { CODIGO }}Final \n" + "\nEjemplo \n" + "INICIO $ejemplo { \n" + "   PRINCIPAL(){ \n" + "      CODIGO \n" + "   } \n" + "}  \n" + "FINAL ",
         /* 41 */ "Solución: \n" + "Escriba el paréntesis ‘)’ que cierra el bloque PRINCIPAL \n" + "\n" + "Resultado esperado:  \n" + "INICIO Identificador Llave_A PRINCIPAL Parentesis_A Parentesis_C Llave_A CODIGO Llave_C Llave_C FINAL \n" + "INICIO Identificador { PRINCIPAL() { CODIGO }}Final \n" + "\nEjemplo \n" + "INICIO $ejemplo { \n" + "   PRINCIPAL(){ \n" + "      CODIGO \n" + "   } \n" + "}  \n" + "FINAL ",
-        /* 42 */ "Solución: \n" + "Escriba la llave ‘{‘ que abre el bloque de escritura de código \n" + "\n" + "Resultado esperado:  \n" + "INICIO Identificador Llave_A PRINCIPAL Parentesis_A Parentesis_C Llave_A CODIGO Llave_C Llave_C FINAL \n" + "INICIO Identificador { PRINCIPAL() { CODIGO }}Final \n" + "\nEjemplo \n" + "INICIO $ejemplo { \n" + "   PRINCIPAL(){ \n" + "      CODIGO \n" + "   } \n" + "}  \n" + "FINAL ",
-        
-
-    };
+        /* 42 */ "Solución: \n" + "Escriba la llave ‘{‘ que abre el bloque de escritura de código \n" + "\n" + "Resultado esperado:  \n" + "INICIO Identificador Llave_A PRINCIPAL Parentesis_A Parentesis_C Llave_A CODIGO Llave_C Llave_C FINAL \n" + "INICIO Identificador { PRINCIPAL() { CODIGO }}Final \n" + "\nEjemplo \n" + "INICIO $ejemplo { \n" + "   PRINCIPAL(){ \n" + "      CODIGO \n" + "   } \n" + "}  \n" + "FINAL ",};
 
     public Compilador() {
         initComponents();
@@ -1408,7 +1416,7 @@ public class Compilador extends javax.swing.JFrame {
 
                                         boolean test;
                                         do {
-                                            System.out.println("Analiznado el codigo dentro de estructura for");
+                                            System.out.println("Analizando el codigo dentro de estructura for");
                                             test = operacionCorrecta();
                                             if (errores.size() > 0) {
                                                 System.out.println("Se encontro un error dentro del codigo en el for");
@@ -1511,78 +1519,6 @@ public class Compilador extends javax.swing.JFrame {
                         errores.add("Error [7], se esperaba parentesis que abre '(' en el ciclo For " + ArreFilaColumnaToken.get(pos - 1));
                     }
                     break;
-                /* FUNCIONES */
-                case "OP_Cita":
-                    System.out.println("Funcion encontrada");
-                    pos++;
-                    if (hayOtro()) {
-                        if (funcionCorrecta()) {
-                            gramaticas.add("Funcion correcta \n");
-                            return true;
-                        }
-
-                    } else {
-                        errores.add("Error [22], se esperaba parentesis que abre '(' en la funcion " + ArreFilaColumnaToken.get(pos - 1));
-                    }
-                    break;
-
-                case "OP_Turno":
-                    System.out.println("Funcion encontrada");
-                    pos++;
-                    if (hayOtro()) {
-                        if (funcionCorrecta()) {
-                            gramaticas.add("Funcion correcta \n");
-                            return true;
-                        }
-
-                    } else {
-                        errores.add("Error [22], se esperaba parentesis que abre '(' en la funcion " + ArreFilaColumnaToken.get(pos - 1));
-                    }
-                    break;
-
-                case "OP_Iluminacion":
-                    System.out.println("Funcion encontrada");
-                    pos++;
-                    if (hayOtro()) {
-                        if (funcionCorrecta()) {
-                            gramaticas.add("Funcion correcta \n");
-                            return true;
-                        }
-
-                    } else {
-                        errores.add("Error [22], se esperaba parentesis que abre '(' en la funcion " + ArreFilaColumnaToken.get(pos - 1));
-                    }
-                    break;
-
-                case "OP_Temperatura":
-                    System.out.println("Funcion encontrada");
-                    pos++;
-                    if (hayOtro()) {
-                        if (funcionCorrecta()) {
-                            gramaticas.add("Funcion correcta \n");
-                            return true;
-                        }
-
-                    } else {
-                        errores.add("Error [22], se esperaba parentesis que abre '(' en la funcion " + ArreFilaColumnaToken.get(pos - 1));
-                    }
-                    break;
-
-                case "OP_Puerta":
-                    System.out.println("Funcion encontrada");
-
-                    pos++;
-                    if (hayOtro()) {
-                        if (funcionCorrecta()) {
-                            gramaticas.add("Funcion correcta \n");
-                            return true;
-                        }
-
-                    } else {
-                        errores.add("Error [22], se esperaba parentesis que abre '(' en la funcion " + ArreFilaColumnaToken.get(pos - 1));
-                    }
-                    break;
-
                 /* If */
                 case "If":
                     System.out.println("If encontrada");
@@ -1612,17 +1548,45 @@ public class Compilador extends javax.swing.JFrame {
 
                     } else {
                         errores.add("Error [33], se esperaba parentesis que abre '(' en el while " + ArreFilaColumnaToken.get(pos - 1));
+
                     }
+
                     break;
 
                 default:
-                //errores.add("Error [99]: No se encontró ninguna palabra reservada valida");
+                    boolean resp = buscarFunciones();
+                    if (resp) {
+                        return true;
+                    }
 
             }
         } else {
             errores.add("Error [39], se esperaba llave que cierra '}' en el bloque PRINCIPAL " + ArreFilaColumnaToken.get(pos - 1));
         }
         return false;
+    }
+
+    private boolean buscarFunciones() {
+
+        String funciones[] = {"OP_Cortadora", "OP_Aspersor", "OP_Ventilador", "OP_Iluminacion", "OP_Puerta", "OP_Banda", "OP_TV", "OP_Alarma", "OP_Caja", "OP_Panel"};
+        String erroresFun[] = {""};
+        boolean resp = false;
+        for (int i = 0; i <= funciones.length - 1; i++) {
+            if (ArreNomToken.get(pos).equals(funciones[i])) {
+                System.out.println("Se encontró: " + funciones[i]);
+                pos++;
+                if (hayOtro()) {
+                    if (funcionCorrecta()) {
+                        gramaticas.add("Funcion correcta \n");
+                        resp = true;
+                    }
+                } else {
+                    errores.add("Error [22], se esperaba parentesis que abre '(' en la funcion " + ArreFilaColumnaToken.get(pos - 1));
+                }
+                i = funciones.length - 1; //Para de buscar para ahorrar tiempo
+            }
+        }
+        return resp;
     }
 
     private boolean inicioCorrecto() {
@@ -1665,7 +1629,7 @@ public class Compilador extends javax.swing.JFrame {
                                                             if (hayOtro()) {
                                                                 boolean test;
                                                                 do {
-                                                                    System.out.println("Analiznado el codigo dentro de estructura inicial");
+                                                                    System.out.println(ANSI_YELLOW + "Analizando el codigo dentro de estructura inicial" + ANSI_RESET);
                                                                     test = operacionCorrecta();
                                                                     if (hayOtro()) {
                                                                         if (errores.size() > 0) {
@@ -1821,13 +1785,36 @@ public class Compilador extends javax.swing.JFrame {
             System.out.println("Parentecis que abre encontrado");
             gramaticas.add("Parentecis que abre");
             /* Verifica parametros */
+            //EDITANDO
             if (hayOtro()) {
-                if (finFuncion()) {
-                    return true;
-                }//No se metió ningun valor y se encontró un parentesis que cierra
-                else if (valorCorrecto() || ArreNomToken.get(pos++).equals("Identificador")) {
-                    errores.clear();
-                    gramaticas.add("Valor o identificador");
+                if (ArreToken.get(pos - 2).equals("alarma_activar") || ArreToken.get(pos - 2).equals("alarma_desactivar")) {
+                    System.out.println(ANSI_CYAN + "Evaluando: " + ArreToken.get(pos - 2) + ANSI_RESET);
+                    
+                    if (finFuncion()) {
+                        return true;
+                    }
+                } //System.out.println(ANSI_PURPLE+"Palabra reservada: " + ArreToken.get(pos-2)+ANSI_RESET);
+                else if (ArreToken.get(pos - 2).equals("cortadora_activar") || ArreToken.get(pos - 2).equals("cortadora_desactivar")
+                        || ArreToken.get(pos - 2).equals("ventilador_activar") || ArreToken.get(pos - 2).equals("ventilador_desactivar")
+                        || ArreToken.get(pos - 2).equals("iluminacion_activar") || ArreToken.get(pos - 2).equals("iluminacion_desactivar")
+                        || ArreToken.get(pos - 2).equals("banda_activar") || ArreToken.get(pos - 2).equals("banda_desactivar")
+                        || ArreToken.get(pos - 2).equals("puerta_abrir") || ArreToken.get(pos - 2).equals("puerta_cerrar")
+                        || ArreToken.get(pos - 2).equals("tv_encender") || ArreToken.get(pos - 2).equals("tv_apagar")
+                        || ArreToken.get(pos - 2).equals("aspersor_desactivar") || ArreToken.get(pos - 2).equals("asperdor_desactivar")
+                        || ArreToken.get(pos - 2).equals("cajafuerte_desactivar")) {
+                    System.out.println(ANSI_CYAN + "Evaluando: " + ArreToken.get(pos - 2) + ANSI_RESET);
+                    switch (ArreNomToken.get(pos)) {
+                        case "Cadena":
+                            System.out.println("Cadena encontrada");
+                            break;
+                        case "Identificador":
+                            System.out.println("Identificador encontrado");
+                            break;
+                        default:
+                            error = "Error [25], se esperaba una cadena o un identificador en la funcion: " + ArreToken.get(pos - 2) + " " + ArreFilaColumnaToken.get(pos - 1);
+                            errores.add(error);
+                    }
+                    pos++;
                     if (hayOtro()) {
                         if (finFuncion()) {
                             return true;
@@ -1835,20 +1822,109 @@ public class Compilador extends javax.swing.JFrame {
 
                     }//Hay otro
                     else {
-                        error = "Error [23], se esperaba parentesis que cierra ')' en la funcion " + ArreFilaColumnaToken.get(pos - 1);
+                        error = "Error [23], se esperaba parentesis que cierra ')' en la funcion: "+ArreToken.get(pos - 3) + " " + ArreFilaColumnaToken.get(pos - 1);
                         errores.add(error);
                     }
-                }//Valor correcto.
-                else {
+                }//If varias funciones
+                else if (ArreToken.get(pos - 2).equals("aspersor_activar") || ArreToken.get(pos - 2).equals("cajafuerte_activar")) {
+                    System.out.println(ANSI_CYAN + "Evaluando: " + ArreToken.get(pos - 2) + ANSI_RESET);
+                    switch (ArreNomToken.get(pos)) {
+                        case "Cadena":
+                            System.out.println("Cadena encontrada");
+                            break;
+                        case "Identificador":
+                            System.out.println("Identificador encontrado");
+                            break;
+                        default:
+                            error = "Error [25], se esperaba una cadena o un identificador en la funcion: " + ArreToken.get(pos - 2) + " " + ArreFilaColumnaToken.get(pos - 1);
+                            errores.add(error);
+                    }
+                    pos++;
+                    if (hayOtro()) {
+                        if (ArreNomToken.get(pos).equals("Coma")) {
+                            pos++;
+                            System.out.println("Coma encontrada");
+                            if (hayOtro()) {
+                                switch (ArreNomToken.get(pos)) {
+                                    case "Numero":
+                                        System.out.println("Cadena encontrada");
+                                        break;
+                                    case "Identificador":
+                                        System.out.println("Identificador encontrado");
+                                        break;
+                                    default:
+                                        error = "Error [44], se esperaba una número o un identificador en la funcion: " + ArreToken.get(pos - 4) + " " + ArreFilaColumnaToken.get(pos - 1);
+                                        errores.add(error);
+                                }
+                                pos++;
+                                if (hayOtro()) {
+                                    if (finFuncion()) {
+                                        return true;
+                                    }
 
-                    error = "Error [25], se esperaba un valor o identificador en la funcion " + ArreFilaColumnaToken.get(pos - 1);
-                    errores.add(error);
-                    pos--;
+                                }//Hay otro
+                                else {
+                                    error = "Error [23], se esperaba parentesis que cierra ')' en la funcion: "+ArreToken.get(pos - 3) + " " + ArreFilaColumnaToken.get(pos - 1);
+                                    errores.add(error);
+                                }
+                            }//Hay otro
+                            else {
+                                error = "Error [44], se esperaba una número o un identificador en la funcion: " + ArreToken.get(pos - 4) + " " + ArreFilaColumnaToken.get(pos - 1);
+                                errores.add(error);
+                            }
+
+                        } // Coma
+                        else {
+                            error = "Error [43], se esperaba coma ',' en la función: " + ArreToken.get(pos - 2) + ArreFilaColumnaToken.get(pos - 1);
+                            errores.add(error);
+                        } // Coma
+                    }//Hay otro
+                    else {
+                        error = "Error [43], se esperaba coma ',' en la función: " + ArreToken.get(pos - 2) + ArreFilaColumnaToken.get(pos - 1);
+                        errores.add(error);
+                    }
+                } else if (ArreToken.get(pos - 2).equals("panel_girar")) {
+                    System.out.println(ANSI_CYAN + "Evaluando: " + ArreToken.get(pos - 2) + ANSI_RESET);
+                    switch (ArreNomToken.get(pos)) {
+                        case "Numero":
+                            System.out.println("Cadena encontrada");
+                            break;
+                        case "Identificador":
+                            System.out.println("Identificador encontrado");
+                            break;
+                        default:
+                            error = "Error [44], se esperaba una número o un identificador en la funcion: " + ArreToken.get(pos - 2) + " " + ArreFilaColumnaToken.get(pos - 1);
+                            errores.add(error);
+                    }
+                    pos++;
+                    if (hayOtro()) {
+                        if (finFuncion()) {
+                            return true;
+                        }
+                    } else {
+                        error = "Error [23], se esperaba parentesis que cierra ')' en la funcion: "+ArreToken.get(pos - 3) + " " + ArreFilaColumnaToken.get(pos - 1);
+                        errores.add(error);
+                    }
                 }
 
-            } else {
-                error = "Error [25], se esperaba un valor o identificador en la funcion " + ArreFilaColumnaToken.get(pos - 1);
-                errores.add(error);
+//                if (finFuncion()) {
+//                    return true;
+//                }//No se metió ningun valor y se encontró un parentesis que cierra
+            } //No hay otro valor
+            else {
+                if (ArreToken.get(pos - 2).equals("alarma_activar") || ArreToken.get(pos - 2).equals("alarma_desactivar")) {
+                    error = "Error [23], se esperaba parentesis que cierra ')' en la funcion: " + ArreToken.get(pos - 2) + " " + ArreFilaColumnaToken.get(pos - 1);
+                    errores.add(error);
+                }
+                else if (ArreToken.get(pos - 2).equals("panel_girar")) {
+                    error = "Error [44], se esperaba una número o un identificador en la funcion: " + ArreToken.get(pos - 2) + " " + ArreFilaColumnaToken.get(pos - 1);
+                    errores.add(error);
+                }
+                else {
+                    error = "Error [25], se esperaba una cadena o un identificador en la funcion: " + ArreToken.get(pos - 2) + " " + ArreFilaColumnaToken.get(pos - 1);
+                    errores.add(error);
+                }
+
             }
 
         } else {
@@ -1922,7 +1998,7 @@ public class Compilador extends javax.swing.JFrame {
             }
 
         } else {
-            error = "Error [23], se esperaba parentesis que cierra ')' en la funcion " + ArreFilaColumnaToken.get(pos - 1);
+            error = "Error [23], se esperaba parentesis que cierra ')' en la funcion: "+ArreToken.get(pos - 2) + ArreFilaColumnaToken.get(pos - 1);
             errores.add(error);
         }
         return false;
@@ -2088,7 +2164,7 @@ public class Compilador extends javax.swing.JFrame {
                                                     if (hayOtro()) {
                                                         boolean test;
                                                         do {
-                                                            System.out.println("Analiznado el codigo dentro de estructura while");
+                                                            System.out.println("Analizando el codigo dentro de estructura while");
                                                             test = operacionCorrecta();
                                                             if (errores.size() > 0) {
                                                                 System.out.println("Se encontro un error dentro del codigo en el while");

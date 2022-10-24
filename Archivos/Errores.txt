@@ -42,13 +42,13 @@ Error [40], se esperaba parentesis que abre '(' en el bloque PRINCIPAL
 Error [41], se esperaba parentesis que cierra ')' en el bloque PRINCIPAL
 Error [42], se esperaba llave que abre '{' en el bloque PRINCIPAL
 
-----> Errores funcion <----
+----> Errores funciones <----
 
-Error [22], se esperaba parentesis que abre '(' en la funcion 
-Error [23], se esperaba parentesis que cierra ')' en la funcion 
-Error [24], se esperaba punto y coma ';' en la funcion 
-Error [25], se esperaba un valor en la funcion 
-Error [26], se esperaba coma ',' en la funcion 
+Error [22], se esperaba parentesis que abre '(' en la funcion: " + ArreToken.get(pos - 2) + " "
+Error [23], se esperaba parentesis que cierra ')' en la funcion: " + ArreToken.get(pos - 2) + " "
+Error [24], se esperaba punto y coma ';' en la funcion: " + ArreToken.get(pos - 2) + " "
+Error [25], se esperaba una cadena o un identificador en la funcion: " + ArreToken.get(pos - 2) + " "
+Error [26], se esperaba coma ',' en la funcion: " + ArreToken.get(pos - 2) + " "
 
 
 ----> Errores if <----
@@ -71,10 +71,10 @@ Error [37], se esperaba llave que abre '{' en el while
 Error [38], se esperaba llave que cierra '}' en el while  
 
 
+----> Errores Funciones Nuevas <----
 
-
-
-
+Error [43], se esperaba coma ',' en la funcion: " + ArreToken.get(pos - 2)
+Error [44], se esperaba una número o un identificador en la funcion: " + ArreToken.get(pos - 2) + " "
 
 
 
@@ -119,3 +119,82 @@ do {
 } while (test);
 System.out.println("Saliendo de analizar el codigo dentro de la estructura de for");
 
+
+/* FUNCIONES */
+                case "OP_Cita":
+                    System.out.println("Funcion encontrada");
+                    pos++;
+                    if (hayOtro()) {
+                        if (funcionCorrecta()) {
+                            gramaticas.add("Funcion correcta \n");
+                            return true;
+                        }
+
+                    } else {
+                        errores.add("Error [22], se esperaba parentesis que abre '(' en la funcion " + ArreFilaColumnaToken.get(pos - 1));
+                    }
+                    break;
+
+                case "OP_Turno":
+                    System.out.println("Funcion encontrada");
+                    pos++;
+                    if (hayOtro()) {
+                        if (funcionCorrecta()) {
+                            gramaticas.add("Funcion correcta \n");
+                            return true;
+                        }
+
+                    } else {
+                        errores.add("Error [22], se esperaba parentesis que abre '(' en la funcion " + ArreFilaColumnaToken.get(pos - 1));
+                    }
+                    break;
+
+                case "OP_Iluminacion":
+                    System.out.println("Funcion encontrada");
+                    pos++;
+                    if (hayOtro()) {
+                        if (funcionCorrecta()) {
+                            gramaticas.add("Funcion correcta \n");
+                            return true;
+                        }
+
+                    } else {
+                        errores.add("Error [22], se esperaba parentesis que abre '(' en la funcion " + ArreFilaColumnaToken.get(pos - 1));
+                    }
+                    break;
+
+                case "OP_Temperatura":
+                    System.out.println("Funcion encontrada");
+                    pos++;
+                    if (hayOtro()) {
+                        if (funcionCorrecta()) {
+                            gramaticas.add("Funcion correcta \n");
+                            return true;
+                        }
+
+                    } else {
+                        errores.add("Error [22], se esperaba parentesis que abre '(' en la funcion " + ArreFilaColumnaToken.get(pos - 1));
+                    }
+                    break;
+
+                case "OP_Puerta":
+                    System.out.println("Funcion encontrada");
+
+                    pos++;
+                    if (hayOtro()) {
+                        if (funcionCorrecta()) {
+                            gramaticas.add("Funcion correcta \n");
+                            return true;
+                        }
+
+                    } else {
+                        errores.add("Error [22], se esperaba parentesis que abre '(' en la funcion " + ArreFilaColumnaToken.get(pos - 1));
+                    }
+                    break;
+
+
+
+for (ErrorLSSL error : errors) {
+//                String strError = String.valueOf(error);
+//                strErrors += strError + "\n";
+//            }
