@@ -40,6 +40,8 @@ public class Compilador extends javax.swing.JFrame {
     private Directory directorio;
     private ArrayList<Token> tokens;
     private ArrayList<String> ArreToken, ArreCompleto, ArreNomToken, ArreFilaColumnaToken;
+    private ArrayList<Variables> ArreVariables = new ArrayList<>();
+    ;
     private ArrayList<ErrorLSSL> errors;
     private ArrayList<String> errores, gramaticas;
     private ArrayList<TextColor> textsColor;
@@ -53,6 +55,10 @@ public class Compilador extends javax.swing.JFrame {
     VentanaErrores venErrores;
     OpcionesGrama opcGrama;
     private int esteXO;
+    private String nombre = "";
+    private String valor = "";
+    private String tipo = "";
+    private String fila_columna = "";
 
     //Colores
     public static final String ANSI_BLACK = "\u001B[30m";
@@ -158,10 +164,9 @@ public class Compilador extends javax.swing.JFrame {
         identificadores = new HashMap<>();
         esteXO = this.getX();
 
-        Functions.setAutocompleterJTextComponent(new String[]{"color", "numero", "este", "oeste", "norte", "sur", "pintar"}, txtCodigo, () -> {
+        Functions.setAutocompleterJTextComponent(new String[]{"INICIO $programa {\n    PRINCIPAL(){\n       //Bloque de codigo\n       \n       \n//Fin bloque de codigo\n        }//Fin PRINCIPAL\n }//Fin INICIO\nFINAL "}, txtCodigo, () -> {
             timerKeyReleased.restart();
         });
-
     }
 
     private void colorAnalysis() {
@@ -212,7 +217,7 @@ public class Compilador extends javax.swing.JFrame {
         //fillTablaTokens();
         //syntacticAnalysis();
         sintactico();
-        //semanticAnalysis();
+        semanticAnalysis();
         printConsole();
         codeHasBeenCompiled = true;
         //a_dOpciones();
@@ -427,7 +432,17 @@ public class Compilador extends javax.swing.JFrame {
     }
 
     private void semanticAnalysis() {
+        //EDITANDO
 
+        ArreVariables.forEach(var
+                -> {
+            System.out.println("");
+            System.out.println("Nombre: "+var.nombre());
+            System.out.println("Valor: "+var.valor());
+            System.out.println("Tipo: "+var.tipo());
+            System.out.println("Fila_Columna: "+var.fila_columna());
+        }
+        );
     }
 
     private void printConsole() {
@@ -1138,16 +1153,24 @@ public class Compilador extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Compilador.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Compilador.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Compilador.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Compilador.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Compilador.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Compilador.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Compilador.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Compilador.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
@@ -1156,8 +1179,10 @@ public class Compilador extends javax.swing.JFrame {
             try {
                 UIManager.setLookAndFeel(new FlatIntelliJLaf());
                 new Compilador().setVisible(true);
+
             } catch (UnsupportedLookAndFeelException ex) {
-                Logger.getLogger(Compilador.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Compilador.class
+                        .getName()).log(Level.SEVERE, null, ex);
             }
         });
     }
@@ -1262,6 +1287,13 @@ public class Compilador extends javax.swing.JFrame {
             if (hayOtro()) {
                 switch (ArreNomToken.get(pos)) {
                     case "Numero":
+                        valor = ArreToken.get(pos);
+                        System.out.println(ANSI_PURPLE + "Valor de la variable: " + ArreToken.get(pos) + ANSI_RESET);
+                        tipo = "Numero";
+                        System.out.println(ANSI_PURPLE + "Tipo de la variable: " + ArreNomToken.get(pos) + ANSI_RESET);
+                        fila_columna = ArreFilaColumnaToken.get(pos - 1);
+                        System.out.println(ANSI_PURPLE + "Fila_Columna de la variable: " + ArreFilaColumnaToken.get(pos - 1) + ANSI_RESET);
+                        ArreVariables.add(new Variables(nombre, valor, tipo, fila_columna));
                         pos++;
                         System.out.println("Numero encontrado");
                         gramaticas.add("Numero");
@@ -1282,6 +1314,16 @@ public class Compilador extends javax.swing.JFrame {
 
                         break;
                     case "Cadena":
+                        valor = ArreToken.get(pos);
+                        System.out.println(ANSI_PURPLE + "Valor de la variable: " + ArreToken.get(pos) + ANSI_RESET);
+
+                        tipo = "Cadena";
+                        System.out.println(ANSI_PURPLE + "Tipo de la variable: " + ArreNomToken.get(pos) + ANSI_RESET);
+
+                        fila_columna = ArreFilaColumnaToken.get(pos - 1);
+                        System.out.println(ANSI_PURPLE + "Fila_Columna de la variable: " + ArreFilaColumnaToken.get(pos - 1) + ANSI_RESET);
+
+                        ArreVariables.add(new Variables(nombre, valor, tipo, fila_columna));
                         pos++;
                         System.out.println("Cadena encontrada");
                         gramaticas.add("Cadena");
@@ -1301,40 +1343,40 @@ public class Compilador extends javax.swing.JFrame {
                         }
 
                         break;
-                    case "OP_Retorno":
-                        System.out.println("OP_Retorno encontrada");
-                        gramaticas.add("Op_Retorno");
-                        pos++;
-                        if (hayOtro()) {
-                            if (!op_RetornoCorrecto()) {
-                                System.out.println("OP_Retorno incorrecta");
-                            }//No está correcta
-                            else {
-                                if (hayOtro()) {
-                                    if (ArreNomToken.get(pos).equals("Punto_Coma")) {
-                                        pos++;
-                                        System.out.println("Punto y Coma encontrado");
-                                        gramaticas.add("Punto y coma");
-                                        return true;
-                                    } else {
-                                        error = "Error [4], se esperaba punto y coma ';' en el identificador " + ArreFilaColumnaToken.get(pos - 1);
-                                        errores.add(error);
-                                    }
-                                }//Hay otro
-                                else {
-                                    error = "Error [4], se esperaba punto y coma ';' en el identificador " + ArreFilaColumnaToken.get(pos - 1);
-                                    errores.add(error);
-                                }
-                                gramaticas.add("Op_Retorno Correcta \n");
-                            }//Si está correcta
-                        }//Hay otro
-                        else {
-                            errores.add("Error [5], se esperaba parentesis que abre '(' en la OP_Retorno " + ArreFilaColumnaToken.get(pos - 1));
-                        }
-
-                        break;
+//                    case "OP_Retorno":
+//                        System.out.println("OP_Retorno encontrada");
+//                        gramaticas.add("Op_Retorno");
+//                        pos++;
+//                        if (hayOtro()) {
+//                            if (!op_RetornoCorrecto()) {
+//                                System.out.println("OP_Retorno incorrecta");
+//                            }//No está correcta
+//                            else {
+//                                if (hayOtro()) {
+//                                    if (ArreNomToken.get(pos).equals("Punto_Coma")) {
+//                                        pos++;
+//                                        System.out.println("Punto y Coma encontrado");
+//                                        gramaticas.add("Punto y coma");
+//                                        return true;
+//                                    } else {
+//                                        error = "Error [4], se esperaba punto y coma ';' en el identificador " + ArreFilaColumnaToken.get(pos - 1);
+//                                        errores.add(error);
+//                                    }
+//                                }//Hay otro
+//                                else {
+//                                    error = "Error [4], se esperaba punto y coma ';' en el identificador " + ArreFilaColumnaToken.get(pos - 1);
+//                                    errores.add(error);
+//                                }
+//                                gramaticas.add("Op_Retorno Correcta \n");
+//                            }//Si está correcta
+//                        }//Hay otro
+//                        else {
+//                            errores.add("Error [5], se esperaba parentesis que abre '(' en la OP_Retorno " + ArreFilaColumnaToken.get(pos - 1));
+//                        }
+//
+//                        break;
                     default:
-                        error = "Error [3], se esperaba numero, cadena u op_retorno en el identificador " + ArreFilaColumnaToken.get(pos - 1);
+                        error = "Error [3], se esperaba numero, cadena en el identificador " + ArreFilaColumnaToken.get(pos - 1);
                         errores.add(error);
                 }
             } else {
@@ -1493,6 +1535,8 @@ public class Compilador extends javax.swing.JFrame {
                 case "Identificador":
                     System.out.println("Identificador encontrado");
                     gramaticas.add("Identificador");
+                    nombre = ArreToken.get(pos);
+                    System.out.println(ANSI_PURPLE + "Nombre de la variable: " + ArreToken.get(pos) + ANSI_RESET);
                     pos++;
                     if (hayOtro()) {
                         if (identificadorCorrecto()) {
@@ -1785,11 +1829,11 @@ public class Compilador extends javax.swing.JFrame {
             System.out.println("Parentecis que abre encontrado");
             gramaticas.add("Parentecis que abre");
             /* Verifica parametros */
-            //EDITANDO
+
             if (hayOtro()) {
                 if (ArreToken.get(pos - 2).equals("alarma_activar") || ArreToken.get(pos - 2).equals("alarma_desactivar")) {
                     System.out.println(ANSI_CYAN + "Evaluando: " + ArreToken.get(pos - 2) + ANSI_RESET);
-                    
+
                     if (finFuncion()) {
                         return true;
                     }
@@ -1822,7 +1866,7 @@ public class Compilador extends javax.swing.JFrame {
 
                     }//Hay otro
                     else {
-                        error = "Error [23], se esperaba parentesis que cierra ')' en la funcion: "+ArreToken.get(pos - 3) + " " + ArreFilaColumnaToken.get(pos - 1);
+                        error = "Error [23], se esperaba parentesis que cierra ')' en la funcion: " + ArreToken.get(pos - 3) + " " + ArreFilaColumnaToken.get(pos - 1);
                         errores.add(error);
                     }
                 }//If varias funciones
@@ -1864,7 +1908,7 @@ public class Compilador extends javax.swing.JFrame {
 
                                 }//Hay otro
                                 else {
-                                    error = "Error [23], se esperaba parentesis que cierra ')' en la funcion: "+ArreToken.get(pos - 3) + " " + ArreFilaColumnaToken.get(pos - 1);
+                                    error = "Error [23], se esperaba parentesis que cierra ')' en la funcion: " + ArreToken.get(pos - 3) + " " + ArreFilaColumnaToken.get(pos - 1);
                                     errores.add(error);
                                 }
                             }//Hay otro
@@ -1902,7 +1946,7 @@ public class Compilador extends javax.swing.JFrame {
                             return true;
                         }
                     } else {
-                        error = "Error [23], se esperaba parentesis que cierra ')' en la funcion: "+ArreToken.get(pos - 3) + " " + ArreFilaColumnaToken.get(pos - 1);
+                        error = "Error [23], se esperaba parentesis que cierra ')' en la funcion: " + ArreToken.get(pos - 3) + " " + ArreFilaColumnaToken.get(pos - 1);
                         errores.add(error);
                     }
                 }
@@ -1915,12 +1959,10 @@ public class Compilador extends javax.swing.JFrame {
                 if (ArreToken.get(pos - 2).equals("alarma_activar") || ArreToken.get(pos - 2).equals("alarma_desactivar")) {
                     error = "Error [23], se esperaba parentesis que cierra ')' en la funcion: " + ArreToken.get(pos - 2) + " " + ArreFilaColumnaToken.get(pos - 1);
                     errores.add(error);
-                }
-                else if (ArreToken.get(pos - 2).equals("panel_girar")) {
+                } else if (ArreToken.get(pos - 2).equals("panel_girar")) {
                     error = "Error [44], se esperaba una número o un identificador en la funcion: " + ArreToken.get(pos - 2) + " " + ArreFilaColumnaToken.get(pos - 1);
                     errores.add(error);
-                }
-                else {
+                } else {
                     error = "Error [25], se esperaba una cadena o un identificador en la funcion: " + ArreToken.get(pos - 2) + " " + ArreFilaColumnaToken.get(pos - 1);
                     errores.add(error);
                 }
@@ -1998,7 +2040,7 @@ public class Compilador extends javax.swing.JFrame {
             }
 
         } else {
-            error = "Error [23], se esperaba parentesis que cierra ')' en la funcion: "+ArreToken.get(pos - 2) + ArreFilaColumnaToken.get(pos - 1);
+            error = "Error [23], se esperaba parentesis que cierra ')' en la funcion: " + ArreToken.get(pos - 2) + ArreFilaColumnaToken.get(pos - 1);
             errores.add(error);
         }
         return false;
