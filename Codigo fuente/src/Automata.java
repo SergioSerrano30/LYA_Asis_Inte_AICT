@@ -50,6 +50,7 @@ public class Automata extends javax.swing.JFrame {
     public void P0(ArrayList<String> NombreToken, ArrayList<String> Tokens) {
         if (Tokens.get(conta).equals("INICIO")) {
             Cadena += Tokens.get(conta) + "  P0: AVANZA HACIA EL P1 \n";
+             System. out. println("P0 "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1));
             P1(NombreToken, Tokens);
         } else {
             Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE P0 HACIA P1";
@@ -61,6 +62,7 @@ public class Automata extends javax.swing.JFrame {
         if (conta <= NombreToken.size() - 1) {
             if (NombreToken.get(conta).equals("Identificador")) {
                 Cadena += Tokens.get(conta) + "  P1: AVANZA HACIA EL P2 \n";
+                 System. out. println("P1 "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1));
                 P2(NombreToken, Tokens);
             } else {
                 Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE P1 HACIA P2";
@@ -76,6 +78,7 @@ public class Automata extends javax.swing.JFrame {
             if (NombreToken.get(conta).equals("Llave_A")) {
                 Cadena += Tokens.get(conta) + "  P2: AVANZA HACIA EL P3 \n";
                 P3(NombreToken, Tokens);
+                 System. out. println("P2 "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1));
             } else {
                 Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE P2 HACIA P3";
             }
@@ -89,6 +92,7 @@ public class Automata extends javax.swing.JFrame {
         if (conta <= NombreToken.size() - 1) {
             if (Tokens.get(conta).equals("PRINCIPAL")) {
                 Cadena += Tokens.get(conta) + "  P3: AVANZA HACIA EL P4 \n";
+                 System. out. println("P3 "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1));
                 P4(NombreToken, Tokens);
             } else {
                 Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE P3 HACIA P4";
@@ -103,6 +107,7 @@ public class Automata extends javax.swing.JFrame {
         if (conta <= NombreToken.size() - 1) {
             if (NombreToken.get(conta).equals("Parentesis_A")) {
                 Cadena += Tokens.get(conta) + "  P4: AVANZA HACIA EL P5 \n";
+                 System. out. println("P4 "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1));
                 P5(NombreToken, Tokens);
             } else {
                 Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE P4 HACIA P5";
@@ -117,6 +122,7 @@ public class Automata extends javax.swing.JFrame {
         if (conta <= NombreToken.size() - 1) {
             if (NombreToken.get(conta).equals("Parentesis_C")) {
                 Cadena += Tokens.get(conta) + "  P5: AVANZA HACIA EL P6 \n";
+                 System. out. println("p5 "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1));
                 P6(NombreToken, Tokens);
             } else {
                 Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE P5 HACIA P6";
@@ -131,6 +137,7 @@ public class Automata extends javax.swing.JFrame {
         if (conta <= NombreToken.size() - 1) {
             if (NombreToken.get(conta).equals("Llave_A")) {
                 Cadena += Tokens.get(conta) + "  P6: AVANZA HACIA EL P7 \n";
+                 System. out. println("P6 "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1));
                 P7(NombreToken, Tokens);
             } else {
                 Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE P6 HACIA P7";
@@ -154,6 +161,7 @@ public class Automata extends javax.swing.JFrame {
              
                 if (Llave_A == -1) {
                    Cadena += Tokens.get(conta) + "  P7: AVANZA HACIA EL P8 \n";
+                    System. out. println("P7  "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1));
                    P8(NombreToken, Tokens);
                    break;
                 }
@@ -170,7 +178,8 @@ public class Automata extends javax.swing.JFrame {
         if (conta <= NombreToken.size() - 1) {
             if (NombreToken.get(conta).equals("Llave_C")) {
                 Cadena += Tokens.get(conta) + "  P8: AVANZA HACIA EL P9 \n";
-                 P9(NombreToken, Tokens);
+                 System. out. println("P8 "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1)); 
+                P9(NombreToken, Tokens);
             } else {
                 Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE P8 HACIA P9";
             }
@@ -185,17 +194,20 @@ public class Automata extends javax.swing.JFrame {
             if (Tokens.get(conta).equals("FINAL")&& (NombreToken.size() - 1)==conta) {
                 Cadena += Tokens.get(conta) + "  P9: AVANZA HACIA EL P10 \n  AUTOMATA CONCLUIDO";
                 //    P7(NombreToken, Tokens);
+               System. out. println("P8 1 "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1));
             }
             
             else if (Tokens.get(conta).equals("FINAL")&& (NombreToken.size() - 1)!=conta) {
                 Cadena += Tokens.get(conta) + "  P9: AVANZA HACIA EL P10 \n  AUTOMATA CONCLUIDO \n EL CODIGO QUE SE ESCUENTRA DESPUES DEL FINAL NO ES VALIDO "; 
                 //    P7(NombreToken, Tokens);
-            } 
+                  System. out. println("P8 2 "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1));
+            }
             else {
                 Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE P9 HACIA P10";
             }
         } else if (!Tokens.get(Tokens.size() - 1).equals("FINAL")) {
             Cadena += "YA NO HAY TOKENS POR ANALIZAR Y NO SE FINALIZO EL AUTOMATA";
+              System. out. println("Opcion 3 "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1));
         }
     }
        

@@ -1,14 +1,7 @@
-INICIO $prueba{
+INICIO $nombre {
 PRINCIPAL(){
-$t = "Prueba";
-$num = 60;
-    tv_encender($t);
-    //cortadora_desactivar("Prueba 2");
-   //aspersor_activar($t,60);
-    alarma_activar(
-   // panel_girar($num);
-/*
+
+if($e<=5){
 }
 }
-FINAL
-*/
+}
