@@ -49,11 +49,13 @@ public class Automata extends javax.swing.JFrame {
 
     public void P0(ArrayList<String> NombreToken, ArrayList<String> Tokens) {
         if (Tokens.get(conta).equals("INICIO")) {
-            Cadena += Tokens.get(conta) + "  P0: AVANZA HACIA EL P1 \n";
-             System. out. println("P0 "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1));
-            P1(NombreToken, Tokens);
+            Cadena += Tokens.get(conta) + "  Q0: AVANZA HACIA EL P1 \n";
+             P1(NombreToken, Tokens);
         } else {
-            Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE P0 HACIA P1";
+           Icon icon;
+           icon= new ImageIcon(getClass().getResource("/imagenes/automata p0.png"));
+           jLabel.setIcon(icon);
+            Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE Q0 HACIA Q1";
         }
     }
 
@@ -61,11 +63,13 @@ public class Automata extends javax.swing.JFrame {
         conta += 1;
         if (conta <= NombreToken.size() - 1) {
             if (NombreToken.get(conta).equals("Identificador")) {
-                Cadena += Tokens.get(conta) + "  P1: AVANZA HACIA EL P2 \n";
-                 System. out. println("P1 "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1));
+                Cadena += Tokens.get(conta) + "  Q1: AVANZA HACIA EL Q2 \n";
                 P2(NombreToken, Tokens);
             } else {
-                Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE P1 HACIA P2";
+                Icon icon;
+           icon= new ImageIcon(getClass().getResource("/imagenes/automata p1.png"));
+           jLabel.setIcon(icon);
+                Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE P1 HACIA Q2";
             }
         } else if (!Tokens.get(Tokens.size() - 1).equals("FINAL")) {
             Cadena += "YA NO HAY TOKENS POR ANALIZAR Y NO SE FINALIZO EL AUTOMATA";
@@ -76,11 +80,14 @@ public class Automata extends javax.swing.JFrame {
         conta += 1;
         if (conta <= NombreToken.size() - 1) {
             if (NombreToken.get(conta).equals("Llave_A")) {
-                Cadena += Tokens.get(conta) + "  P2: AVANZA HACIA EL P3 \n";
+                Cadena += Tokens.get(conta) + "  Q2: AVANZA HACIA EL Q3 \n";
                 P3(NombreToken, Tokens);
-                 System. out. println("P2 "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1));
+                 System. out. println("Q2 "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1));
             } else {
-                Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE P2 HACIA P3";
+                Icon icon;
+           icon= new ImageIcon(getClass().getResource("/imagenes/automata p2.png"));
+           jLabel.setIcon(icon);
+                Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE Q2 HACIA Q3";
             }
         } else if (!Tokens.get(Tokens.size() - 1).equals("FINAL")) {
             Cadena += "YA NO HAY TOKENS POR ANALIZAR Y NO SE FINALIZO EL AUTOMATA";
@@ -91,11 +98,14 @@ public class Automata extends javax.swing.JFrame {
         conta += 1;
         if (conta <= NombreToken.size() - 1) {
             if (Tokens.get(conta).equals("PRINCIPAL")) {
-                Cadena += Tokens.get(conta) + "  P3: AVANZA HACIA EL P4 \n";
-                 System. out. println("P3 "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1));
+                Cadena += Tokens.get(conta) + "  Q3: AVANZA HACIA EL Q4 \n";
+                 System. out. println("Q3 "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1));
                 P4(NombreToken, Tokens);
             } else {
-                Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE P3 HACIA P4";
+                Icon icon;
+           icon= new ImageIcon(getClass().getResource("/imagenes/automata p3.png"));
+           jLabel.setIcon(icon);
+                Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE Q3 HACIA Q4";
             }
         } else if (!Tokens.get(Tokens.size() - 1).equals("FINAL")) {
             Cadena += "YA NO HAY TOKENS POR ANALIZAR Y NO SE FINALIZO EL AUTOMATA";
@@ -106,11 +116,14 @@ public class Automata extends javax.swing.JFrame {
         conta += 1;
         if (conta <= NombreToken.size() - 1) {
             if (NombreToken.get(conta).equals("Parentesis_A")) {
-                Cadena += Tokens.get(conta) + "  P4: AVANZA HACIA EL P5 \n";
-                 System. out. println("P4 "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1));
+                Cadena += Tokens.get(conta) + "  Q4: AVANZA HACIA EL Q5 \n";
+                 System. out. println("Q4 "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1));
                 P5(NombreToken, Tokens);
             } else {
-                Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE P4 HACIA P5";
+                Icon icon;
+           icon= new ImageIcon(getClass().getResource("/imagenes/automata p4.png"));
+           jLabel.setIcon(icon);
+                Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE Q4 HACIA Q5";
             }
         } else if (!Tokens.get(Tokens.size() - 1).equals("FINAL")) {
             Cadena += "YA NO HAY TOKENS POR ANALIZAR Y NO SE FINALIZO EL AUTOMATA";
@@ -121,11 +134,14 @@ public class Automata extends javax.swing.JFrame {
         conta += 1;
         if (conta <= NombreToken.size() - 1) {
             if (NombreToken.get(conta).equals("Parentesis_C")) {
-                Cadena += Tokens.get(conta) + "  P5: AVANZA HACIA EL P6 \n";
-                 System. out. println("p5 "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1));
+                Cadena += Tokens.get(conta) + "  Q5: AVANZA HACIA EL Q6 \n";
+                 System. out. println("Q5 "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1));
                 P6(NombreToken, Tokens);
             } else {
-                Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE P5 HACIA P6";
+                Icon icon;
+           icon= new ImageIcon(getClass().getResource("/imagenes/automata p5.png"));
+           jLabel.setIcon(icon);
+                Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE Q5 HACIA Q6";
             }
         } else if (!Tokens.get(Tokens.size() - 1).equals("FINAL")) {
             Cadena += "YA NO HAY TOKENS POR ANALIZAR Y NO SE FINALIZO EL AUTOMATA";
@@ -136,11 +152,13 @@ public class Automata extends javax.swing.JFrame {
         conta += 1;
         if (conta <= NombreToken.size() - 1) {
             if (NombreToken.get(conta).equals("Llave_A")) {
-                Cadena += Tokens.get(conta) + "  P6: AVANZA HACIA EL P7 \n";
-                 System. out. println("P6 "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1));
+                Cadena += Tokens.get(conta) + "  Q6: AVANZA HACIA EL Q7 \n";               
                 P7(NombreToken, Tokens);
             } else {
-                Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE P6 HACIA P7";
+                Icon icon;
+           icon= new ImageIcon(getClass().getResource("/imagenes/automata p6.png"));
+           jLabel.setIcon(icon);
+                Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE Q6 HACIA Q7";
             }
         } else if (!Tokens.get(Tokens.size() - 1).equals("FINAL")) {
             Cadena += "YA NO HAY TOKENS POR ANALIZAR Y NO SE FINALIZO EL AUTOMATA";
@@ -160,13 +178,19 @@ public class Automata extends javax.swing.JFrame {
                 }
              
                 if (Llave_A == -1) {
-                   Cadena += Tokens.get(conta) + "  P7: AVANZA HACIA EL P8 \n";
+                   Cadena += Tokens.get(conta) + "  Q7: AVANZA HACIA EL Q8 \n";
                     System. out. println("P7  "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1));
                    P8(NombreToken, Tokens);
                    break;
+                }else{
+                Icon icon;
+                icon= new ImageIcon(getClass().getResource("/imagenes/automata p7.png"));
+                jLabel.setIcon(icon);
+                Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE Q6 HACIA Q7";
+            
                 }
                  conta++;
-
+                    
             }
         } else if (!Tokens.get(Tokens.size() - 1).equals("FINAL")) {
             Cadena += "YA NO HAY TOKENS POR ANALIZAR Y NO SE FINALIZO EL AUTOMATA";
@@ -177,11 +201,13 @@ public class Automata extends javax.swing.JFrame {
         conta += 1;
         if (conta <= NombreToken.size() - 1) {
             if (NombreToken.get(conta).equals("Llave_C")) {
-                Cadena += Tokens.get(conta) + "  P8: AVANZA HACIA EL P9 \n";
-                 System. out. println("P8 "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1)); 
-                P9(NombreToken, Tokens);
+                Cadena += Tokens.get(conta) + "  Q8: AVANZA HACIA EL Q9 \n";
+                    P9(NombreToken, Tokens);
             } else {
-                Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE P8 HACIA P9";
+                Icon icon;
+                icon= new ImageIcon(getClass().getResource("/imagenes/automata p8.png"));
+                jLabel.setIcon(icon);
+                Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE Q8 HACIA Q9";
             }
         } else if (!Tokens.get(Tokens.size() - 1).equals("FINAL")) {
             Cadena += "YA NO HAY TOKENS POR ANALIZAR Y NO SE FINALIZO EL AUTOMATA";
@@ -192,22 +218,32 @@ public class Automata extends javax.swing.JFrame {
         conta += 1;
         if (conta <= NombreToken.size() - 1) {
             if (Tokens.get(conta).equals("FINAL")&& (NombreToken.size() - 1)==conta) {
-                Cadena += Tokens.get(conta) + "  P9: AVANZA HACIA EL P10 \n  AUTOMATA CONCLUIDO";
+                Icon icon;
+                icon= new ImageIcon(getClass().getResource("/imagenes/automata.png"));
+                jLabel.setIcon(icon);
+                Cadena += Tokens.get(conta) + "  Q9: AVANZA HACIA EL Q10 \n  AUTOMATA CONCLUIDO";
                 //    P7(NombreToken, Tokens);
                System. out. println("P8 1 "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1));
             }
             
             else if (Tokens.get(conta).equals("FINAL")&& (NombreToken.size() - 1)!=conta) {
-                Cadena += Tokens.get(conta) + "  P9: AVANZA HACIA EL P10 \n  AUTOMATA CONCLUIDO \n EL CODIGO QUE SE ESCUENTRA DESPUES DEL FINAL NO ES VALIDO "; 
+                Cadena += Tokens.get(conta) + "  Q9: AVANZA HACIA EL Q10 \n  AUTOMATA CONCLUIDO \n EL CODIGO QUE SE ESCUENTRA DESPUES DEL FINAL NO ES VALIDO "; 
                 //    P7(NombreToken, Tokens);
-                  System. out. println("P8 2 "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1));
-            }
+               }
             else {
-                Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE P9 HACIA P10";
+                Icon icon;
+                icon= new ImageIcon(getClass().getResource("/imagenes/automata p9.png"));
+                jLabel.setIcon(icon);
+                Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE Q6 HACIA Q7";
+            
+                Cadena += "EL TOKEN [ " + Tokens.get(conta) + " ] ANALIZADO NO PERTENCE A LA TRANSICION DE Q9 HACIA Q10";
             }
         } else if (!Tokens.get(Tokens.size() - 1).equals("FINAL")) {
+                Icon icon;
+                icon= new ImageIcon(getClass().getResource("/imagenes/automata p9.png"));
+                jLabel.setIcon(icon);
             Cadena += "YA NO HAY TOKENS POR ANALIZAR Y NO SE FINALIZO EL AUTOMATA";
-              System. out. println("Opcion 3 "+"Contador: "+conta+" Condicion: "+(NombreToken.size() - 1));
+            
         }
     }
        
