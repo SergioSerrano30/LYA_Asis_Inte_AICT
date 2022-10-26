@@ -73,7 +73,6 @@ Error [38], se esperaba llave que cierra '}' en el while
 
 ----> Errores Funciones Nuevas <----
 
-Error [43], se esperaba coma ',' en la funcion: " + ArreToken.get(pos - 2)
 Error [44], se esperaba una número o un identificador en la funcion: " + ArreToken.get(pos - 2) + " "
 
 
@@ -198,3 +197,17 @@ for (ErrorLSSL error : errors) {
 //                String strError = String.valueOf(error);
 //                strErrors += strError + "\n";
 //            }
+
+nombre = ArreToken.get(pos);
+System.out.println(ANSI_PURPLE +"Nombre de la variable: "+ArreToken.get(pos) + ANSI_RESET);
+
+valor = ArreToken.get(pos);
+System.out.println(ANSI_PURPLE +"Valor de la variable: "+ArreToken.get(pos) + ANSI_RESET);
+
+tipo = "Numero";
+System.out.println(ANSI_PURPLE +"Tipo de la variable: "+ArreNomToken.get(pos) + ANSI_RESET);
+
+fila_columna = ArreFilaColumnaToken.get(pos - 1);
+System.out.println(ANSI_PURPLE+"Fila_Columna de la variable: "+ArreFilaColumnaToken.get(pos - 1)+ANSI_RESET);
+
+ArreVariables.add(new Variables(nombre,valor,tipo,fila_columna));

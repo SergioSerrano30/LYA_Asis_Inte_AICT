@@ -1,0 +1,25 @@
+-----> Variables <-----
+
+Error semantico [1]: La variable ya se encuentra declarada
+Error semantico [2]: No se puede cambiar el tipo de dato de la variable porque ya se encuentra definido
+
+
+
+
+
+
+
+
+fncCoVNombre = ArreToken.get(pos-2);
+System.out.println(ANSI_PURPLE + "Nombre de la funcion: " + fncCoVNombre + ANSI_RESET);
+                    
+fncCoVValor = ArreToken.get(pos);
+System.out.println(ANSI_PURPLE + "Valor: " + fncCoVValor + ANSI_RESET);
+
+fncCoVTipo = "Identificador";
+System.out.println(ANSI_PURPLE + "Tipo: " + fncCoVTipo + ANSI_RESET);
+
+fncCoVFila_Columna = ArreFilaColumnaToken.get(pos-1);
+System.out.println(ANSI_PURPLE + "Fila_Columna: " + fncCoVFila_Columna + ANSI_RESET);
+
+ArreFunciones_CadenaoVariable.add(new Funciones_CadenaoVariable(fncCoVNombre, fncCoVValor, fncCoVTipo, fncCoVFila_Columna));

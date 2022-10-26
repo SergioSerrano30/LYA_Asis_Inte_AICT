@@ -1,11 +1,30 @@
 INICIO $programa {
     PRINCIPAL(){
-       //Bloque de codigo
-$prueba_variable = 2;
-$hola = "x";
-aspersor_desactivar($hola);
-//Fin bloque de codigo
+//Bloque de codigo
+        //$pSala = "cerrado";
+        //$pSala = 1;
+        //$pCom = 8;
+        //$p = "";
+        //$pComedor = "cerrado";
+        //puerta_cerrar($pComedor);
+        //puerta_abrir($pSala);
+        //$p=2;
+        
+        //$aspSalida = "desactivado";
+        $caja = "desactivado";
+        $aspEntrada = "desactivado";
+        $x = "";
+    
+        aspersor_activar($aspEntrada,$x);
 
-        }//Fin PRINCIPAL
- }//Fin INICIO
+        cajafuerte_activar($caja,60);
+    
+        aspersor_activar($aspSalida,10);
+
+    
+
+//Fin bloque de codigo
+    }//Fin PRINCIPAL
+}//Fin INICIO
 FINAL
+//NO AGREGAR CODIGO DESPUES DE LA PALABRA FINAL

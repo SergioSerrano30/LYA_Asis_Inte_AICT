@@ -41,7 +41,10 @@ public class Compilador extends javax.swing.JFrame {
     private ArrayList<Token> tokens;
     private ArrayList<String> ArreToken, ArreCompleto, ArreNomToken, ArreFilaColumnaToken;
     private ArrayList<Variables> ArreVariables = new ArrayList<>();
-    ;
+    private ArrayList<Funciones_CadenaoVariable> ArreFunciones_CadenaoVariable = new ArrayList<>();
+    private ArrayList<Funciones_CoV_NoV> ArreFunciones_CoV_NoV = new ArrayList<>();
+    private ArrayList<Integer> ArreFilaFnc = new ArrayList<>();
+    private ArrayList<Integer> ArreFilaVar = new ArrayList<>();
     private ArrayList<ErrorLSSL> errors;
     private ArrayList<String> errores, gramaticas;
     private ArrayList<TextColor> textsColor;
@@ -55,10 +58,11 @@ public class Compilador extends javax.swing.JFrame {
     VentanaErrores venErrores;
     OpcionesGrama opcGrama;
     private int esteXO;
-    private String nombre = "";
-    private String valor = "";
-    private String tipo = "";
-    private String fila_columna = "";
+    private String varNombre, fncCoVNombre, fncCoV_NoVNombre = "";
+    private String varValor, fncCoVValor, fncCoV_NoVValor_CoV, fncCoV_NoVValor_NoV = "";
+    private String varTipo, fncCoVTipo, fncCoV_NoVTipo_CoV, fncCoV_NoVTipo_NoV = "";
+    private String varFila_columna, fncCoVFila_Columna, fncCoV_NoVFila_columna = "";
+    private String fncCoVStatus, fncCoV_NoVStatus = "";
 
     //Colores
     public static final String ANSI_BLACK = "\u001B[30m";
@@ -72,7 +76,8 @@ public class Compilador extends javax.swing.JFrame {
     public static final String ANSI_RESET = "\u001B[0m";
 
     public int numeroError = 0;
-    public String[] soluciones = {
+    public String[] errores_sintacticos = {};
+    public String[] soluciones_sintactico = {
         /* 1 */"Solución: \n" + "Se espera escritura de código. \n" + "\n" + "Resultado esperado: \n" + "Agregue la estructura inicial para comenzar con el programa \n" + "Estructura inicial: \n" + "INICIO $ejemplo { \n" + "  PRINCIPAL(){ \n" + "     //Código \n" + "  } \n" + "} ",
         /* 2 */ "Solución: \n" + "Agregue un operador de asignación ‘=’ después del identificador \n" + "\n" + "Resultado esperado: \n" + "Identificador OP_Asignacion Valor Punto_Coma \n" + "Identificador = (Numero | Cadena | OP_Retorno); \n" + "$ejemplo = 12;",
         /* 3 */ "Solución: \n" + "Escriba un numero o cadena o OP_Retorno despues del signo ‘=’ \n" + "\n" + "Resultado esperado:  \n" + "Identificador OP_Asignacion Valor Punto_Coma \n" + "Identificador = (Numero | Cadena | OP_Retorno); \n" + "$ejemplo = 12;",
@@ -115,6 +120,15 @@ public class Compilador extends javax.swing.JFrame {
         /* 40 */ "Solución: \n" + "Escriba el paréntesis ‘(’ que abre el bloque PRINCIPAL \n" + "\n" + "Resultado esperado:  \n" + "INICIO Identificador Llave_A PRINCIPAL Parentesis_A Parentesis_C Llave_A CODIGO Llave_C Llave_C FINAL \n" + "INICIO Identificador { PRINCIPAL() { CODIGO }}Final \n" + "\nEjemplo \n" + "INICIO $ejemplo { \n" + "   PRINCIPAL(){ \n" + "      CODIGO \n" + "   } \n" + "}  \n" + "FINAL ",
         /* 41 */ "Solución: \n" + "Escriba el paréntesis ‘)’ que cierra el bloque PRINCIPAL \n" + "\n" + "Resultado esperado:  \n" + "INICIO Identificador Llave_A PRINCIPAL Parentesis_A Parentesis_C Llave_A CODIGO Llave_C Llave_C FINAL \n" + "INICIO Identificador { PRINCIPAL() { CODIGO }}Final \n" + "\nEjemplo \n" + "INICIO $ejemplo { \n" + "   PRINCIPAL(){ \n" + "      CODIGO \n" + "   } \n" + "}  \n" + "FINAL ",
         /* 42 */ "Solución: \n" + "Escriba la llave ‘{‘ que abre el bloque de escritura de código \n" + "\n" + "Resultado esperado:  \n" + "INICIO Identificador Llave_A PRINCIPAL Parentesis_A Parentesis_C Llave_A CODIGO Llave_C Llave_C FINAL \n" + "INICIO Identificador { PRINCIPAL() { CODIGO }}Final \n" + "\nEjemplo \n" + "INICIO $ejemplo { \n" + "   PRINCIPAL(){ \n" + "      CODIGO \n" + "   } \n" + "}  \n" + "FINAL ",};
+
+    public String errores_semanticos[] = {
+        /* 0 */"",
+        /* 1 */ "Error semantico [1]: La variable ya se encuentra declarada en: ",
+        /* 2 */ "Error semantico [2]: No se puede cambiar el tipo de dato de la variable \nporque ya se encuentra definido",
+        /* 3 */ "Error semantico [3]: La variable no se encuentra declarada para asignar en la función",
+        /* 4 */ "Error semantico [4]: La variable asignada en la función es de tipo 'numero', se esperaba una 'cadena'"
+    };
+    public String soluciones_semantico[] = {};
 
     public Compilador() {
         initComponents();
@@ -164,7 +178,18 @@ public class Compilador extends javax.swing.JFrame {
         identificadores = new HashMap<>();
         esteXO = this.getX();
 
-        Functions.setAutocompleterJTextComponent(new String[]{"INICIO $programa {\n    PRINCIPAL(){\n       //Bloque de codigo\n       \n       \n//Fin bloque de codigo\n        }//Fin PRINCIPAL\n }//Fin INICIO\nFINAL "}, txtCodigo, () -> {
+        Functions.setAutocompleterJTextComponent(new String[]{"INICIO $programa {\n    PRINCIPAL(){\n//Bloque de codigo\n       \n       \n       \n//Fin bloque de codigo\n    }//Fin PRINCIPAL\n}//Fin INICIO\nFINAL\n//NO AGREGAR CODIGO DESPUES DE LA PALABRA FINAL",
+            "cortadora_activar", "cortadora_desactivar",
+            "aspersor_activar", "aspersor_desactivar",
+            "ventilador_activar", "ventilador_desactivar",
+            "iluminacion_encender", "iluminacion_apagar",
+            "puerta_abrir", "puerta_cerrar",
+            "banda_activar", "banda_desactivar",
+            "tv_encender", "tv_apagar",
+            "alarma_activar", "alarma_desactivar",
+            "cajafuerte_activar", "cajafuerte_desactivar",
+            "panel_girar"
+        }, txtCodigo, () -> {
             timerKeyReleased.restart();
         });
     }
@@ -206,6 +231,9 @@ public class Compilador extends javax.swing.JFrame {
         ArreNomToken.clear();
         ProCorrectas.clear();
         ArreCompleto.clear();
+        ArreVariables.clear();
+        ArreFunciones_CadenaoVariable.clear();
+        ArreFunciones_CoV_NoV.clear();
         identProd.clear();
         identificadores.clear();
         codeHasBeenCompiled = false;
@@ -261,188 +289,76 @@ public class Compilador extends javax.swing.JFrame {
 
     }
 
-    private void syntacticAnalysis() {
-        Grammar gramatica = new Grammar(tokens, errors);
-        gramatica.delete(new String[]{"Error", "Error_1", "Error_2"}, 1, "Error Lexico: No se reconoce el token [] [#, %]");
+    private void semanticAnalysis() {
 
-        /* Operaciones de retorno */
-        gramatica.group("OP_RETORNO", "OP_Retorno Parentesis_A Parentesis_C", true, ProCorrectas);
-
-        gramatica.group("OP_RETORNO", "OP_Retorno Parentesis_C", true,
-                5, "Error sintáctico {}: Falta parantesis que abre \"(\" en la función [#,%]", CadErrores);
-        gramatica.group("OP_RETORNO", "OP_Retorno Parentesis_A", true,
-                6, "Error sintáctico {}: Falta parantesis que cierra \")\" en la función [#,%]", CadErrores);
-        gramatica.group("OP_RETORNO", "OP_Retorno", true,
-                7, "Error sintáctico {}: Falta parantesis que abre \"(\" y cierra \")\" en la función [#,%]", CadErrores);
-
-        /* Variables */
-        gramatica.group("VALOR", "(Cadena | Numero | OP_RETORNO)", ProCorrectas);
-        gramatica.group("VARIABLE", "Identificador Op_Asignacion VALOR", true, ProCorrectas);
-        gramatica.group("VARIABLE", "Op_Asignacion VALOR", true,
-                1, "Error sintáctico {}: Falta el identificador en la declaración de variable [#,%]", CadErrores);
-        gramatica.group("VARIABLE", "Identificador VALOR", true,
-                2, "Error sintáctico {}: Falta el operador de asignación (\"=\") en la declaración de variable [#,%]", CadErrores);
-        gramatica.group("VARIABLE", "Identificador Op_Asignacion", true,
-                3, "Error sintáctico {}: Falta el valor en la declaración de variable [#,%]", CadErrores);
-        gramatica.group("VARIABLE_PC", "VARIABLE Punto_Coma", true, ProCorrectas);
-        gramatica.group("VARIABLE_PC", "VARIABLE", true,
-                4, "Error sintáctico {}: Falta el ; al final de la declaración de variable [#,%]", CadErrores);
-
-        // Eliminación de operadores de asignación
-        gramatica.delete("Op_Asignacion",
-                40, "Error sintactica {}: El operador de asignación [] no está en una declaración [#,%]");
-
-        /* Funciones */
-        gramatica.group("PARAMETROS", "(VALOR | Identificador) (Coma (VALOR | Identificador))+", ProCorrectas);
-        gramatica.group("FUNCION", "(OP_Cita | OP_Turno | OP_Iluminacion | OP_Temperatura | OP_Puerta)", true, ProCorrectas);
-        gramatica.group("FUNCION_COMPLETA", "FUNCION Parentesis_A (PARAMETROS | (VALOR | Identificador))? Parentesis_C", ProCorrectas);
-        gramatica.group("FUNCION_COMPLETA", "FUNCION (PARAMETROS | (VALOR | Identificador))? Parentesis_C",
-                8, "Error sintáctico {}: Falta parantesis que abre \"(\" en la función [#,%]", CadErrores);
-        gramatica.group("FUNCION_COMPLETA", "FUNCION Parentesis_A (PARAMETROS | (VALOR | Identificador))?",
-                9, "Error sintáctico {}: Falta parantesis que cierra \")\" en la función[#,%]", CadErrores);
-        gramatica.group("FUNCION_COMPLETA", "FUNCION (PARAMETROS | (VALOR | Identificador))?",
-                10, "Error sintáctico {}: Falta parantesis que abre \"(\" y cierra \")\" en la función [#,%]", CadErrores);
-        gramatica.group("FUNCION_COMPLETA_PC", "FUNCION_COMPLETA Punto_Coma", true, ProCorrectas);
-        gramatica.group("FUNCION_COMPLETA_PC", "FUNCION_COMPLETA", true,
-                11, "Error sintáctico {}: Falta ; al final de la función [#,%]", CadErrores);
-
-        // Eliminación del punto y coma
-        gramatica.delete("Punto_Coma",
-                35, "Error sintactico {}: El [] no está al final de una sentencia [#,%]");
-        // Eliminación de opretorno y función
-        gramatica.delete(new String[]{"OP_RETORNO", "FUNCION"},
-                39, "Error sintactico {}: La función [] está mal declarada [#,%]");
-
-        /* Ciclo FOR */
-        gramatica.group("CICLO_FOR", "For Parentesis_A (VALOR | Identificador) Parentesis_C", true, ProCorrectas);
-        gramatica.group("CICLO_FOR", "For (VALOR | Identificador) Parentesis_C", true,
-                19, "Error sintáctico {}: Falta el parantesis que abre \"(\" en el ciclo FOR [#,%]", CadErrores);
-        gramatica.group("CICLO_FOR", "For Parentesis_A Parentesis_C", true,
-                20, "Error sintáctico {}: Falta el VALOR en el ciclo FOR [#,%]", CadErrores);
-        gramatica.group("CICLO_FOR", "For Parentesis_A (VALOR | Identificador)", true,
-                21, "Error sintáctico {}: Falta el parantesis que cierra \")\" en el ciclo FOR [#,%]", CadErrores);
-        gramatica.group("CICLO_FOR", "For Parentesis_A ", true,
-                22, "Error sintáctico {}: Falta el VALOR y el parantesis que cierra \")\" en el ciclo FOR [#,%]", CadErrores);
-        gramatica.group("CICLO_FOR", "For Parentesis_C", true,
-                23, "Error sintáctico {}: Falta el parantesis que abre \"(\" y el VALOR en el ciclo FOR [#,%]", CadErrores);
-        gramatica.group("CICLO_FOR", "For (VALOR | Identificador)", true,
-                24, "Error sintáctico {}: Falta el parantesis que abre \"(\" y el parentesis que cierra \")\" en el ciclo FOR [#,%]", CadErrores);
-        gramatica.group("CICLO_FOR", "For", true,
-                25, "Error sintáctico {}: Falta el parantesis que abre \"(\", el VALOR y el parantesis que cierra \")\" en el ciclo FOR [#,%]", CadErrores);
-
-        /* Expresiones lógicas */
-        gramatica.group("EXP_LOGICA", "(VALOR | Identificador) Op_Relacional (VALOR | Identificador)", ProCorrectas);
-        gramatica.group("EXP_LOGICA", "(VALOR | Identificador) Op_Relacional",
-                33, "Error sintáctico {}: Falta el segundo operador en la expresión lógica", CadErrores);
-        gramatica.group("EXP_LOGICA", "Op_Relacional (VALOR | Identificador)",
-                33, "Error sintáctico {}: Falta el primer operador en la expresión lógica", CadErrores);
-
-        /* Condicionales */
-        gramatica.group("IF", "If Parentesis_A (EXP_LOGICA | Identificador) Parentesis_C", true, ProCorrectas);
-        gramatica.group("IF", "If (EXP_LOGICA | Identificador) Parentesis_C", true,
-                12, "Error sintáctico {}: Falta parantesis que abre \"(\" en la condición [#,%]", CadErrores);
-        gramatica.group("IF", "If Parentesis_A Parentesis_C", true,
-                13, "Error sintáctico {}: Falta la expresión lógica en la condición [#,%]", CadErrores);
-        gramatica.group("IF", "If Parentesis_A (EXP_LOGICA | Identificador)", true,
-                14, "Error sintáctico {}: Falta parantesis que cierra \")\" en la condición [#,%]", CadErrores);
-        gramatica.group("IF", "If Parentesis_A ", true,
-                15, "Error sintáctico {}: Falta la expresión lógica y el parantesis que cierra \")\" en la condición [#,%]", CadErrores);
-        gramatica.group("IF", "If (EXP_LOGICA | Identificador) ", true,
-                16, "Error sintáctico {}: Falta parantesis que abre \"(\" y parentesis que cierra \")\" en la condición [#,%] [#,%]", CadErrores);
-        gramatica.group("IF", "If Parentesis_C", true,
-                17, "Error sintáctico {}: Falta el parantesis que abre \"(\" y la expresión lógica en la condición [#,%]", CadErrores);
-        gramatica.group("IF", "If", true,
-                18, "Error sintáctico {}: Falta el parantesis que abre \"(\", la expresión lógica y parentesis que cierra \")\" en la condición [#,%]", CadErrores);
-
-        /* Cliclo WHILE */
-        gramatica.group("CICLO_WHILE", "While Parentesis_A (EXP_LOGICA | Identificador) Parentesis_C", true, ProCorrectas);
-        gramatica.group("CICLO_WHILE", "While (EXP_LOGICA | Identificador) Parentesis_C", true,
-                26, "Error sintáctico {}: Falta parantesis que abre \"(\" en el ciclo WHILE [#,%]", CadErrores);
-        gramatica.group("CICLO_WHILE", "While Parentesis_A Parentesis_C", true,
-                27, "Error sintáctico {}: Falta la expresión lógica en el ciclo WHILE [#,%]", CadErrores);
-        gramatica.group("CICLO_WHILE", "While Parentesis_A (EXP_LOGICA | Identificador)", true,
-                28, "Error sintáctico {}: Falta parantesis que cierra \")\" en el ciclo WHILE [#,%]", CadErrores);
-        gramatica.group("CICLO_WHILE", "While Parentesis_A ", true,
-                29, "Error sintáctico {}: Falta la expresión lógica y el parantesis que cierra \")\" en el ciclo WHILE [#,%]", CadErrores);
-        gramatica.group("CICLO_WHILE", "While (EXP_LOGICA | Identificador) ", true,
-                30, "Error sintáctico {}: Falta parantesis que abre \"(\" y parentesis que cierra \")\" en el ciclo WHILE [#,%] [#,%]", CadErrores);
-        gramatica.group("CICLO_WHILE", "While Parentesis_C", true,
-                31, "Error sintáctico {}: Falta el parantesis que abre \"(\" y la expresión lógica en el ciclo WHILE [#,%]", CadErrores);
-        gramatica.group("CICLO_WHILE", "While", true,
-                32, "Error sintáctico {}: Falta el parantesis que abre \"(\", la expresión lógica y parentesis que cierra \")\" en el ciclo WHILE [#,%]", CadErrores);
-
-        // Eliminación de expresiones lógicas
-        gramatica.delete("EXP_LOGICA",
-                33, "Error sintactico {}: La expresión lógica [] no está contenida dentro de una estructura de control [#,%]");
-
-        /* Agrupación de sentencias */
-        gramatica.group("SENTENCIAS", "(FUNCION_COMPLETA_PC | VARIABLE_PC)+");
-        gramatica.group("EST_CONTROL_COMPLETA", "(CICLO_FOR | IF | CICLO_WHILE)");
-        gramatica.loopForFunExecUntilChangeNotDetected(() -> {
-            gramatica.group("EST_CONTROL_COMPLETA_LALC", "EST_CONTROL_COMPLETA Llave_A (SENTENCIAS)? Llave_C", true);
-            gramatica.group("SENTENCIAS", "(EST_CONTROL_COMPLETA_LALC | SENTENCIAS)+");
-        });
-
-        // Eliminación de estructuras de control completas
-        gramatica.delete("EST_CONTROL_COMPLETA",
-                37, "Error sintactico {}: La estructura de control no está declarada correctamente [#,%]");
-
-        /* Agrupación de bloque principal y de inicio */
-        gramatica.group("BLOQUE_INICIO", "INICIO Identificador");
-        gramatica.group("BLOQUE_INICIO", "INICIO",
-                40, "Error sintactico {}: Falta el identificador después del bloque de inicio [#, %]", CadErrores);
-        gramatica.group("BLOQUE_PRINCIPAL", "PRINCIPAL Parentesis_A Parentesis_C");
-        gramatica.group("BLOQUE_PRINCIPAL", "PRINCIPAL Parentesis_C",
-                41, "Error sintactico {}: Falta el paréntesis que abre después del bloque principal [#, %]", CadErrores);
-        gramatica.group("BLOQUE_PRINCIPAL", "PRINCIPAL Parentesis_A",
-                42, "Error sintactico {}: Falta el paréntesis que cierra después del bloque principal [#, %]", CadErrores);
-        gramatica.group("BLOQUE_PRINCIPAL", "PRINCIPAL",
-                43, "Error sintactico {}: Falta el paréntesis que abre y que cierra después del bloque principal [#, %]", CadErrores);
-        gramatica.group("BLOQUE_PRINCIPAL_COMPLET", "BLOQUE_PRINCIPAL Llave_A (SENTENCIAS)* Llave_C");
-        gramatica.group("BLOQUE_PRINCIPAL_COMPLET", "BLOQUE_PRINCIPAL (SENTENCIAS)* Llave_C",
-                44, "Error sintactico {}: Falta la llave que abre después del bloque principal [#, %]", CadErrores);
-        gramatica.finalLineColumn();
-        gramatica.group("BLOQUE_PRINCIPAL_COMPLET", "BLOQUE_PRINCIPAL Llave_A (SENTENCIAS)*",
-                45, "Error sintactico {}: Falta la llave que cierra después del bloque principal [#, %]", CadErrores);
-        gramatica.initialLineColumn();
-        gramatica.group("BLOQUE_PRINCIPAL_COMPLET", "BLOQUE_PRINCIPAL (SENTENCIAS)*",
-                46, "Error sintactico {}: Falta la llave que abre y que cierra después del bloque principal [#, %]", CadErrores);
-        gramatica.group("BLOQUE_INICIO_COMPLET", "BLOQUE_INICIO Llave_A BLOQUE_PRINCIPAL_COMPLET Llave_C");
-        gramatica.group("BLOQUE_INICIO_COMPLET", "BLOQUE_INICIO BLOQUE_PRINCIPAL_COMPLET Llave_C",
-                47, "Error sintactico {}: Falta la llave que abre después del bloque de inicio [#, %]", CadErrores);
-        gramatica.finalLineColumn();
-        gramatica.group("BLOQUE_INICIO_COMPLET", "BLOQUE_INICIO Llave_A BLOQUE_PRINCIPAL_COMPLET",
-                48, "Error sintactico {}: Falta la llave que cierra después del bloque de inicio [#, %]", CadErrores);
-        gramatica.initialLineColumn();
-        gramatica.group("BLOQUE_INICIO_COMPLET", "BLOQUE_INICIO BLOQUE_PRINCIPAL_COMPLET",
-                49, "Error sintactico {}: Falta la llave que abre y que cierra después del bloque de inicio [#, %]", CadErrores);
-        gramatica.group("BLOQUE_INICIO_COMPLET_FIN", "BLOQUE_INICIO_COMPLET FINAL");
-        gramatica.finalLineColumn();
-        gramatica.group("BLOQUE_INICIO_COMPLET_FIN", "BLOQUE_INICIO_COMPLET",
-                50, "Error sintáctico {}: Falta el bloque de fin al final del bloque de inicio [#, %]", CadErrores);
-
-        /* Eliminación de expresiones innecesarias */
-        gramatica.delete(new String[]{"Llave_A", "Llave_C"},
-                34, "Error sintactico {}: La llave [] no está en el contenido de una agrupación [#, %]");
-        gramatica.delete(new String[]{"Parentesis_A", "Parentesis_C"},
-                36, "Error sintactico {}: El parentesis [] no está contenido en una agrupación [#,%]");
-
-        gramatica.show();
+//        errores.clear();
+//        System.out.println("NUMERO DE FUNCIONES DEFINIDAS: " + ArreFunciones_CadenaoVariable.size());
+//        ArreFunciones_CadenaoVariable.forEach(var
+//                -> {
+//            System.out.println("");
+//            System.out.println("Nombre: " + var.nombre());
+//            System.out.println("Valor: " + var.valor());
+//            System.out.println("Tipo: " + var.tipo());
+//            System.out.println("Fila_Columna: " + var.fila_columna());
+//            System.out.println("Status: " + var.status());
+//        }
+//        );
+//        if (!sema_variables_repetidas()){
+//            System.out.println("Sin variables repetidas");
+//        }
+//        ArreFunciones_CadenaoVariable.forEach(fnc ->{
+//            System.out.println("Fila de "+fnc.nombre()+ " desde propiedad -> "+fnc.fila());
+//        });
+//        ArreVariables.forEach(variables ->{
+//            System.out.println("Fila de "+variables.nombre()+ " desde propiedad -> "+variables.fila());
+//        });
+//        ArreFilaFnc.forEach(ffnc -> {
+//            System.out.println("Fila de la funcion: " + ffnc);
+//        });
+//        ArreFilaVar.forEach(fv -> {
+//            System.out.println("Fila de la variable: " + fv);
+//        });
+        //SERGIO_EDITANDO 
+        sema_asignaFilas();
+//        if (ArreVariables.size() > 0) {
+//            if (sema_variables_tipoDato()) {
+//                System.out.println("Sin cambios de tipos de variables");
+//            }
+//        }
+//        if (ArreFunciones_CadenaoVariable.size() > 0) {
+//            if (!sema_fncCoV_varNoDeclarada()) { //true -> hubo variables no declaradas. false -> todas las variables están declaradas
+//                System.out.println("Todas las variables estan bien definidas para las funciones");
+//                if (!sema_fncCoV_tipoIncorrecto()) {
+//                    System.out.println("Todas las variables o datos recibidos en las funciones son correctos");
+//                }
+//            }
+//        }
+        System.out.println("Tamaño NoV: " + ArreFunciones_CoV_NoV.size());
+        if (ArreFunciones_CoV_NoV.size() > 0) {
+            if (!sema_fncCoV_NoV_varNoDeclaradas()) {
+                System.out.println("Todas las variables estan bien definidas para las funciones CoV_NoV");
+            }
+        }
 
     }
 
-    private void semanticAnalysis() {
+    private boolean sema_variables_repetidas() {
         //EDITANDO
 
-        ArreVariables.forEach(var
-                -> {
-            System.out.println("");
-            System.out.println("Nombre: "+var.nombre());
-            System.out.println("Valor: "+var.valor());
-            System.out.println("Tipo: "+var.tipo());
-            System.out.println("Fila_Columna: "+var.fila_columna());
+        for (int i = 0; i < ArreVariables.size(); i++) {
+            for (int k = i + 1; k < ArreVariables.size(); k++) {
+//                System.out.println("");
+//                System.out.println("Nom i -> " + ArreVariables.get(i).nombre() + " Fila_Columna -> " + ArreVariables.get(i).fila_columna());
+//                System.out.println("Nom k -> " + ArreVariables.get(k).nombre() + " Fila_Columna -> " + ArreVariables.get(k).fila_columna());
+                if (ArreVariables.get(i).nombre().equals(ArreVariables.get(k).nombre())) {
+                    System.out.println(ANSI_RED + errores_semanticos[1] + ArreVariables.get(i).fila_columna() + "\nVariable -> " + ArreVariables.get(k).nombre() + ArreVariables.get(k).fila_columna() + ANSI_RESET);
+                    errores.add(errores_semanticos[1] + " " + ArreVariables.get(i).fila_columna() + "\nVariable -> " + ArreVariables.get(k).nombre() + " " + ArreVariables.get(k).fila_columna());
+
+                    return true; //Si hay variables repetidas
+                }
+            }
         }
-        );
+        return false; //No hay variables repetidas
     }
 
     private void printConsole() {
@@ -976,7 +892,7 @@ public class Compilador extends javax.swing.JFrame {
             numeroError = Integer.parseInt(parts2[0]);
             venErrores = new VentanaErrores();
             venErrores.setVisible(true);
-            venErrores.txtError.setText(errores.get(0) + "\n\n" + soluciones[numeroError - 1]);
+            venErrores.txtError.setText(errores.get(0) + "\n\n" + soluciones_sintactico[numeroError - 1]);
         }
         /*
         int position = txtConsola.getCaretPosition();
@@ -1287,13 +1203,13 @@ public class Compilador extends javax.swing.JFrame {
             if (hayOtro()) {
                 switch (ArreNomToken.get(pos)) {
                     case "Numero":
-                        valor = ArreToken.get(pos);
+                        varValor = ArreToken.get(pos);
                         System.out.println(ANSI_PURPLE + "Valor de la variable: " + ArreToken.get(pos) + ANSI_RESET);
-                        tipo = "Numero";
+                        varTipo = "Numero";
                         System.out.println(ANSI_PURPLE + "Tipo de la variable: " + ArreNomToken.get(pos) + ANSI_RESET);
-                        fila_columna = ArreFilaColumnaToken.get(pos - 1);
+                        varFila_columna = ArreFilaColumnaToken.get(pos - 1);
                         System.out.println(ANSI_PURPLE + "Fila_Columna de la variable: " + ArreFilaColumnaToken.get(pos - 1) + ANSI_RESET);
-                        ArreVariables.add(new Variables(nombre, valor, tipo, fila_columna));
+                        ArreVariables.add(new Variables(varNombre, varValor, varTipo, varFila_columna));
                         pos++;
                         System.out.println("Numero encontrado");
                         gramaticas.add("Numero");
@@ -1314,16 +1230,16 @@ public class Compilador extends javax.swing.JFrame {
 
                         break;
                     case "Cadena":
-                        valor = ArreToken.get(pos);
+                        varValor = ArreToken.get(pos);
                         System.out.println(ANSI_PURPLE + "Valor de la variable: " + ArreToken.get(pos) + ANSI_RESET);
 
-                        tipo = "Cadena";
+                        varTipo = "Cadena";
                         System.out.println(ANSI_PURPLE + "Tipo de la variable: " + ArreNomToken.get(pos) + ANSI_RESET);
 
-                        fila_columna = ArreFilaColumnaToken.get(pos - 1);
+                        varFila_columna = ArreFilaColumnaToken.get(pos - 1);
                         System.out.println(ANSI_PURPLE + "Fila_Columna de la variable: " + ArreFilaColumnaToken.get(pos - 1) + ANSI_RESET);
 
-                        ArreVariables.add(new Variables(nombre, valor, tipo, fila_columna));
+                        ArreVariables.add(new Variables(varNombre, varValor, varTipo, varFila_columna));
                         pos++;
                         System.out.println("Cadena encontrada");
                         gramaticas.add("Cadena");
@@ -1535,7 +1451,7 @@ public class Compilador extends javax.swing.JFrame {
                 case "Identificador":
                     System.out.println("Identificador encontrado");
                     gramaticas.add("Identificador");
-                    nombre = ArreToken.get(pos);
+                    varNombre = ArreToken.get(pos);
                     System.out.println(ANSI_PURPLE + "Nombre de la variable: " + ArreToken.get(pos) + ANSI_RESET);
                     pos++;
                     if (hayOtro()) {
@@ -1844,15 +1760,33 @@ public class Compilador extends javax.swing.JFrame {
                         || ArreToken.get(pos - 2).equals("banda_activar") || ArreToken.get(pos - 2).equals("banda_desactivar")
                         || ArreToken.get(pos - 2).equals("puerta_abrir") || ArreToken.get(pos - 2).equals("puerta_cerrar")
                         || ArreToken.get(pos - 2).equals("tv_encender") || ArreToken.get(pos - 2).equals("tv_apagar")
-                        || ArreToken.get(pos - 2).equals("aspersor_desactivar") || ArreToken.get(pos - 2).equals("asperdor_desactivar")
+                        || ArreToken.get(pos - 2).equals("aspersor_desactivar") || ArreToken.get(pos - 2).equals("aspersor_desactivar")
                         || ArreToken.get(pos - 2).equals("cajafuerte_desactivar")) {
                     System.out.println(ANSI_CYAN + "Evaluando: " + ArreToken.get(pos - 2) + ANSI_RESET);
+                    fncCoVNombre = ArreToken.get(pos - 2);
+                    System.out.println(ANSI_PURPLE + "Nombre de la funcion: " + fncCoVNombre + ANSI_RESET);
+                    //fncCoVStatus = asignaStatus_fncCoV(fncCoVNombre);
                     switch (ArreNomToken.get(pos)) {
                         case "Cadena":
                             System.out.println("Cadena encontrada");
+                            fncCoVValor = ArreToken.get(pos);
+
+                            System.out.println(ANSI_PURPLE + "Valor: " + fncCoVValor + ANSI_RESET);
+                            fncCoVTipo = "Cadena";
+                            System.out.println(ANSI_PURPLE + "Tipo: " + fncCoVTipo + ANSI_RESET);
+                            fncCoVFila_Columna = ArreFilaColumnaToken.get(pos - 1);
+                            System.out.println(ANSI_PURPLE + "Fila_Columna: " + fncCoVFila_Columna + ANSI_RESET);
+                            ArreFunciones_CadenaoVariable.add(new Funciones_CadenaoVariable(fncCoVNombre, fncCoVValor, fncCoVTipo, fncCoVFila_Columna));
                             break;
                         case "Identificador":
                             System.out.println("Identificador encontrado");
+                            fncCoVValor = ArreToken.get(pos);
+                            System.out.println(ANSI_PURPLE + "Valor: " + fncCoVValor + ANSI_RESET);
+                            fncCoVTipo = "Identificador";
+                            System.out.println(ANSI_PURPLE + "Tipo: " + fncCoVTipo + ANSI_RESET);
+                            fncCoVFila_Columna = ArreFilaColumnaToken.get(pos - 1);
+                            System.out.println(ANSI_PURPLE + "Fila_Columna: " + fncCoVFila_Columna + ANSI_RESET);
+                            ArreFunciones_CadenaoVariable.add(new Funciones_CadenaoVariable(fncCoVNombre, fncCoVValor, fncCoVTipo, fncCoVFila_Columna));
                             break;
                         default:
                             error = "Error [25], se esperaba una cadena o un identificador en la funcion: " + ArreToken.get(pos - 2) + " " + ArreFilaColumnaToken.get(pos - 1);
@@ -1872,12 +1806,25 @@ public class Compilador extends javax.swing.JFrame {
                 }//If varias funciones
                 else if (ArreToken.get(pos - 2).equals("aspersor_activar") || ArreToken.get(pos - 2).equals("cajafuerte_activar")) {
                     System.out.println(ANSI_CYAN + "Evaluando: " + ArreToken.get(pos - 2) + ANSI_RESET);
+                    fncCoV_NoVNombre = ArreToken.get(pos - 2);
+                    System.out.println(ANSI_PURPLE + "Nombre de la funcion: " + fncCoV_NoVNombre + ANSI_RESET);
                     switch (ArreNomToken.get(pos)) {
                         case "Cadena":
                             System.out.println("Cadena encontrada");
+
+                            fncCoV_NoVValor_CoV = ArreToken.get(pos);
+                            System.out.println(ANSI_PURPLE + "Valor CoV: " + fncCoV_NoVValor_CoV + ANSI_RESET);
+
+                            fncCoV_NoVTipo_CoV = "Cadena";
+                            System.out.println(ANSI_PURPLE + "Tipo: " + fncCoV_NoVTipo_CoV + ANSI_RESET);
                             break;
                         case "Identificador":
                             System.out.println("Identificador encontrado");
+                            fncCoV_NoVValor_CoV = ArreToken.get(pos);
+                            System.out.println(ANSI_PURPLE + "Valor CoV: " + fncCoV_NoVValor_CoV + ANSI_RESET);
+
+                            fncCoV_NoVTipo_CoV = "Identificador";
+                            System.out.println(ANSI_PURPLE + "Tipo: " + fncCoV_NoVTipo_CoV + ANSI_RESET);
                             break;
                         default:
                             error = "Error [25], se esperaba una cadena o un identificador en la funcion: " + ArreToken.get(pos - 2) + " " + ArreFilaColumnaToken.get(pos - 1);
@@ -1891,10 +1838,29 @@ public class Compilador extends javax.swing.JFrame {
                             if (hayOtro()) {
                                 switch (ArreNomToken.get(pos)) {
                                     case "Numero":
-                                        System.out.println("Cadena encontrada");
+                                        System.out.println("Numero encontrado");
+                                        fncCoV_NoVValor_NoV = ArreToken.get(pos);
+                                        System.out.println(ANSI_PURPLE + "Valor NoV: " + fncCoV_NoVValor_NoV + ANSI_RESET);
+
+                                        fncCoV_NoVTipo_NoV = "Numero";
+                                        System.out.println(ANSI_PURPLE + "Tipo: " + fncCoV_NoVTipo_NoV + ANSI_RESET);
+                                        fncCoV_NoVFila_columna = ArreFilaColumnaToken.get(pos - 1);
+                                        System.out.println(ANSI_PURPLE + "Fila_Columna: " + fncCoV_NoVFila_columna + ANSI_RESET);
+                                        ArreFunciones_CoV_NoV.add(new Funciones_CoV_NoV(fncCoV_NoVNombre, fncCoV_NoVValor_CoV, fncCoV_NoVTipo_CoV, fncCoV_NoVValor_NoV, fncCoV_NoVTipo_NoV, fncCoV_NoVFila_columna));
+
                                         break;
                                     case "Identificador":
                                         System.out.println("Identificador encontrado");
+                                        fncCoV_NoVValor_NoV = ArreToken.get(pos);
+                                        System.out.println(ANSI_PURPLE + "Valor CoV: " + fncCoV_NoVValor_NoV + ANSI_RESET);
+
+                                        fncCoV_NoVTipo_NoV = "Identificador";
+                                        System.out.println(ANSI_PURPLE + "Tipo: " + fncCoV_NoVTipo_NoV + ANSI_RESET);
+
+                                        fncCoV_NoVFila_columna = ArreFilaColumnaToken.get(pos - 1);
+                                        System.out.println(ANSI_PURPLE + "Fila_Columna: " + fncCoV_NoVFila_columna + ANSI_RESET);
+
+                                        ArreFunciones_CoV_NoV.add(new Funciones_CoV_NoV(fncCoV_NoVNombre, fncCoV_NoVValor_CoV, fncCoV_NoVTipo_CoV, fncCoV_NoVValor_NoV, fncCoV_NoVTipo_NoV, fncCoV_NoVFila_columna));
                                         break;
                                     default:
                                         error = "Error [44], se esperaba una número o un identificador en la funcion: " + ArreToken.get(pos - 4) + " " + ArreFilaColumnaToken.get(pos - 1);
@@ -1991,25 +1957,24 @@ public class Compilador extends javax.swing.JFrame {
                 gramaticas.add("Cadena");
 
                 return true;
-            case "OP_Retorno":
-                System.out.println("OP_Retorno encontrada");
-                gramaticas.add("OP_Retorno");
-                pos++;
-                if (hayOtro()) {
-                    if (!op_RetornoCorrecto()) {
-                        System.out.println("OP_Retorno incorrecta");
-                    }//No está correcta
-                    else {
-                        gramaticas.add("OP_Retorno Correcta");
-                        return true;
-                    }//Si está correcta
-                }//Hay otro
-                else {
-                    errores.add("Error [5], se esperaba parentesis que abre '(' en la OP_Retorno " + ArreFilaColumnaToken.get(pos - 1));
-                }
+//            case "OP_Retorno":
+//                System.out.println("OP_Retorno encontrada");
+//                gramaticas.add("OP_Retorno");
+//                pos++;
+//                if (hayOtro()) {
+//                    if (!op_RetornoCorrecto()) {
+//                        System.out.println("OP_Retorno incorrecta");
+//                    }//No está correcta
+//                    else {
+//                        gramaticas.add("OP_Retorno Correcta");
+//                        return true;
+//                    }//Si está correcta
+//                }//Hay otro
+//                else {
+//                    errores.add("Error [5], se esperaba parentesis que abre '(' en la OP_Retorno " + ArreFilaColumnaToken.get(pos - 1));
+//                }
 
-                break;
-
+//                break;
             default:
 
         }//Switch
@@ -2300,6 +2265,329 @@ public class Compilador extends javax.swing.JFrame {
             errores.add(error);
         }
         return false;
+    }
+
+    private boolean sema_variables_tipoDato() {
+        //EDITANDO
+        for (int i = 0; i < ArreVariables.size(); i++) {
+            for (int k = i + 1; k < ArreVariables.size(); k++) {
+                //System.out.println("");
+                //System.out.println("Nom i -> " + ArreVariables.get(i).nombre() +" Valor i -> " + ArreVariables.get(i).valor()+ " Tipo -> "+ ArreVariables.get(i).tipo()+ " Fila_Columna -> " + ArreVariables.get(i).fila_columna());
+                //System.out.println("Nom k -> " + ArreVariables.get(k).nombre() +" Valor k -> " + ArreVariables.get(k).valor()+ " Tipo -> "+ ArreVariables.get(k).tipo()+ " Fila_Columna -> " + ArreVariables.get(k).fila_columna());
+                if (ArreVariables.get(i).nombre().equals(ArreVariables.get(k).nombre())
+                        && !ArreVariables.get(i).tipo().equals(ArreVariables.get(k).tipo())) {
+
+                    System.out.println(ANSI_RED + errores_semanticos[2] + ArreVariables.get(i).fila_columna() + "\nVariable -> " + ArreVariables.get(k).nombre() + ArreVariables.get(k).fila_columna() + ANSI_RESET);
+                    errores.add(errores_semanticos[2] + " " + ArreVariables.get(i).fila_columna() + "\nVariable -> " + ArreVariables.get(k).nombre() + " " + ArreVariables.get(k).fila_columna());
+
+                    return true; //Si hay variables repetidas
+                }
+            }
+        }
+        return false; //Sin cambios de datos
+    }
+
+    private String asignaStatus_fncCoV(String nombreFuncion) {
+        String status = "";
+        switch (nombreFuncion) {
+            case "puerta_abrir":
+                status = "abierto";
+                break;
+            case "puerta_cerrar":
+                status = "cerrado";
+            default:
+
+        }
+        return status;
+    }
+
+    private boolean sema_fncCoV_varNoDeclarada() {
+        boolean resp = true;
+        String nvfnc = "";
+        String vvfnc = "";
+        String fcvfnc = "";
+        String nv = "";
+        String fcv = "";
+
+        for (int i = 0; i < ArreFunciones_CadenaoVariable.size(); i++) {
+            System.out.println("No. Vars " + ArreVariables.size());
+            nvfnc = ArreFunciones_CadenaoVariable.get(i).nombre(); //Nombre de la función
+            vvfnc = ArreFunciones_CadenaoVariable.get(i).valor();  //Nombre de la variable escrita en la funcion
+            fcvfnc = ArreFunciones_CadenaoVariable.get(i).fila_columna(); //Fila y columna de la funcion
+
+            if (ArreVariables.size() > 0) {
+
+                for (int k = 0; k < ArreVariables.size(); k++) {
+                    if ((ArreFunciones_CadenaoVariable.get(i).fila() > ArreVariables.get(k).fila())) {
+                        System.out.println("La fila de la fnc si es mayor Procediendo...");
+                        System.out.println("");
+                        System.out.println("Nom fnc i -> " + ArreFunciones_CadenaoVariable.get(i).nombre() + " Valor fnc i -> " + ArreFunciones_CadenaoVariable.get(i).valor() + /*" Tipo -> "+ ArreVariables.get(i).tipo()+ */ " Fila_Columna -> " + ArreFunciones_CadenaoVariable.get(i).fila_columna());
+                        System.out.println("Nom variable k -> " + ArreVariables.get(k).nombre() +/* " Valor k -> " + ArreVariables.get(k).valor()+ " Tipo -> "+ ArreVariables.get(k).tipo()+ */ " Fila_Columna -> " + ArreVariables.get(k).fila_columna());
+                        nv = ArreVariables.get(k).nombre(); //Nombre de la variable
+                        fcv = ArreVariables.get(k).fila_columna(); //Fila y columna donde está declarada la variable
+                        System.out.println("Fila fnc -> " + ArreFunciones_CadenaoVariable.get(i).fila());
+                        System.out.println("Fila variable -> " + ArreVariables.get(k).fila());
+
+                        if (ArreFunciones_CadenaoVariable.get(i).tipo().equals("Identificador")) {
+                            System.out.println("Si es un identificador Procediendo...");
+                            if ((!ArreFunciones_CadenaoVariable.get(i).valor().equals(ArreVariables.get(k).nombre()))) {
+                                System.out.println(ANSI_RED + "Variables diferentes detectadas" + ANSI_RESET);
+                                resp = true; //No está declarada la variable
+//                                if ((ArreFunciones_CadenaoVariable.get(i).fila() < ArreVariables.get(k).fila())) {
+//                                    System.out.println(ANSI_RED + "Se detectó que una función no tiene ninguna variable declarada \nMatando proceso" + ANSI_RESET);
+//                                    System.out.println(ANSI_RED + errores_semanticos[3] + fcvfnc + "\nVariable fnc -> " + vvfnc + ANSI_RESET);
+//                                    errores.add(errores_semanticos[3] + " " + fcvfnc + "\nVariable fnc -> " + vvfnc);
+//                                    return true;
+//                                }
+                            } else {
+                                //Ambas variables son igual
+                                System.out.println("Ambas variables son iguales Procediendo...");
+                                resp = false;
+                                k = ArreVariables.size() - 1;
+                            }
+
+                        }//if identificador
+                        else {
+                            System.out.println("Es cadena Procediendo...");
+                            resp = false;
+                            k = ArreVariables.size() - 1;
+                        }
+                    } else {
+                        //La fila de la funcion es menor a la de la variable a evaluar
+                        System.out.println(ANSI_RED + "Se detectó que una función no tiene ninguna variable declarada \nMatando proceso" + ANSI_RESET);
+                        System.out.println(ANSI_RED + errores_semanticos[3] + fcvfnc + "\nVariable fnc -> " + vvfnc + ANSI_RESET);
+                        errores.add(errores_semanticos[3] + " " + fcvfnc + "\nVariable fnc -> " + vvfnc);
+                        return true;
+                    }
+
+                } //For k
+                if (resp) {
+                    System.out.println("");
+                    System.out.println(ANSI_RED + "Se detectó que una función no tiene ninguna variable declarada \nMatando proceso" + ANSI_RESET);
+                    System.out.println(ANSI_RED + errores_semanticos[3] + fcvfnc + "\nVariable fnc -> " + vvfnc + ANSI_RESET);
+                    errores.add(errores_semanticos[3] + " " + fcvfnc + "\nVariable fnc -> " + vvfnc);
+                    return true;
+                }
+
+            } else if (ArreFunciones_CadenaoVariable.get(i).tipo().equals("Cadena")) {
+                resp = false;
+                System.out.println("Evaluando: " + ArreFunciones_CadenaoVariable.get(i).valor());
+                //i = ArreFunciones_CadenaoVariable.size();
+            } else {
+                resp = true; //No hay variables definidas en las funciones pero si hay declaradas en el arreglo
+                i = ArreFunciones_CadenaoVariable.size();
+            }
+        }
+
+        if (resp) {
+            System.out.println(ANSI_RED + errores_semanticos[3] + fcvfnc + "\nVariable fnc -> " + vvfnc + ANSI_RESET);
+            errores.add(errores_semanticos[3] + " " + fcvfnc + "\nVariable fnc -> " + vvfnc);
+        }
+        return resp; //Todas las variables se encuentran declaradas
+    }
+
+    private void sema_asignaFilas() {
+        for (int i = 0; i < ArreFunciones_CadenaoVariable.size(); i++) {
+            String fcfnc_1[] = ArreFunciones_CadenaoVariable.get(i).fila_columna().split("\\[");
+            String fcfnc_2[] = {};
+            for (int j = 1; j < fcfnc_1.length; j = j + 2) {
+                fcfnc_2 = fcfnc_1[j].split(",");
+            }
+            //System.out.println("Fila de la funcion agregada -> " + fcfnc_2[0]);
+            ArreFunciones_CadenaoVariable.get(i).setFila(Integer.parseInt(fcfnc_2[0]));
+            ArreFilaFnc.add(Integer.parseInt(fcfnc_2[0]));
+        }
+        for (int i = 0; i < ArreFunciones_CoV_NoV.size(); i++) {
+            String fcvar_1[] = ArreFunciones_CoV_NoV.get(i).fila_columna().split("\\[");
+            String fcvar_2[] = {};
+            for (int j = 1; j < fcvar_1.length; j = j + 2) {
+                fcvar_2 = fcvar_1[j].split(",");
+            }
+            //System.out.println("Fila de la Funcion CoV_NoV agregada -> " + fcvar_2[0]);
+            ArreFunciones_CoV_NoV.get(i).setFila(Integer.parseInt(fcvar_2[0]));
+            ArreFilaVar.add(Integer.parseInt(fcvar_2[0]));
+        }
+        for (int i = 0; i < ArreVariables.size(); i++) {
+            String fcvar_1[] = ArreVariables.get(i).fila_columna().split("\\[");
+            String fcvar_2[] = {};
+            for (int j = 1; j < fcvar_1.length; j = j + 2) {
+                fcvar_2 = fcvar_1[j].split(",");
+            }
+            //System.out.println("Fila de la variable agregada -> " + fcvar_2[0]);
+            ArreVariables.get(i).setFila(Integer.parseInt(fcvar_2[0]));
+            ArreFilaVar.add(Integer.parseInt(fcvar_2[0]));
+        }
+
+    }
+
+    private boolean sema_fncCoV_tipoIncorrecto() {
+        boolean resp = true; //Si hay tipos incorrectos
+        String nvfnc = "";
+        String vvfnc = "";
+        String fcvfnc = "";
+        String nv = "";
+        String fcv = "";
+        for (int i = 0; i < ArreFunciones_CadenaoVariable.size(); i++) {
+            if (ArreVariables.size() > 0) {
+                Funciones_CadenaoVariable funCoV = ArreFunciones_CadenaoVariable.get(i);
+                nvfnc = funCoV.nombre();
+                fcvfnc = funCoV.fila_columna();
+                for (int j = 0; j < ArreVariables.size(); j++) {
+                    Variables vars = ArreVariables.get(j);
+                    nv = vars.nombre();
+                    fcv = vars.fila_columna();
+                    if (funCoV.valor().equals(vars.nombre())) {
+                        if (vars.tipo().equals("Numero")) {
+                            System.out.println("Variable declarada como numero, error detectado");
+                            resp = true; //Si hay tipos incorrectos
+                            i = ArreFunciones_CadenaoVariable.size();
+                        } else {
+                            resp = false;
+                        }
+                    }
+                }
+            } else {
+                return false;
+            }
+
+        }
+        if (resp) {
+            System.out.println(ANSI_RED + errores_semanticos[4] + "\nFuncion -> " + nvfnc + " " + fcvfnc + "\nVariable -> " + nv + " " + fcv + ANSI_RESET);
+            errores.add(errores_semanticos[4] + "\nFuncion -> " + nvfnc + " " + fcvfnc + "\nVariable -> " + nv + " " + fcv);
+
+        }
+
+        return resp;
+    }
+
+    private boolean sema_fncCoV_NoV_varNoDeclaradas() {
+        boolean resp = true;
+        boolean r = false;
+        String nvfnc = "";
+        String vvfncCoV = "";
+        String vvfncNoV = "";
+        String fcvfnc = "";
+        String nv = "";
+        String fcv = "";
+
+        for (int i = 0; i < ArreFunciones_CoV_NoV.size(); i++) {
+            Funciones_CoV_NoV funcion = ArreFunciones_CoV_NoV.get(i);
+            nvfnc = funcion.nombre(); //Nombre de la función
+            vvfncCoV = funcion.valor_CoV();  //Nombre de la variable escrita en la funcion
+            vvfncNoV = funcion.valor_NoV();
+            fcvfnc = funcion.fila_columna(); //Fila y columna de la funcion
+            System.out.println("vvfncCoV: " + vvfncCoV);
+            System.out.println("vvfncNoV: " + vvfncNoV);
+            System.out.println("No. variables: " + ArreVariables.size());
+            if (ArreVariables.size() > 0) {
+
+                for (int k = 0; k < ArreVariables.size(); k++) {
+                    Variables variable = ArreVariables.get(k);
+                    //Verifica si la variable de la funcion está declarada antes de llamarla
+                    System.out.println("");
+                    System.out.println("Nom fnc i -> " + funcion.nombre() + " Valor CoV fnc i -> " + funcion.valor_CoV() + " Valor NoV fnc i ->" + funcion.valor_NoV() + /*" Tipo -> "+ ArreVariables.get(i).tipo()+ */ " Fila_Columna -> " + funcion.fila_columna());
+                    System.out.println("Nom variable k -> " + variable.nombre() +/* " Valor k -> " + ArreVariables.get(k).valor()+ " Tipo -> "+ ArreVariables.get(k).tipo()+ */ " Fila_Columna -> " + variable.fila_columna());
+
+                    if (funcion.fila() > variable.fila()) {
+                        nv = variable.nombre(); //Nombre de la variable
+                        fcv = variable.fila_columna(); //Fila y columna donde está declarada la variable
+
+                        if (funcion.tipo_CoV().equals("Identificador")) {
+                            System.out.println("Si es un identificador Procediendo...");
+
+                            if (!funcion.valor_CoV().equals(variable.nombre())) {
+                                System.out.println(ANSI_RED + "Variables diferentes detectadas" + ANSI_RESET);
+                                resp = true; //No está declarada la variable
+                            } else {
+                                //Ambas variables son igual
+                                System.out.println(ANSI_GREEN + "Ambas variables son iguales CoV Procediendo..." + ANSI_RESET);
+                                resp = false;
+                                k = ArreVariables.size() - 1;
+                            }
+                        }//if identificador
+                        else {
+                            System.out.println("Es cadena Procediendo...");
+                            resp = false;
+                            k = ArreVariables.size() - 1;
+                        }
+                    } else { //if funcion.fila() > variable.fila()
+                        //La fila de la funcion es menor a la de la variable a evaluar
+                        System.out.println(ANSI_RED + "Se detectó que ninguna de las variables definidas coincide \ncon la de la funcion \nMatando proceso" + ANSI_RESET);
+                        System.out.println(ANSI_RED + errores_semanticos[3] + fcvfnc + "\nVariable fnc -> " + vvfncCoV + ANSI_RESET);
+                        errores.add(errores_semanticos[3] + " " + fcvfnc + "\nVariable fnc -> " + vvfncCoV);
+                        return true;
+                    } //else funcion.fila() > variable.fila()
+                } //For k CoV
+                if (resp) {
+                    System.out.println("");
+                    System.out.println(ANSI_RED + "Se detectó que una función no tiene ninguna variable declarada \nMatando proceso" + ANSI_RESET);
+                    System.out.println(ANSI_RED + errores_semanticos[3] + fcvfnc + "\nVariable fnc -> " + vvfncCoV + ANSI_RESET);
+                    errores.add(errores_semanticos[3] + " " + fcvfnc + "\nVariable fnc -> " + vvfncCoV);
+                    return true;
+                }
+
+                for (int k = 0; k < ArreVariables.size(); k++) {
+                    Variables variable = ArreVariables.get(k);
+                    //Verifica si la variable de la funcion está declarada antes de llamarla
+                    System.out.println("");
+                    System.out.println("Nom fnc i -> " + funcion.nombre() + " Valor CoV fnc i -> " + funcion.valor_CoV() + " Valor NoV fnc i ->" + funcion.valor_NoV() + /*" Tipo -> "+ ArreVariables.get(i).tipo()+ */ " Fila_Columna -> " + funcion.fila_columna());
+                    System.out.println("Nom variable k -> " + variable.nombre() +/* " Valor k -> " + ArreVariables.get(k).valor()+ " Tipo -> "+ ArreVariables.get(k).tipo()+ */ " Fila_Columna -> " + variable.fila_columna());
+
+                    if (funcion.fila() > variable.fila()) {
+                        nv = variable.nombre(); //Nombre de la variable
+                        fcv = variable.fila_columna(); //Fila y columna donde está declarada la variable
+
+                        if (funcion.tipo_NoV().equals("Identificador")) {
+                            System.out.println("Si es un identificador Procediendo...");
+
+                            if (!funcion.valor_NoV().equals(variable.nombre())) {
+                                System.out.println(ANSI_RED + "Variables diferentes detectadas" + ANSI_RESET);
+                                r = true; //No está declarada la variable
+                            } else {
+                                //Ambas variables son igual
+                                System.out.println(ANSI_GREEN + "Ambas variables son iguales NoV Procediendo..." + ANSI_RESET);
+                                r = false;
+                                k = ArreVariables.size() - 1;
+                            }
+                            
+                        }//if identificador
+                        else {
+                            System.out.println("Es numero Procediendo...");
+                            r = false;
+                            k = ArreVariables.size() - 1;
+                        }
+                    } else { //if funcion.fila() > variable.fila()
+                        //La fila de la funcion es menor a la de la variable a evaluar
+                        System.out.println(ANSI_RED + "Se detectó que ninguna de las variables definidas coincide \ncon la de la funcion \nMatando proceso" + ANSI_RESET);
+                        System.out.println(ANSI_RED + errores_semanticos[3] + fcvfnc + "\nVariable fnc -> " + vvfncNoV + ANSI_RESET);
+                        errores.add(errores_semanticos[3] + " " + fcvfnc + "\nVariable fnc -> " + vvfncNoV);
+                        return true;
+                    } //else funcion.fila() > variable.fila()
+                } //For k 2
+                if (r) {
+                    System.out.println("");
+                    System.out.println(ANSI_RED + "Se detectó que una función no tiene ninguna variable declarada \nMatando proceso" + ANSI_RESET);
+                    System.out.println(ANSI_RED + errores_semanticos[3] + fcvfnc + "\nVariablefnc -> " + vvfncNoV + ANSI_RESET);
+                    errores.add(errores_semanticos[3] + " " + fcvfnc + "\nVariable fnc -> " + vvfncNoV);
+                    return true;
+                }
+            }// If no.variables > 0
+            else if (funcion.tipo_CoV().equals("Cadena")) {
+                System.out.println("Evaluando: " + funcion.valor_CoV());
+                resp = false;
+                //i = ArreFunciones_CadenaoVariable.size()-1;
+            } else {
+
+                resp = true; //No hay variables definidas en las funciones pero si hay declaradas en el arreglo
+                i = ArreFunciones_CadenaoVariable.size();
+            }
+        }//For i
+        if (resp) {
+            System.out.println("Entrando aqui");
+            System.out.println(ANSI_RED + errores_semanticos[3] + fcvfnc + "\nVariable fnc -> " + vvfncCoV + ANSI_RESET);
+            errores.add(errores_semanticos[3] + " " + fcvfnc + "\nVariable fnc -> " + vvfncCoV);
+        }
+        return resp;
     }
 
 }
