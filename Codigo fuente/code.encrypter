@@ -7,19 +7,20 @@ INICIO $programa {
         //$p = "";
         //$pComedor = "cerrado";
         //puerta_cerrar($pComedor);
-        //puerta_abrir($pSala);
+        puerta_abrir($pSala);
         //$p=2;
         
         //$aspSalida = "desactivado";
-        $caja = "desactivado";
+        //$caja = "desactivado";
+        //$aspEntrada = "desactivado";
         $aspEntrada = "desactivado";
-        $x = "";
+        $x = 100;
     
         aspersor_activar($aspEntrada,$x);
 
-        cajafuerte_activar($caja,60);
+        //cajafuerte_activar($caja,60);
     
-        aspersor_activar($aspSalida,10);
+        //aspersor_activar($aspSalida,10);
 
     
 

@@ -126,7 +126,8 @@ public class Compilador extends javax.swing.JFrame {
         /* 1 */ "Error semantico [1]: La variable ya se encuentra declarada en: ",
         /* 2 */ "Error semantico [2]: No se puede cambiar el tipo de dato de la variable \nporque ya se encuentra definido",
         /* 3 */ "Error semantico [3]: La variable no se encuentra declarada para asignar en la función",
-        /* 4 */ "Error semantico [4]: La variable asignada en la función es de tipo 'numero', se esperaba una 'cadena'"
+        /* 4 */ "Error semantico [4]: La variable asignada en la función es de tipo 'numero', se esperaba una 'cadena'",
+        /* 4 */ "Error semantico [5]: La variable asignada en la función es de tipo 'cadena', se esperaba una 'numero'"
     };
     public String soluciones_semantico[] = {};
 
@@ -320,23 +321,26 @@ public class Compilador extends javax.swing.JFrame {
 //        });
         //SERGIO_EDITANDO 
         sema_asignaFilas();
-//        if (ArreVariables.size() > 0) {
-//            if (sema_variables_tipoDato()) {
-//                System.out.println("Sin cambios de tipos de variables");
-//            }
-//        }
-//        if (ArreFunciones_CadenaoVariable.size() > 0) {
-//            if (!sema_fncCoV_varNoDeclarada()) { //true -> hubo variables no declaradas. false -> todas las variables están declaradas
-//                System.out.println("Todas las variables estan bien definidas para las funciones");
-//                if (!sema_fncCoV_tipoIncorrecto()) {
-//                    System.out.println("Todas las variables o datos recibidos en las funciones son correctos");
-//                }
-//            }
-//        }
-        System.out.println("Tamaño NoV: " + ArreFunciones_CoV_NoV.size());
+        if (ArreVariables.size() > 0) {
+            if (sema_variables_tipoDato()) {
+                System.out.println("Sin cambios de tipos de variables");
+            }
+        }
+        if (ArreFunciones_CadenaoVariable.size() > 0) {
+            if (!sema_fncCoV_varNoDeclarada()) { //true -> hubo variables no declaradas. false -> todas las variables están declaradas
+                System.out.println("Todas las variables estan bien definidas para las funciones");
+                if (!sema_fncCoV_tipoIncorrecto()) {
+                    System.out.println("Todas las variables o datos recibidos en las funciones son correctos");
+                }
+            }
+        }
+        //System.out.println("Tamaño NoV: " + ArreFunciones_CoV_NoV.size());
         if (ArreFunciones_CoV_NoV.size() > 0) {
             if (!sema_fncCoV_NoV_varNoDeclaradas()) {
                 System.out.println("Todas las variables estan bien definidas para las funciones CoV_NoV");
+                if (!sema_fncCoV_NoV_tipoIncorrecto()) {
+                    System.out.println("Todas las variables CoV_NoV o datos recibidos en las funciones son correctos");
+                }
             }
         }
 
@@ -2476,37 +2480,37 @@ public class Compilador extends javax.swing.JFrame {
             vvfncCoV = funcion.valor_CoV();  //Nombre de la variable escrita en la funcion
             vvfncNoV = funcion.valor_NoV();
             fcvfnc = funcion.fila_columna(); //Fila y columna de la funcion
-            System.out.println("vvfncCoV: " + vvfncCoV);
-            System.out.println("vvfncNoV: " + vvfncNoV);
-            System.out.println("No. variables: " + ArreVariables.size());
+//            System.out.println("vvfncCoV: " + vvfncCoV);
+//            System.out.println("vvfncNoV: " + vvfncNoV);
+//            System.out.println("No. variables: " + ArreVariables.size());
             if (ArreVariables.size() > 0) {
 
                 for (int k = 0; k < ArreVariables.size(); k++) {
                     Variables variable = ArreVariables.get(k);
                     //Verifica si la variable de la funcion está declarada antes de llamarla
-                    System.out.println("");
-                    System.out.println("Nom fnc i -> " + funcion.nombre() + " Valor CoV fnc i -> " + funcion.valor_CoV() + " Valor NoV fnc i ->" + funcion.valor_NoV() + /*" Tipo -> "+ ArreVariables.get(i).tipo()+ */ " Fila_Columna -> " + funcion.fila_columna());
-                    System.out.println("Nom variable k -> " + variable.nombre() +/* " Valor k -> " + ArreVariables.get(k).valor()+ " Tipo -> "+ ArreVariables.get(k).tipo()+ */ " Fila_Columna -> " + variable.fila_columna());
+//                    System.out.println("");
+//                    System.out.println("Nom fnc i -> " + funcion.nombre() + " Valor CoV fnc i -> " + funcion.valor_CoV() + " Valor NoV fnc i ->" + funcion.valor_NoV() + /*" Tipo -> "+ ArreVariables.get(i).tipo()+ */ " Fila_Columna -> " + funcion.fila_columna());
+//                    System.out.println("Nom variable k -> " + variable.nombre() +/* " Valor k -> " + ArreVariables.get(k).valor()+ " Tipo -> "+ ArreVariables.get(k).tipo()+ */ " Fila_Columna -> " + variable.fila_columna());
 
                     if (funcion.fila() > variable.fila()) {
                         nv = variable.nombre(); //Nombre de la variable
                         fcv = variable.fila_columna(); //Fila y columna donde está declarada la variable
 
                         if (funcion.tipo_CoV().equals("Identificador")) {
-                            System.out.println("Si es un identificador Procediendo...");
+                            //System.out.println("Si es un identificador Procediendo...");
 
                             if (!funcion.valor_CoV().equals(variable.nombre())) {
-                                System.out.println(ANSI_RED + "Variables diferentes detectadas" + ANSI_RESET);
+                                //System.out.println(ANSI_RED + "Variables diferentes detectadas" + ANSI_RESET);
                                 resp = true; //No está declarada la variable
                             } else {
                                 //Ambas variables son igual
-                                System.out.println(ANSI_GREEN + "Ambas variables son iguales CoV Procediendo..." + ANSI_RESET);
+                                //System.out.println(ANSI_GREEN + "Ambas variables son iguales CoV Procediendo..." + ANSI_RESET);
                                 resp = false;
                                 k = ArreVariables.size() - 1;
                             }
                         }//if identificador
                         else {
-                            System.out.println("Es cadena Procediendo...");
+                            //System.out.println("Es cadena Procediendo...");
                             resp = false;
                             k = ArreVariables.size() - 1;
                         }
@@ -2529,30 +2533,30 @@ public class Compilador extends javax.swing.JFrame {
                 for (int k = 0; k < ArreVariables.size(); k++) {
                     Variables variable = ArreVariables.get(k);
                     //Verifica si la variable de la funcion está declarada antes de llamarla
-                    System.out.println("");
-                    System.out.println("Nom fnc i -> " + funcion.nombre() + " Valor CoV fnc i -> " + funcion.valor_CoV() + " Valor NoV fnc i ->" + funcion.valor_NoV() + /*" Tipo -> "+ ArreVariables.get(i).tipo()+ */ " Fila_Columna -> " + funcion.fila_columna());
-                    System.out.println("Nom variable k -> " + variable.nombre() +/* " Valor k -> " + ArreVariables.get(k).valor()+ " Tipo -> "+ ArreVariables.get(k).tipo()+ */ " Fila_Columna -> " + variable.fila_columna());
+//                    System.out.println("");
+//                    System.out.println("Nom fnc i -> " + funcion.nombre() + " Valor CoV fnc i -> " + funcion.valor_CoV() + " Valor NoV fnc i ->" + funcion.valor_NoV() + /*" Tipo -> "+ ArreVariables.get(i).tipo()+ */ " Fila_Columna -> " + funcion.fila_columna());
+//                    System.out.println("Nom variable k -> " + variable.nombre() +/* " Valor k -> " + ArreVariables.get(k).valor()+ " Tipo -> "+ ArreVariables.get(k).tipo()+ */ " Fila_Columna -> " + variable.fila_columna());
 
                     if (funcion.fila() > variable.fila()) {
                         nv = variable.nombre(); //Nombre de la variable
                         fcv = variable.fila_columna(); //Fila y columna donde está declarada la variable
 
                         if (funcion.tipo_NoV().equals("Identificador")) {
-                            System.out.println("Si es un identificador Procediendo...");
+                            //System.out.println("Si es un identificador Procediendo...");
 
                             if (!funcion.valor_NoV().equals(variable.nombre())) {
-                                System.out.println(ANSI_RED + "Variables diferentes detectadas" + ANSI_RESET);
+                                //System.out.println(ANSI_RED + "Variables diferentes detectadas" + ANSI_RESET);
                                 r = true; //No está declarada la variable
                             } else {
                                 //Ambas variables son igual
-                                System.out.println(ANSI_GREEN + "Ambas variables son iguales NoV Procediendo..." + ANSI_RESET);
+                                //System.out.println(ANSI_GREEN + "Ambas variables son iguales NoV Procediendo..." + ANSI_RESET);
                                 r = false;
                                 k = ArreVariables.size() - 1;
                             }
-                            
+
                         }//if identificador
                         else {
-                            System.out.println("Es numero Procediendo...");
+                            //System.out.println("Es numero Procediendo...");
                             r = false;
                             k = ArreVariables.size() - 1;
                         }
@@ -2587,6 +2591,82 @@ public class Compilador extends javax.swing.JFrame {
             System.out.println(ANSI_RED + errores_semanticos[3] + fcvfnc + "\nVariable fnc -> " + vvfncCoV + ANSI_RESET);
             errores.add(errores_semanticos[3] + " " + fcvfnc + "\nVariable fnc -> " + vvfncCoV);
         }
+        return resp;
+    }
+
+    private boolean sema_fncCoV_NoV_tipoIncorrecto() {
+        boolean resp = true; //Si hay tipos incorrectos
+        String nvfnc = "";
+        String vvfncCoV = "";
+        String vvfncNoV = "";
+        String fcvfnc = "";
+        String nv = "";
+        String fcv = "";
+        if (ArreVariables.size() > 0) {
+            System.out.println("Num. Variables " + ArreVariables.size());
+            for (int i = 0; i < ArreFunciones_CoV_NoV.size(); i++) {
+                Funciones_CoV_NoV fun = ArreFunciones_CoV_NoV.get(i);
+                nvfnc = fun.nombre();
+                vvfncCoV = fun.valor_CoV();
+                vvfncNoV = fun.valor_NoV();
+                fcvfnc = fun.fila_columna();
+                System.out.println("For j");
+                for (int j = 0; j < ArreVariables.size(); j++) {
+                    System.out.println("Entrando");
+                    Variables vars = ArreVariables.get(j);
+                    nv = vars.nombre();
+                    fcv = vars.fila_columna();
+                    System.out.println("Valor CoV fnc: " + fun.valor_CoV());
+                    System.out.println("Valor var: " + vars.nombre());
+                    if (fun.valor_CoV().equals(vars.nombre())) {
+                        if (vars.tipo().equals("Numero")) {
+                            System.out.println("Variable declarada como numero, error detectado");
+                            resp = true; //Si hay tipos incorrectos
+                            j = ArreFunciones_CoV_NoV.size();
+                        } else {
+                            resp = false;
+                            System.out.println("Si es una cadena");
+                            j = ArreVariables.size() - 1;
+                        }
+                    }
+                } //For j
+                if (resp) {
+                    System.out.println(ANSI_RED + errores_semanticos[4] + "\nFuncion -> " + nvfnc + " " + fcvfnc + "\nVariable -> " + nv + " " + fcv + ANSI_RESET);
+                    errores.add(errores_semanticos[4] + "\nFuncion -> " + nvfnc + " " + fcvfnc + "\nxVariable -> " + nv + " " + fcv);
+                    return true;
+                }
+                for (int j = 0; j < ArreVariables.size(); j++) {
+                    System.out.println("Entrando");
+                    Variables vars = ArreVariables.get(j);
+                    nv = vars.nombre();
+                    fcv = vars.fila_columna();
+                    System.out.println("Valor CoV fnc: " + fun.valor_CoV());
+                    System.out.println("Valor var: " + vars.nombre());
+                    if (fun.valor_NoV().equals(vars.nombre())) {
+                        if (vars.tipo().equals("Cadena")) {
+                            System.out.println("Variable declarada como cadena, error detectado");
+                            resp = true; //Si hay tipos incorrectos
+                            j = ArreFunciones_CoV_NoV.size();
+                        } else {
+                            resp = false;
+                            System.out.println("Si es un numero");
+                            j = ArreVariables.size() - 1;
+                        }
+                    }
+                } //For j
+                if (resp) {
+                    System.out.println(ANSI_RED + errores_semanticos[5] + "\nFuncion -> " + nvfnc + " " + fcvfnc + "\nVariable -> " + nv + " " + fcv + ANSI_RESET);
+                    errores.add(errores_semanticos[5] + "\nFuncion -> " + nvfnc + " " + fcvfnc + "\nxVariable -> " + nv + " " + fcv);
+                    return true;
+                }
+
+            } // For i
+
+        } else {
+            System.out.println("No hay variables");
+            return false;
+        }
+
         return resp;
     }
 
