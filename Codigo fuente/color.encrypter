@@ -1,31 +1,11 @@
 INICIO $programa {
-    PRINCIPAL(){
+    PRINCIPAL({
 //Bloque de codigo
-        $pSala = "cerrado";
-        //$pSala = 1;
-        //$pCom = 8;
-        //$p = "";
-        //$pComedor = "cerrado";
-        //puerta_cerrar($pComedor);
-        puerta_abrir($pSala);
-        //$p=2;
-        
-        //$aspSalida = "desactivado";
-        //$caja = "desactivado";
-        //$aspEntrada = "desactivado";
-        $aspEntrada = "desactivado";
-        $x = 100;
-    
-        aspersor_activar($aspEntrada,$x);
-
-        //cajafuerte_activar($caja,60);
-    
-        //aspersor_activar($aspSalida,10);
-
-    
-
+       
+      
+       
 //Fin bloque de codigo
-    }//Fin PRINCIPAL
+    ////Fin PRINCIPAL
 }//Fin INICIO
 FINAL
 //NO AGREGAR CODIGO DESPUES DE LA PALABRA FINAL

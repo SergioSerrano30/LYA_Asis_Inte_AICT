@@ -968,6 +968,7 @@ public class Compilador extends javax.swing.JFrame {
     }//GEN-LAST:event_txtConsolaMouseReleased
 
     private void opAutomataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opAutomataActionPerformed
+        tokens.clear();
         for (Token token : tokens) {
             ArreToken.add(token.getLexeme());
             ArreNomToken.add(token.getLexicalComp());
