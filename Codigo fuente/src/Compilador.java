@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import javax.swing.UIManager;
@@ -46,7 +48,8 @@ public class Compilador extends javax.swing.JFrame {
     private ArrayList<Integer> ArreFilaFnc = new ArrayList<>();
     private ArrayList<Integer> ArreFilaVar = new ArrayList<>();
     private ArrayList<ErrorLSSL> errors;
-    private ArrayList<String> errores, gramaticas;
+    private ArrayList<String> errores, gramaticas, gramaUsadas;
+    String gramatica = "";
     private ArrayList<TextColor> textsColor;
     private Timer timerKeyReleased;
     private ArrayList<Production> identProd, CadErrores, ProCorrectas;
@@ -57,6 +60,7 @@ public class Compilador extends javax.swing.JFrame {
     Automata auto;
     VentanaErrores venErrores;
     OpcionesGrama opcGrama;
+    VentanaCuadruplos vIntermedio;
     private int esteXO;
     private String varNombre, fncCoVNombre, fncCoV_NoVNombre = "";
     private String varValor, fncCoVValor, fncCoV_NoVValor_CoV, fncCoV_NoVValor_NoV = "";
@@ -171,6 +175,7 @@ public class Compilador extends javax.swing.JFrame {
         errors = new ArrayList<>();
         errores = new ArrayList<>();
         gramaticas = new ArrayList<>();
+        gramaUsadas = new ArrayList<>();
         CadErrores = new ArrayList<>();
         textsColor = new ArrayList<>();
         ProCorrectas = new ArrayList<>();
@@ -227,6 +232,8 @@ public class Compilador extends javax.swing.JFrame {
         txtConsola.setText("");
         tokens.clear();
         errors.clear();
+        gramaticas.clear();
+        gramaUsadas.clear();
         ArreToken.clear();
         CadErrores.clear();
         ArreNomToken.clear();
@@ -248,8 +255,10 @@ public class Compilador extends javax.swing.JFrame {
         sintactico();
         semanticAnalysis();
         printConsole();
+        codigoIntermedio();
         codeHasBeenCompiled = true;
         //a_dOpciones();
+
     }
 
     private void lexicalAnalysis() {
@@ -288,6 +297,30 @@ public class Compilador extends javax.swing.JFrame {
         System.out.println("Tokens listos");
         vtnTabla.setVisible(true);
 
+    }
+
+    private void fillTablaCuadruplos() {
+        ArrayList<String> Arre = codigoIntermedio();
+        VentanaCuadruplos vtnIntermedio = new VentanaCuadruplos();
+        Functions.clearDataInTable(vtnIntermedio.tblCuadru);
+        for (int a = 0; a < Arre.size(); a++) {
+            ArbolExpresion arbolExpresionArit = new ArbolExpresion();
+            String cad = Arre.get(a);
+            arbolExpresionArit.crearArbol(cad);
+            ArrayList<Cuadruplo> cuadruplos = arbolExpresionArit.getCuadruplos();
+            for (int i = 0; i < cuadruplos.size(); i++) {
+                Cuadruplo cuadruplo = cuadruplos.get(i);
+                String operador = cuadruplo.getOp();
+                String argu1 = cuadruplo.getArg1();
+                String argu2 = cuadruplo.getArg2();
+                String resul = cuadruplo.getR();
+                Object[] data = new Object[]{operador, argu1, argu2, resul};
+                Functions.addRowDataInTable(vtnIntermedio.tblCuadru, data);
+                System.out.println(operador + " " + argu1 + " " + argu2 + " " + resul);
+            }
+        }
+        System.out.println("Tokens listos");
+        vtnIntermedio.setVisible(true);
     }
 
     private void semanticAnalysis() {
@@ -430,6 +463,8 @@ public class Compilador extends javax.swing.JFrame {
         pnlError = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         txtConsola = new javax.swing.JTextArea();
+        jButton1 = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
         menu = new javax.swing.JMenuBar();
         archivo = new javax.swing.JMenu();
         opNuevo = new javax.swing.JMenuItem();
@@ -453,6 +488,7 @@ public class Compilador extends javax.swing.JFrame {
         opAutomata = new javax.swing.JMenuItem();
         opGramaticaG = new javax.swing.JMenuItem();
         opGramaticaU = new javax.swing.JMenuItem();
+        opCodIntermedio = new javax.swing.JMenuItem();
 
         jMenu1.setText("jMenu1");
 
@@ -593,6 +629,12 @@ public class Compilador extends javax.swing.JFrame {
         pnlFondo.add(pnlError, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 350, -1, 170));
 
         getContentPane().add(pnlFondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
+
+        jButton1.setText("jButton1");
+        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
+
+        jLabel1.setText("jLabel1");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         menu.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         menu.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
@@ -750,6 +792,14 @@ public class Compilador extends javax.swing.JFrame {
 
         opciones.add(opGramatica);
 
+        opCodIntermedio.setText("Código intermedio");
+        opCodIntermedio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                opCodIntermedioActionPerformed(evt);
+            }
+        });
+        opciones.add(opCodIntermedio);
+
         menu.add(opciones);
 
         setJMenuBar(menu);
@@ -830,6 +880,19 @@ public class Compilador extends javax.swing.JFrame {
     }//GEN-LAST:event_txtCodigoKeyReleased
 
     private void opTablaTokensDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opTablaTokensDActionPerformed
+        if (err != null) {
+            err.dispose();
+        }
+        if (auto != null) {
+            auto.dispose();
+        }
+        if (venErrores != null) {
+            venErrores.dispose();
+        }
+
+        if (opcGrama != null) {
+            opcGrama.dispose();
+        }
         fillTablaTokens();
     }//GEN-LAST:event_opTablaTokensDActionPerformed
 
@@ -1050,15 +1113,32 @@ public class Compilador extends javax.swing.JFrame {
         if (opcGrama != null) {
             opcGrama.dispose();
         }
-        String cadena = "";
-        for (int i = 0; i <= gramaticas.size() - 1; i++) {
-            cadena += gramaticas.get(i) + "\n";
-        }
+//        String cadena = "";
+//        for (int i = 0; i <= gramaUsadas.size() - 1; i++) {
+//            cadena += gramaUsadas.get(i) + "\n";
+//        }
 
-        opcGrama = new OpcionesGrama(gramaticas);
+        opcGrama = new OpcionesGrama(gramaUsadas);
         opcGrama.setVisible(true);
 
     }//GEN-LAST:event_opGramaticaUActionPerformed
+
+    private void opCodIntermedioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opCodIntermedioActionPerformed
+        if (err != null) {
+            err.dispose();
+        }
+        if (auto != null) {
+            auto.dispose();
+        }
+        if (venErrores != null) {
+            venErrores.dispose();
+        }
+
+        if (opcGrama != null) {
+            opcGrama.dispose();
+        }
+        fillTablaCuadruplos();
+    }//GEN-LAST:event_opCodIntermedioActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1118,7 +1198,9 @@ public class Compilador extends javax.swing.JFrame {
     private javax.swing.JLabel imgGuardar;
     private javax.swing.JLabel imgGuardarComo;
     private javax.swing.JLabel imgNuevo;
+    private javax.swing.JButton jButton1;
     private say.swing.JFontChooser jFontChooser1;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JScrollPane jScrollPane1;
@@ -1128,6 +1210,7 @@ public class Compilador extends javax.swing.JFrame {
     private javax.swing.JMenuBar menu;
     private javax.swing.JMenuItem opAbrir;
     private javax.swing.JMenuItem opAutomata;
+    private javax.swing.JMenuItem opCodIntermedio;
     private javax.swing.JMenuItem opCompilar;
     private javax.swing.JMenuItem opCopiar;
     private javax.swing.JMenuItem opCortar;
@@ -1202,9 +1285,9 @@ public class Compilador extends javax.swing.JFrame {
     private boolean identificadorCorrecto() {
         String error = "";
         if (ArreNomToken.get(pos).equals("Op_Asignacion")) {
+            System.out.println(ArreNomToken.get(pos) + " encontrado");
+            gramaticas.add(ArreNomToken.get(pos));
             pos++;
-            System.out.println("Operador de asignacion encontrado");
-            gramaticas.add("Operador de asignacion");
             if (hayOtro()) {
                 switch (ArreNomToken.get(pos)) {
                     case "Numero":
@@ -1215,14 +1298,14 @@ public class Compilador extends javax.swing.JFrame {
                         varFila_columna = ArreFilaColumnaToken.get(pos - 1);
                         System.out.println(ANSI_PURPLE + "Fila_Columna de la variable: " + ArreFilaColumnaToken.get(pos - 1) + ANSI_RESET);
                         ArreVariables.add(new Variables(varNombre, varValor, varTipo, varFila_columna));
+                        System.out.println(ArreNomToken.get(pos) + " encontrado");
+                        gramaticas.add(ArreNomToken.get(pos));
                         pos++;
-                        System.out.println("Numero encontrado");
-                        gramaticas.add("Numero");
                         if (hayOtro()) {
                             if (ArreNomToken.get(pos).equals("Punto_Coma")) {
+                                System.out.println(ArreNomToken.get(pos) + " encontrado");
+                                gramaticas.add(ArreNomToken.get(pos));
                                 pos++;
-                                System.out.println("Punto y Coma encontrado");
-                                gramaticas.add("Punto y coma");
                                 return true;
                             } else {
                                 error = "Error [4], se esperaba punto y coma ';' en el identificador " + ArreFilaColumnaToken.get(pos - 1);
@@ -1245,14 +1328,14 @@ public class Compilador extends javax.swing.JFrame {
                         System.out.println(ANSI_PURPLE + "Fila_Columna de la variable: " + ArreFilaColumnaToken.get(pos - 1) + ANSI_RESET);
 
                         ArreVariables.add(new Variables(varNombre, varValor, varTipo, varFila_columna));
+                        System.out.println(ArreNomToken.get(pos) + " encontrado");
+                        gramaticas.add(ArreNomToken.get(pos));
                         pos++;
-                        System.out.println("Cadena encontrada");
-                        gramaticas.add("Cadena");
                         if (hayOtro()) {
                             if (ArreNomToken.get(pos).equals("Punto_Coma")) {
+                                System.out.println(ArreNomToken.get(pos) + " encontrado");
+                                gramaticas.add(ArreNomToken.get(pos));
                                 pos++;
-                                System.out.println("Punto y Coma encontrado");
-                                gramaticas.add("Punto y coma");
                                 return true;
                             } else {
                                 error = "Error [4], se esperaba punto y coma ';' en el identificador " + ArreFilaColumnaToken.get(pos - 1);
@@ -1327,14 +1410,14 @@ public class Compilador extends javax.swing.JFrame {
     private boolean op_RetornoCorrecto() {
         String error = "";
         if (ArreNomToken.get(pos).equals("Parentesis_A")) {
+            System.out.println(ArreNomToken.get(pos) + " encontrado");
+            gramaticas.add(ArreNomToken.get(pos));
             pos++;
-            System.out.println("Parentecis que abre encontrado");
-            gramaticas.add("Parentecis que abre");
             if (hayOtro()) {
                 if (ArreNomToken.get(pos).equals("Parentesis_C")) {
+                    System.out.println(ArreNomToken.get(pos) + " encontrado");
+                    gramaticas.add(ArreNomToken.get(pos));
                     pos++;
-                    System.out.println("Parentesis que cierra encontrado");
-                    gramaticas.add("Parentecis que cierra");
                     return true;
                     //Es corrrecto
                 } else {
@@ -1357,24 +1440,26 @@ public class Compilador extends javax.swing.JFrame {
     private boolean forCorrecto() {
         String error = "";
         if (ArreNomToken.get(pos).equals("Parentesis_A")) {
+            System.out.println(ArreNomToken.get(pos) + " encontrado");
+            gramaticas.add(ArreNomToken.get(pos));
             pos++;
-            System.out.println("Parentecis que abre encontrado");
-            gramaticas.add("Parentecis que abre");
             if (hayOtro()) {
                 if (ArreNomToken.get(pos).equals("Numero") || ArreNomToken.get(pos).equals("Identificador")) {
+                    System.out.println(ArreNomToken.get(pos) + " encontrado");
+                    gramaticas.add(ArreNomToken.get(pos));
                     pos++;
-                    System.out.println("Numero o identificador encontrado");
-                    gramaticas.add("Numero o identificador");
+
                     if (hayOtro()) {
                         if (ArreNomToken.get(pos).equals("Parentesis_C")) {
+                            System.out.println(ArreNomToken.get(pos) + " encontrado");
+                            gramaticas.add(ArreNomToken.get(pos));
                             pos++;
-                            System.out.println("Parentesis que cierra encontrado");
-                            gramaticas.add("Parentecis que cierra");
                             if (hayOtro()) {
                                 if (ArreNomToken.get(pos).equals("Llave_A")) {
+                                    System.out.println(ArreNomToken.get(pos) + " encontrado");
+                                    gramaticas.add(ArreNomToken.get(pos));
                                     pos++;
-                                    System.out.println("Llave que abre encontrada");
-                                    gramaticas.add("Llave que abre \n");
+                                    agregarGramaticaUsada();
                                     if (hayOtro()) {
 
                                         boolean test;
@@ -1390,9 +1475,9 @@ public class Compilador extends javax.swing.JFrame {
 
                                         if (hayOtro()) {
                                             if (ArreNomToken.get(pos).equals("Llave_C")) {
+                                                System.out.println(ArreNomToken.get(pos) + " encontrado");
+                                                gramaticas.add(ArreNomToken.get(pos));
                                                 pos++;
-                                                System.out.println("Llave que cierra encontrada");
-                                                gramaticas.add("Llave que cierra");
                                                 return true;
                                             } // }
                                             else {
@@ -1454,14 +1539,15 @@ public class Compilador extends javax.swing.JFrame {
             switch (ArreNomToken.get(pos)) {
                 /* Variables */
                 case "Identificador":
-                    System.out.println("Identificador encontrado");
-                    gramaticas.add("Identificador");
+                    System.out.println(ArreNomToken.get(pos) + " encontrado");
+                    gramaticas.add(ArreNomToken.get(pos));
                     varNombre = ArreToken.get(pos);
                     System.out.println(ANSI_PURPLE + "Nombre de la variable: " + ArreToken.get(pos) + ANSI_RESET);
                     pos++;
                     if (hayOtro()) {
                         if (identificadorCorrecto()) {
-                            gramaticas.add("Identificador correcto \n");
+                            agregarGramaticaUsada();
+                            //gramaticas.add("Identificador correcto \n");
                             return true;
                         }
                     }//Hay otro
@@ -1471,12 +1557,13 @@ public class Compilador extends javax.swing.JFrame {
 
                     break;
                 case "For":
-                    System.out.println("For encontrado");
-                    gramaticas.add("For");
+                    System.out.println(ArreNomToken.get(pos) + " encontrado");
+                    gramaticas.add(ArreNomToken.get(pos));
                     pos++;
                     if (hayOtro()) {
                         if (forCorrecto()) {
-                            gramaticas.add("For correcto \n");
+                            agregarGramaticaUsada();
+                            //gramaticas.add("For correcto \n");
                             return true;
                         }
 
@@ -1486,12 +1573,13 @@ public class Compilador extends javax.swing.JFrame {
                     break;
                 /* If */
                 case "If":
-                    System.out.println("If encontrada");
-                    gramaticas.add("If");
+                    System.out.println(ArreNomToken.get(pos) + " encontrado");
+                    gramaticas.add(ArreNomToken.get(pos));
                     pos++;
                     if (hayOtro()) {
                         if (ifCorrecta()) {
-                            gramaticas.add("If correcto \n");
+                            agregarGramaticaUsada();
+                            //gramaticas.add("If correcto \n");
                             return true;
                         }
 
@@ -1502,12 +1590,13 @@ public class Compilador extends javax.swing.JFrame {
 
                 /* While */
                 case "While":
-                    System.out.println("While encontrada");
-                    gramaticas.add("While");
+                    System.out.println(ArreNomToken.get(pos) + " encontrado");
+                    gramaticas.add(ArreNomToken.get(pos));
                     pos++;
                     if (hayOtro()) {
                         if (whileCorrecta()) {
-                            gramaticas.add("While correcto \n");
+                            agregarGramaticaUsada();
+                            //gramaticas.add("While correcto \n");
                             return true;
                         }
 
@@ -1538,11 +1627,13 @@ public class Compilador extends javax.swing.JFrame {
         boolean resp = false;
         for (int i = 0; i <= funciones.length - 1; i++) {
             if (ArreNomToken.get(pos).equals(funciones[i])) {
-                System.out.println("Se encontró: " + funciones[i]);
+                System.out.println(ArreNomToken.get(pos) + " encontrado");
+                gramaticas.add(ArreNomToken.get(pos));
                 pos++;
                 if (hayOtro()) {
                     if (funcionCorrecta()) {
-                        gramaticas.add("Funcion correcta \n");
+                        agregarGramaticaUsada();
+                        //gramaticas.add("Funcion correcta \n");
                         resp = true;
                     }
                 } else {
@@ -1558,39 +1649,42 @@ public class Compilador extends javax.swing.JFrame {
         String error = "";
 
         if (ArreNomToken.get(pos).equals("INICIO")) {
+            System.out.println(ArreNomToken.get(pos) + " encontrado");
+            gramaticas.add(ArreNomToken.get(pos));
             pos++;
-            System.out.println("INICIO encontrado");
-            gramaticas.add("Inicio");
             if (hayOtro()) {
                 if (ArreNomToken.get(pos).equals("Identificador")) {
+                    System.out.println(ArreNomToken.get(pos) + " encontrado");
+                    gramaticas.add(ArreNomToken.get(pos));
                     pos++;
-                    System.out.println("Identificador encontrado");
-                    gramaticas.add("Identificador");
                     if (hayOtro()) {
                         if (ArreNomToken.get(pos).equals("Llave_A")) {
+                            System.out.println(ArreNomToken.get(pos) + " encontrado");
+                            gramaticas.add(ArreNomToken.get(pos));
                             pos++;
-                            System.out.println("Llave que abre encontrada");
-                            gramaticas.add("Llave que abre");
                             if (hayOtro()) {
                                 if (ArreNomToken.get(pos).equals("PRINCIPAL")) {
+                                    System.out.println(ArreNomToken.get(pos) + " encontrado");
+                                    gramaticas.add(ArreNomToken.get(pos));
                                     pos++;
-                                    System.out.println("PRINCIPAL encontrado");
-                                    gramaticas.add("PRINCIPAL");
                                     if (hayOtro()) {
                                         if (ArreNomToken.get(pos).equals("Parentesis_A")) {
+                                            System.out.println(ArreNomToken.get(pos) + " encontrado");
+                                            gramaticas.add(ArreNomToken.get(pos));
                                             pos++;
-                                            System.out.println("Parentesis que abre encontrado");
-                                            gramaticas.add("Parentesis que abre");
                                             if (hayOtro()) {
                                                 if (ArreNomToken.get(pos).equals("Parentesis_C")) {
+                                                    System.out.println(ArreNomToken.get(pos) + " encontrado");
+                                                    gramaticas.add(ArreNomToken.get(pos));
                                                     pos++;
-                                                    System.out.println("Parentesis que cierra encontrado");
-                                                    gramaticas.add("Parentesis que cierra");
                                                     if (hayOtro()) {
                                                         if (ArreNomToken.get(pos).equals("Llave_A")) {
+                                                            System.out.println(ArreNomToken.get(pos) + " encontrado");
+                                                            gramaticas.add(ArreNomToken.get(pos));
                                                             pos++;
-                                                            System.out.println("Llave que abre encontrada");
-                                                            gramaticas.add("Llave que abre \n");
+
+                                                            agregarGramaticaUsada();
+
                                                             if (hayOtro()) {
                                                                 boolean test;
                                                                 do {
@@ -1615,25 +1709,27 @@ public class Compilador extends javax.swing.JFrame {
                                                                 /* Continua con el bloque de inicio */
                                                                 if (hayOtro()) {
                                                                     if (ArreNomToken.get(pos).equals("Llave_C")) {
+                                                                        System.out.println(ArreNomToken.get(pos) + " encontrado");
+                                                                        gramaticas.add(ArreNomToken.get(pos));
                                                                         pos++;
-                                                                        System.out.println("Llave que cierra encontrada");
-                                                                        gramaticas.add("Llave que cierra");
                                                                         if (hayOtro()) {
                                                                             if (ArreNomToken.get(pos).equals("Llave_C")) {
+                                                                                System.out.println(ArreNomToken.get(pos) + " encontrado");
+                                                                                gramaticas.add(ArreNomToken.get(pos));
                                                                                 pos++;
-                                                                                System.out.println("Llave que cierra encontrada");
-                                                                                gramaticas.add("Llave que cierra");
                                                                                 if (hayOtro()) {
                                                                                     if (ArreNomToken.get(pos).equals("FINAL")) {
+                                                                                        System.out.println(ArreNomToken.get(pos) + " encontrado");
+                                                                                        gramaticas.add(ArreNomToken.get(pos));
                                                                                         pos++;
-                                                                                        System.out.println("FINAL encontrado");
-                                                                                        gramaticas.add("FINAL");
                                                                                         if (ArreNomToken.size() > pos) {
                                                                                             error = "Error [20], se encontraron tokens despues de 'FINAL' eliminalos " + ArreFilaColumnaToken.get(pos - 1);
                                                                                             errores.add(error);
                                                                                         } else {
                                                                                             System.out.println("Todo el código es correcto");
-                                                                                            gramaticas.add("INICIO Correcto \n");
+                                                                                            agregarGramaticaUsada();
+
+                                                                                            //gramaticas.add("INICIO Correcto \n");
                                                                                             return true;
                                                                                         }
                                                                                     } // FINAL
@@ -1744,11 +1840,11 @@ public class Compilador extends javax.swing.JFrame {
 
     private boolean funcionCorrecta() {
         String error = "";
-        gramaticas.add("Funcion");
+        //gramaticas.add("Funcion");
         if (ArreNomToken.get(pos).equals("Parentesis_A")) {
+            System.out.println(ArreNomToken.get(pos) + " encontrado");
+            gramaticas.add(ArreNomToken.get(pos));
             pos++;
-            System.out.println("Parentecis que abre encontrado");
-            gramaticas.add("Parentecis que abre");
             /* Verifica parametros */
 
             if (hayOtro()) {
@@ -1773,7 +1869,8 @@ public class Compilador extends javax.swing.JFrame {
                     //fncCoVStatus = asignaStatus_fncCoV(fncCoVNombre);
                     switch (ArreNomToken.get(pos)) {
                         case "Cadena":
-                            System.out.println("Cadena encontrada");
+                            System.out.println(ArreNomToken.get(pos) + " encontrado");
+                            gramaticas.add(ArreNomToken.get(pos));
                             fncCoVValor = ArreToken.get(pos);
 
                             System.out.println(ANSI_PURPLE + "Valor: " + fncCoVValor + ANSI_RESET);
@@ -1784,7 +1881,8 @@ public class Compilador extends javax.swing.JFrame {
                             ArreFunciones_CadenaoVariable.add(new Funciones_CadenaoVariable(fncCoVNombre, fncCoVValor, fncCoVTipo, fncCoVFila_Columna));
                             break;
                         case "Identificador":
-                            System.out.println("Identificador encontrado");
+                            System.out.println(ArreNomToken.get(pos) + " encontrado");
+                            gramaticas.add(ArreNomToken.get(pos));
                             fncCoVValor = ArreToken.get(pos);
                             System.out.println(ANSI_PURPLE + "Valor: " + fncCoVValor + ANSI_RESET);
                             fncCoVTipo = "Identificador";
@@ -1815,8 +1913,8 @@ public class Compilador extends javax.swing.JFrame {
                     System.out.println(ANSI_PURPLE + "Nombre de la funcion: " + fncCoV_NoVNombre + ANSI_RESET);
                     switch (ArreNomToken.get(pos)) {
                         case "Cadena":
-                            System.out.println("Cadena encontrada");
-
+                            System.out.println(ArreNomToken.get(pos) + " encontrado");
+                            gramaticas.add(ArreNomToken.get(pos));
                             fncCoV_NoVValor_CoV = ArreToken.get(pos);
                             System.out.println(ANSI_PURPLE + "Valor CoV: " + fncCoV_NoVValor_CoV + ANSI_RESET);
 
@@ -1824,7 +1922,8 @@ public class Compilador extends javax.swing.JFrame {
                             System.out.println(ANSI_PURPLE + "Tipo: " + fncCoV_NoVTipo_CoV + ANSI_RESET);
                             break;
                         case "Identificador":
-                            System.out.println("Identificador encontrado");
+                            System.out.println(ArreNomToken.get(pos) + " encontrado");
+                            gramaticas.add(ArreNomToken.get(pos));
                             fncCoV_NoVValor_CoV = ArreToken.get(pos);
                             System.out.println(ANSI_PURPLE + "Valor CoV: " + fncCoV_NoVValor_CoV + ANSI_RESET);
 
@@ -1838,12 +1937,15 @@ public class Compilador extends javax.swing.JFrame {
                     pos++;
                     if (hayOtro()) {
                         if (ArreNomToken.get(pos).equals("Coma")) {
+                            System.out.println(ArreNomToken.get(pos) + " encontrado");
+                            gramaticas.add(ArreNomToken.get(pos));
                             pos++;
-                            System.out.println("Coma encontrada");
+
                             if (hayOtro()) {
                                 switch (ArreNomToken.get(pos)) {
                                     case "Numero":
-                                        System.out.println("Numero encontrado");
+                                        System.out.println(ArreNomToken.get(pos) + " encontrado");
+                                        gramaticas.add(ArreNomToken.get(pos));
                                         fncCoV_NoVValor_NoV = ArreToken.get(pos);
                                         System.out.println(ANSI_PURPLE + "Valor NoV: " + fncCoV_NoVValor_NoV + ANSI_RESET);
 
@@ -1855,7 +1957,8 @@ public class Compilador extends javax.swing.JFrame {
 
                                         break;
                                     case "Identificador":
-                                        System.out.println("Identificador encontrado");
+                                        System.out.println(ArreNomToken.get(pos) + " encontrado");
+                                        gramaticas.add(ArreNomToken.get(pos));
                                         fncCoV_NoVValor_NoV = ArreToken.get(pos);
                                         System.out.println(ANSI_PURPLE + "Valor CoV: " + fncCoV_NoVValor_NoV + ANSI_RESET);
 
@@ -1902,10 +2005,12 @@ public class Compilador extends javax.swing.JFrame {
                     System.out.println(ANSI_CYAN + "Evaluando: " + ArreToken.get(pos - 2) + ANSI_RESET);
                     switch (ArreNomToken.get(pos)) {
                         case "Numero":
-                            System.out.println("Cadena encontrada");
+                            System.out.println(ArreNomToken.get(pos) + " encontrado");
+                            gramaticas.add(ArreNomToken.get(pos));
                             break;
                         case "Identificador":
-                            System.out.println("Identificador encontrado");
+                            System.out.println(ArreNomToken.get(pos) + " encontrado");
+                            gramaticas.add(ArreNomToken.get(pos));
                             break;
                         default:
                             error = "Error [44], se esperaba una número o un identificador en la funcion: " + ArreToken.get(pos - 2) + " " + ArreFilaColumnaToken.get(pos - 1);
@@ -1951,15 +2056,15 @@ public class Compilador extends javax.swing.JFrame {
         String error = "";
         switch (ArreNomToken.get(pos)) {
             case "Numero":
+                System.out.println(ArreNomToken.get(pos) + " encontrado");
+                gramaticas.add(ArreNomToken.get(pos));
                 pos++;
-                System.out.println("Numero encontrado");
-                gramaticas.add("Numero");
 
                 return true;
             case "Cadena":
+                System.out.println(ArreNomToken.get(pos) + " encontrado");
+                gramaticas.add(ArreNomToken.get(pos));
                 pos++;
-                System.out.println("Cadena encontrada");
-                gramaticas.add("Cadena");
 
                 return true;
 //            case "OP_Retorno":
@@ -1990,14 +2095,14 @@ public class Compilador extends javax.swing.JFrame {
     private boolean finFuncion() {
         String error = "";
         if (ArreNomToken.get(pos).equals("Parentesis_C")) {
+            System.out.println(ArreNomToken.get(pos) + " encontrado");
+            gramaticas.add(ArreNomToken.get(pos));
             pos++;
-            System.out.println("Parentesis que cierra encontrado");
-            gramaticas.add("Parentesis que cierra");
             if (hayOtro()) {
                 if (ArreNomToken.get(pos).equals("Punto_Coma")) {
+                    System.out.println(ArreNomToken.get(pos) + " encontrado");
+                    gramaticas.add(ArreNomToken.get(pos));
                     pos++;
-                    System.out.println("Punto y Coma encontrado");
-                    gramaticas.add("Punto y coma");
                     return true;
                     //Es correcto
                 } else {
@@ -2019,32 +2124,41 @@ public class Compilador extends javax.swing.JFrame {
     private boolean ifCorrecta() {
         String error = "";
         if (ArreNomToken.get(pos).equals("Parentesis_A")) {
+            System.out.println(ArreNomToken.get(pos) + " encontrado");
+            gramaticas.add(ArreNomToken.get(pos));
             pos++;
-            System.out.println("Parentecis que abre encontrado");
-            gramaticas.add("Parentecis que abre");
             if (hayOtro()) {
                 if (valorCorrecto() || ArreNomToken.get(pos++).equals("Identificador")) {
-                    System.out.println("Valor o identificador encontrado");
-                    gramaticas.add("Valor o identificador");
+                    if (ArreNomToken.get(pos - 1).equals("Identificador")) {
+                        System.out.println(ArreNomToken.get(pos) + " encontrado");
+                        gramaticas.add(ArreNomToken.get(pos - 1));
+                    }
+//                    System.out.println("Valor o identificador encontrado");
+//                    gramaticas.add("Valor o identificador");
                     if (hayOtro()) {
                         if (ArreNomToken.get(pos).equals("Op_Relacional")) {
+                            System.out.println(ArreNomToken.get(pos) + " encontrado");
+                            gramaticas.add(ArreNomToken.get(pos));
                             pos++;
-                            System.out.println("Op_Relacional encontrado");
-                            gramaticas.add("Op_Relacional");
                             if (hayOtro()) {
                                 if (valorCorrecto() || ArreNomToken.get(pos++).equals("Identificador")) {
-                                    System.out.println("Valor o identificador encontrado");
-                                    gramaticas.add("Valor o identificador");
+                                    if (ArreNomToken.get(pos - 1).equals("Identificador")) {
+                                        System.out.println(ArreNomToken.get(pos) + " encontrado");
+                                        gramaticas.add(ArreNomToken.get(pos - 1));
+                                    }
+//                                    System.out.println("Valor o identificador encontrado");
+//                                    gramaticas.add("Valor o identificador");
                                     if (hayOtro()) {
                                         if (ArreNomToken.get(pos).equals("Parentesis_C")) {
+                                            System.out.println(ArreNomToken.get(pos) + " encontrado");
+                                            gramaticas.add(ArreNomToken.get(pos));
                                             pos++;
-                                            System.out.println("Parentesis que cierra encontrado");
-                                            gramaticas.add("Parentesis que cierra");
                                             if (hayOtro()) {
                                                 if (ArreNomToken.get(pos).equals("Llave_A")) {
+                                                    System.out.println(ArreNomToken.get(pos) + " encontrado");
+                                                    gramaticas.add(ArreNomToken.get(pos));
                                                     pos++;
-                                                    System.out.println("Llave que abre encontrada");
-                                                    gramaticas.add("Llave que abre \n");
+                                                    agregarGramaticaUsada();
                                                     if (hayOtro()) {
                                                         boolean test;
                                                         do {
@@ -2058,9 +2172,9 @@ public class Compilador extends javax.swing.JFrame {
                                                         System.out.println("Saliendo de analizar el codigo dentro de la estructura de if");
                                                         if (hayOtro()) {
                                                             if (ArreNomToken.get(pos).equals("Llave_C")) {
+                                                                System.out.println(ArreNomToken.get(pos) + " encontrado");
+                                                                gramaticas.add(ArreNomToken.get(pos));
                                                                 pos++;
-                                                                System.out.println("Llave que cierra encontrada");
-                                                                gramaticas.add("Llave que cierra");
                                                                 return true;
                                                             } // }
                                                             else {
@@ -2147,13 +2261,17 @@ public class Compilador extends javax.swing.JFrame {
     private boolean whileCorrecta() {
         String error = "";
         if (ArreNomToken.get(pos).equals("Parentesis_A")) {
+            System.out.println(ArreNomToken.get(pos) + " encontrado");
+            gramaticas.add(ArreNomToken.get(pos));
             pos++;
-            System.out.println("Parentecis que abre encontrado");
-            gramaticas.add("Parentesis que abre");
             if (hayOtro()) {
                 if (valorCorrecto() || ArreNomToken.get(pos++).equals("Identificador")) {
-                    System.out.println("Valor o identificador encontrado");
-                    gramaticas.add("Valor o identificador");
+                    if (ArreNomToken.get(pos - 1).equals("Identificador")) {
+                        System.out.println(ArreNomToken.get(pos) + " encontrado");
+                        gramaticas.add(ArreNomToken.get(pos - 1));
+                    }
+//                    System.out.println("Valor o identificador encontrado");
+//                    gramaticas.add("Valor o identificador");
                     if (hayOtro()) {
                         if (ArreNomToken.get(pos).equals("Op_Relacional")) {
                             pos++;
@@ -2161,18 +2279,24 @@ public class Compilador extends javax.swing.JFrame {
                             gramaticas.add("Op_Relacional");
                             if (hayOtro()) {
                                 if (valorCorrecto() || ArreNomToken.get(pos++).equals("Identificador")) {
-                                    System.out.println("Valor o identificador encontrado");
-                                    gramaticas.add("Valor o identificador");
+                                    if (ArreNomToken.get(pos - 1).equals("Identificador")) {
+                                        System.out.println("Identificador encontrado");
+                                        gramaticas.add(ArreNomToken.get(pos - 1));
+                                    }
+//                                    System.out.println("Valor o identificador encontrado");
+//                                    gramaticas.add("Valor o identificador");
                                     if (hayOtro()) {
                                         if (ArreNomToken.get(pos).equals("Parentesis_C")) {
-                                            pos++;
                                             System.out.println("Parentesis que cierra encontrado");
-                                            gramaticas.add("Parentesis que cierra");
+                                            gramaticas.add(ArreNomToken.get(pos));
+                                            pos++;
+
                                             if (hayOtro()) {
                                                 if (ArreNomToken.get(pos).equals("Llave_A")) {
+                                                    System.out.println(ArreNomToken.get(pos) + " encontrado");
+                                                    gramaticas.add(ArreNomToken.get(pos));
                                                     pos++;
-                                                    System.out.println("Llave que abre encontrada");
-                                                    gramaticas.add("Llave que abre \n");
+                                                    agregarGramaticaUsada();
                                                     if (hayOtro()) {
                                                         boolean test;
                                                         do {
@@ -2186,9 +2310,9 @@ public class Compilador extends javax.swing.JFrame {
                                                         System.out.println("Saliendo de analizar el codigo dentro de la estructura de while");
                                                         if (hayOtro()) {
                                                             if (ArreNomToken.get(pos).equals("Llave_C")) {
+                                                                System.out.println(ArreNomToken.get(pos) + " encontrado");
+                                                                gramaticas.add(ArreNomToken.get(pos));
                                                                 pos++;
-                                                                System.out.println("Llave que cierra encontrada");
-                                                                gramaticas.add("Llave que cierra");
                                                                 return true;
                                                             } // }
                                                             else {
@@ -2671,4 +2795,37 @@ public class Compilador extends javax.swing.JFrame {
         return resp;
     }
 
+    public ArrayList<String> matches(String text, String regex) {
+        ArrayList<String> texts = new ArrayList();
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(text);
+        while (matcher.find()) {
+            System.out.println("Found text: " + matcher.group());
+            System.out.println("Start index: " + matcher.start());
+            System.out.println("End index: " + matcher.end());
+            System.out.println("=============================");
+            texts.add(matcher.group());
+        }
+        return texts;
+    }
+
+    public ArrayList<String> codigoIntermedio() {
+        String codigo = txtCodigo.getText();
+        codigo = codigo.replaceAll("[\r]+", "");
+        System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXx");
+        System.out.println(codigo);
+        System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXx");
+        String expregularnumero = "\\$[A-Za-zÑñÁÉÍÓÚ]+[\t\s]*=[\t\s]*([0-9]+|\".*\")";
+        return matches(codigo, expregularnumero);
+
+    }
+
+    private void agregarGramaticaUsada() {
+        gramaticas.forEach(gram -> {
+            gramatica += gram + " ";
+        });
+        gramaUsadas.add(gramatica);
+        gramatica = "";
+        gramaticas.clear();
+    }
 }
