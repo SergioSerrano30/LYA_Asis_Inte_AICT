@@ -1,35 +1,26 @@
-INICIO $programa {
+ INICIO $programa {
     PRINCIPAL(){
 //Bloque de codigo
-        //$pSala = "cerrado";        
-        //$pComedor = 1;
-        //$pCom = 8;
-        //$p = "";
-        //$pComedor = "cerrado";
-        //puerta_cerrar();
-        //puerta_abrir($pSala);
+$x = "";
+def #aspPatio;
+$veces = 5;
+if(3==$x){
+aspersor_activar(#aspPatio);
+aspersor_desactivar(#aspPatio);
+//aspersor_desactivar(#aspPatio);
+aspersor_activar(#aspPatio);
+def #pRecepcion;
+puerta_abrir(#pRecepcion);
+puerta_cerrar(#pRecepcion);
+//puerta_abrir(#pSala1);
+}   
+def #panelPatio;
+panel_encender(#panelPatio);
+panel_girar(#panelPatio,70);
+//panel_apagar(#panelPatio);
+panel_girar(#panelPatio,2);
+panel_girar(#panelPatio,20);
+panel_girar(#panelPatio,67);
+//panel_apagar(#panelPatio);
+}}FINAL
 
-
-        //$p=2;
-        
-        //$aspSalida = "desactivado";
-        //$caja = "desactivado";
-        //$aspEntrada = "desactivado";
-        //$aspEntrada = "desactivado";
-        //$x = 100;
-    
-        //aspersor_activar($aspEntrada,$x);
-        //aspersor_desactivar($aspEntrada);
-
-
-        //cajafuerte_activar($caja,60);
-    
-        //aspersor_activar($aspSalida,10);
-
-    
-
-//Fin bloque de codigo
-    }//Fin PRINCIPAL
-}//Fin INICIO
-FINAL
-//NO AGREGAR CODIGO DESPUES DE LA PALABRA FINAL

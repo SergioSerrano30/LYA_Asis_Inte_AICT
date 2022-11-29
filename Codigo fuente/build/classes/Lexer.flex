@@ -87,7 +87,9 @@ cajafuerte_activar |
 cajafuerte_desactivar  { return token(yytext(), "OP_Caja", yyline, yycolumn); }
 
 /* Opciones panel solar */
-panel_girar  { return token(yytext(), "OP_Panel", yyline, yycolumn); }
+panel_girar |
+panel_encender |
+panel_apagar  { return token(yytext(), "OP_Panel", yyline, yycolumn); }
 
 /* --------------------------------- */
 
@@ -97,12 +99,28 @@ if { return token(yytext(), "If", yyline, yycolumn); }
 
 /* Ciclos */
 
-while { return token(yytext(), "While", yyline, yycolumn); }
+/*while { return token(yytext(), "While", yyline, yycolumn); }*/
 for { return token(yytext(), "For", yyline, yycolumn); }
 
-/* Return */
+/* Definir */
+def { return token(yytext(), "def", yyline, yycolumn);}
 
-return { return token(yytext(), "Return", yyline, yycolumn); }
+/* Variables de control */
+\#pRecepcion |
+\#pSala1 |
+\#pSala2 |
+\#vRecepcion |
+\#iluRecepcion |
+\#iluPrincipal |
+\#iluSala1 |
+\#iluSala2 |
+\#tvRecepcion |
+\#panelPatio |
+\#aspPatio |
+\#alarma |
+\#caja |
+\#cortadora { return token(yytext(), "CONTROL", yyline, yycolumn); }
+
 
 /* Operadores Relacional */
 

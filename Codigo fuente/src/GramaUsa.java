@@ -22,14 +22,6 @@ public class GramaUsa extends javax.swing.JFrame {
         initComponents();
 
         String cadena = "";
-        cadena += " Operaciones de retorno\n"
-                + "OP_RETORNO\n"
-                + "( (Parentesis_A)\n"
-                + "Valor (identificador|Numero|Cadena)\n"
-                + ") (Parentesis_C)\n"
-                + "; (Punto_Coma) \n";
-
-        cadena += "\n";
 
         cadena += "Variables\n"
                 + "Valor = Cadena|Numero|OP_RETORNO\n"

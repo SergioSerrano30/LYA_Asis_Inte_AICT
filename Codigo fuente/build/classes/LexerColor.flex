@@ -55,10 +55,26 @@ banda_activar | banda_desactivar |
 tv_encender | tv_apagar |
 alarma_activar | alarma_desactivar | 
 cajafuerte_activar | cajafuerte_desactivar | 
-panel_girar
+panel_girar | panel_encender |
+panel_apagar
 { return textColor(yychar, yylength(), new Color(22, 196, 59)); } // VERDE
 /* --------------------------------- */
 
+/* Variables de control */
+\#pRecepcion |
+\#pSala1 |
+\#pSala2 |
+\#vRecepcion |
+\#iluRecepcion |
+\#iluPrincipal |
+\#iluSala1 |
+\#iluSala2 |
+\#tvRecepcion |
+\#panelPatio |
+\#aspPatio |
+\#alarma |
+\#caja |
+\#cortadora { return textColor(yychar, yylength(), new Color(97, 48, 0)); } // CAFE
 /* INICIO Y FINAL*/
 
 INICIO | FINAL { return textColor(yychar, yylength(), new Color(255, 121, 255)); } // morado 
@@ -69,9 +85,9 @@ PRINCIPAL { return textColor(yychar, yylength(), new Color(75, 203, 204)); } // 
 /* Condicionales */
 
 if |
-while |
+/*while |*/
 for |
-return { return textColor(yychar, yylength(), new Color(138, 22, 196)); } // MORADO
+def  { return textColor(yychar, yylength(), new Color(138, 22, 196)); } // MORADO
 
 /* Operadores relacionales */
 
