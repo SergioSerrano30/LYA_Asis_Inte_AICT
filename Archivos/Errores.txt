@@ -1,3 +1,4 @@
+
 ----> Errores generales <----
 
 Error [1]: No hay tokens para analizar
@@ -6,15 +7,8 @@ Error [1]: No hay tokens para analizar
 ----> Errores identificador <----
 
 Error [2], se esperaba operador de asignacion en el identificador 
-Error [3], se esperaba numero, cadena u op_retorno en el identificador 
+Error [3], se esperaba numero o cadena en el identificador 
 Error [4], se esperaba punto y coma ';' en el identificador 
-
-
-----> Errores op_Retorno <----
-
-Error [5], se esperaba parentesis que abre '(' en la OP_Retorno 
-Error [6], se esperaba parentesis que cierra ')' en la OP_Retorno 
- 
 
 ----> Errores for <----
 
@@ -47,7 +41,7 @@ Error [42], se esperaba llave que abre '{' en el bloque PRINCIPAL
 Error [22], se esperaba parentesis que abre '(' en la funcion: " + ArreToken.get(pos - 2) + " "
 Error [23], se esperaba parentesis que cierra ')' en la funcion: " + ArreToken.get(pos - 2) + " "
 Error [24], se esperaba punto y coma ';' en la funcion: " + ArreToken.get(pos - 2) + " "
-Error [25], se esperaba una cadena o un identificador en la funcion: " + ArreToken.get(pos - 2) + " "
+Error [25], se esperaba una función 
 Error [26], se esperaba coma ',' en la funcion: " + ArreToken.get(pos - 2) + " "
 
 
@@ -73,141 +67,40 @@ Error [38], se esperaba llave que cierra '}' en el while
 
 ----> Errores Funciones Nuevas <----
 
-Error [44], se esperaba una número o un identificador en la funcion: " + ArreToken.get(pos - 2) + " "
+Error [5], se esperaba una variable de control en la funcion
+Error [6], se esperaba una número o un identificador en la funcion: " + ArreToken.get(pos - 2) + " "
+
+----> Variables de control <----
+Error sintactico [43],  se esperaba una variable de control despues del 'def'
+Error sintactico [44],  se esperaba punto y coma ';' despues de la variable de control 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-if(hayOtro()){
-    if(ArreNomToken.get(pos).equals("")){
-        pos++;
-        System.out.println(" encontrada");
-		
-    } // 
-    else{
-        error = "Error [], se esperaba   "+ArreFilaColumnaToken.get(pos-1);
-            errores.add(error);
-    } // 
-}//Hay otro
-else{
-    error = "Error [], se esperaba   "+ArreFilaColumnaToken.get(pos-1);
-    errores.add(error);
-}
-
-
-
-
-boolean test;
-do {
- System.out.println("Analiznado el codigo dentro de estructura for");
- test = operacionCorrecta();
- if (errores.size() > 0) {
-  System.out.println("Se encontro un error dentro del codigo en el for");
-  return false;
- }
-} while (test);
-System.out.println("Saliendo de analizar el codigo dentro de la estructura de for");
-
-
-/* FUNCIONES */
-                case "OP_Cita":
-                    System.out.println("Funcion encontrada");
-                    pos++;
-                    if (hayOtro()) {
-                        if (funcionCorrecta()) {
-                            gramaticas.add("Funcion correcta \n");
-                            return true;
-                        }
-
-                    } else {
-                        errores.add("Error [22], se esperaba parentesis que abre '(' en la funcion " + ArreFilaColumnaToken.get(pos - 1));
-                    }
-                    break;
-
-                case "OP_Turno":
-                    System.out.println("Funcion encontrada");
-                    pos++;
-                    if (hayOtro()) {
-                        if (funcionCorrecta()) {
-                            gramaticas.add("Funcion correcta \n");
-                            return true;
-                        }
-
-                    } else {
-                        errores.add("Error [22], se esperaba parentesis que abre '(' en la funcion " + ArreFilaColumnaToken.get(pos - 1));
-                    }
-                    break;
-
-                case "OP_Iluminacion":
-                    System.out.println("Funcion encontrada");
-                    pos++;
-                    if (hayOtro()) {
-                        if (funcionCorrecta()) {
-                            gramaticas.add("Funcion correcta \n");
-                            return true;
-                        }
-
-                    } else {
-                        errores.add("Error [22], se esperaba parentesis que abre '(' en la funcion " + ArreFilaColumnaToken.get(pos - 1));
-                    }
-                    break;
-
-                case "OP_Temperatura":
-                    System.out.println("Funcion encontrada");
-                    pos++;
-                    if (hayOtro()) {
-                        if (funcionCorrecta()) {
-                            gramaticas.add("Funcion correcta \n");
-                            return true;
-                        }
-
-                    } else {
-                        errores.add("Error [22], se esperaba parentesis que abre '(' en la funcion " + ArreFilaColumnaToken.get(pos - 1));
-                    }
-                    break;
-
-                case "OP_Puerta":
-                    System.out.println("Funcion encontrada");
-
-                    pos++;
-                    if (hayOtro()) {
-                        if (funcionCorrecta()) {
-                            gramaticas.add("Funcion correcta \n");
-                            return true;
-                        }
-
-                    } else {
-                        errores.add("Error [22], se esperaba parentesis que abre '(' en la funcion " + ArreFilaColumnaToken.get(pos - 1));
-                    }
-                    break;
-
-
-
-for (ErrorLSSL error : errors) {
-//                String strError = String.valueOf(error);
-//                strErrors += strError + "\n";
-//            }
-
-nombre = ArreToken.get(pos);
-System.out.println(ANSI_PURPLE +"Nombre de la variable: "+ArreToken.get(pos) + ANSI_RESET);
-
-valor = ArreToken.get(pos);
-System.out.println(ANSI_PURPLE +"Valor de la variable: "+ArreToken.get(pos) + ANSI_RESET);
-
-tipo = "Numero";
-System.out.println(ANSI_PURPLE +"Tipo de la variable: "+ArreNomToken.get(pos) + ANSI_RESET);
-
-fila_columna = ArreFilaColumnaToken.get(pos - 1);
-System.out.println(ANSI_PURPLE+"Fila_Columna de la variable: "+ArreFilaColumnaToken.get(pos - 1)+ANSI_RESET);
-
-ArreVariables.add(new Variables(nombre,valor,tipo,fila_columna));
+-------------------> SEMANTICOS <------------------------------
+Error semantico [1]: La variable ya se encuentra declarada 
+Error semantico [2]: No se puede cambiar el tipo de dato de la variable \nporque ya se encuentra definido 
+Error semantico [3]: La variable no se encuentra declarada para asignar en la función 
+Error semantico [4]: La variable asignada en la función es de tipo 'cadena', se esperaba una 'numero' 
+Error semantico [5]: La puerta no se puede cerrar si esta cerrada 
+Error semantico [6]: La puerta no se puede abrir si esta abierta 
+Error semantico [7]: El aspersor no se puede desactivar si ya está desactivado 
+Error semantico [8]: El aspersor no se puede activar si ya está activado
+Error semantico [9]: La cortadora no se puede desactivar si ya está desactivado 
+Error semantico [10]: La cortadora no se puede activar si ya está activado  
+Error semantico [11]: El ventilador no se puede desactivar si ya está desactivado 
+Error semantico [12]: El ventilador no se puede activar si ya está activado
+Error semantico [13]: La iluminacion no se puede apagar si ya está apagada 
+Error semantico [14]: La iluminacion no se puede encender si ya está encendida 
+Error semantico [15]: La banda no se puede desactivar si ya está desactivado 
+Error semantico [16]: La banda no se puede activar si ya está activado
+Error semantico [17]: La TV no se puede apagar si ya está apagada 
+Error semantico [18]: La TV no se puede encender si ya está encendida
+Error semantico [19]: La alarma no se puede desactivar si ya está desactivada 
+Error semantico [20]: La alarma no se puede activar si ya está activada
+Error semantico [21]: La caja fuerte no se puede desactivar si ya está desactivada 
+Error semantico [22]: La caja fuerte no se puede activar si ya está activada
+Error semantico [23]: La variable asignada no corresponde al tipo de funcion
+Error semantico [24]: El panel no se puede apagar si ya esta apagado 
+Error semantico [25]: El panel no se puede encender si ya esta encendido 
+Error semantico [26]: El panel no puede girar si no se encuentra encendido 
+Error semantico [27]: El panel no puede girar a más de 180°
