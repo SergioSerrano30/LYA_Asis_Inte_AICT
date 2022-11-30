@@ -12,8 +12,27 @@ public class VentanaCuadruplos extends javax.swing.JFrame {
     /**
      * Creates new form VentanaCuadruplos
      */
+    private String Cadena;
     public VentanaCuadruplos() {
         initComponents();
+    }
+      public VentanaCuadruplos(String Cadena) {
+        initComponents();
+        this.Cadena=Cadena;
+        mostrar();
+    }
+      public void mostrar(){
+      jAreaCiclos.setText(Cadena);
+      }
+      public String getCadena()
+    {
+        return Cadena;
+    }
+
+    public void setCadena(String cadena)
+    {
+        this.Cadena =cadena;
+         mostrar();
     }
 
     /**
@@ -28,10 +47,13 @@ public class VentanaCuadruplos extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tblCuadru = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jAreaCiclos = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
 
+        tblCuadru.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         tblCuadru.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -55,15 +77,22 @@ public class VentanaCuadruplos extends javax.swing.JFrame {
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("CÓDIGO INTERMEDIO");
 
+        jAreaCiclos.setColumns(20);
+        jAreaCiclos.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jAreaCiclos.setRows(5);
+        jScrollPane2.setViewportView(jAreaCiclos);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(108, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE)))
                 .addGap(105, 105, 105))
         );
         layout.setVerticalGroup(
@@ -72,8 +101,10 @@ public class VentanaCuadruplos extends javax.swing.JFrame {
                 .addGap(22, 22, 22)
                 .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 58, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 520, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(34, 34, 34))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 333, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(55, 55, 55))
         );
 
         pack();
@@ -116,8 +147,10 @@ public class VentanaCuadruplos extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextArea jAreaCiclos;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     public javax.swing.JTable tblCuadru;
     // End of variables declaration//GEN-END:variables
 }

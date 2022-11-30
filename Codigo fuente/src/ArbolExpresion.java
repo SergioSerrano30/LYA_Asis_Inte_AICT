@@ -16,6 +16,7 @@ public class ArbolExpresion {
     private int contador = 0;
     private int operaciones = 0;
     private String asignacion = "";
+    private String Ciclos = "";
 
     public ArbolExpresion() {
         this.c = new ArrayList<>();
@@ -26,24 +27,38 @@ public class ArbolExpresion {
     
     public void tAcero() {this.t = 0;}
     
-    public void crearArbol(String expresion) {
+    public String crearArbol(String expresion) {
         contador = 0;
         this.raiz = null;
         this.operandosPila.clear();
         this.operadoresPila.clear();
-        String[] e = expresion.split("=", 2);
-        asignacion = e[0];  
+        String[] e = expresion.split("([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+|=|==|>|<|!=)", 2);
+        asignacion = e[0]; 
+        System. out. println("###UNO###\n"+e[0]);
+        System. out. println("###DOS####\n"+e[1]); 
         
-        if (e[1].contains(">") || e[1].contains("<") || e[1].contains("=") || 
-                e[1].contains("VERDAD") || e[1].contains("FALSO")) {
-            operaciones = contarOperacionesBool(e[1].trim());
-            crearArbolBooleano(e[1]);
-        } else {
+        if (e[0].contains("if")) {
+        String[] uno=expresion.split("(\\()", 2);
+        String[] dos=uno[1].split("(\\))", 2);
+         Ciclos=Ciclos+"=============================================================\n"
+                      + expresion+"\n=============================================================\n"+"\n"+"T1= "+dos[0]+"\n"+
+                       "if_false T1 goto L1"+"\n.\n.\n.\n label L1\n\n" ;
+        }
+        if (e[0].contains("for")) {
+        String[] uno=expresion.split("(\\()", 2);
+        String[] dos=uno[1].split("(\\))", 2);
+         Ciclos=Ciclos+"=============================================================\n"
+                      + expresion+"\n=============================================================\n"+"\n"+"Label L1\n"+"T1= "+dos[0]+"-1\n"+
+                     "T2= T1>=0\n"+  
+                 "if_false T2 goto L2"+"\n.\n.\n.\n goto L1\n label L2\n\n" ;
+        }
+        else {
             operaciones = contarOperacionesArit(e[1].trim());
             crearArbolAritmetico(e[1]);
         }
         
         crearCuadruplos(raiz);
+        return Ciclos;
     }
     
     public void crearArbolBooleano(String expresion) {

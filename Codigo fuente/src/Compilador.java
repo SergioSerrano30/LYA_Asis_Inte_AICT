@@ -89,12 +89,9 @@ public class Compilador extends javax.swing.JFrame {
     VentanaErrores venErrores;
     OpcionesGrama opcGrama;
     VentanaCuadruplos vIntermedio;
-    private int esteXO;
-    private String varNombre, fncCoVNombre, fncCoV_NoVNombre = "";
-    private String varValor, fncCoVValor, fncCoV_NoVValor_CoV, fncCoV_NoVValor_NoV = "";
-    private String varTipo, fncCoVTipo, fncCoV_NoVTipo_CoV, fncCoV_NoVTipo_NoV = "";
-    private String varFila_columna, fncCoVFila_Columna, fncCoV_NoVFila_columna = "";
-    private String fncCoVStatus, fncCoV_NoVStatus = "";
+    private String fncCoV_NoVNombre = "";
+    private String fncCoV_NoVValor_CoV = "";
+    private String fncCoV_NoVTipo_CoV = "";
 
     //Colores
     public static final String ANSI_BLACK = "\u001B[30m";
@@ -215,7 +212,7 @@ public class Compilador extends javax.swing.JFrame {
         /* 0 */"",
         /* 1 */ "Error semantico [1]: La variable ya se encuentra declarada ",
         /* 2 */ "Error semantico [2]: No se puede cambiar el tipo de dato de la variable \nporque ya se encuentra definido ",
-        /* 3 */ "Error semantico [3]: La variable de control no se encuentra declarada para asignar en la funcion ",
+        /* 3 */ "Error semantico [3]: La variable no se encuentra declarada ",
         /* 4 */ "Error semantico [4]: La variable asignada en la función es de tipo 'cadena', se esperaba una 'numero' ",
         /* 5 */ "Error semantico [5]: La puerta no se puede cerrar si esta cerrada ",
         /* 6 */ "Error semantico [6]: La puerta no se puede abrir si esta abierta ",
@@ -240,41 +237,39 @@ public class Compilador extends javax.swing.JFrame {
         /* 25 */ "Error semantico [25]: El panel no se puede encender si ya esta encendido ",
         /* 26 */ "Error semantico [26]: El panel no puede girar si no se encuentra encendido ",
         /* 27 */ "Error semantico [27]: El panel no puede girar a más de 180° ",
-    };
+        /* 28 */ "Error semantico [28]: Los tipos de datos no coinciden ",
+        /* 29 */ "Error semantico [29]: Operacion invalida ",};
 
     public String soluciones_semantico[] = {
         /* 0 */"",
-        /* 1 */ "Solución: \n" + "1 \n",
-        /* 2 */ "Solución: \n" + "2 \n",
-        /* 3 */ "Solución: \n" + "3 \n",
-        /* 4 */ "Solución: \n" + "4 \n",
-        /* 5 */ "Solución: \n" + "5 \n",
-        /* 6 */ "Solución: \n" + "6 \n",
-        /* 7 */ "Solución: \n" + "7 \n",
-        /* 8 */ "Solución: \n" + "8 \n",
-        /* 9 */ "Solución: \n" + "9 \n",
-        /* 10 */ "Solución: \n" + "10 \n",
-        /* 11 */ "Solución: \n" + "11 \n",
-        /* 12 */ "Solución: \n" + "12 \n",
-        /* 13 */ "Solución: \n" + "13 \n",
-        /* 14 */ "Solución: \n" + "14 \n",
-        /* 15 */ "Solución: \n" + "15 \n",
-        /* 16 */ "Solución: \n" + "16 \n",
-        /* 17 */ "Solución: \n" + "17 \n",
-        /* 18 */ "Solución: \n" + "18 \n",
-        /* 19 */ "Solución: \n" + "19 \n",
-        /* 20 */ "Solución: \n" + "20 \n",
-        /* 20 */ "Solución: \n" + "20 \n",
-        /* 21 */ "Solución: \n" + "21 \n",
-        /* 22 */ "Solución: \n" + "22 \n",
-        /* 23 */ "Solución: \n" + "23 \n",
-        /* 24 */ "Solución: \n" + "24 \n",
-        /* 25 */ "Solución: \n" + "25 \n",
-        /* 26 */ "Solución: \n" + "26 \n",
-        /* 27 */ "Solución: \n" + "27 \n",
-        /* 28 */ "Solución: \n" + "28 \n",
-        /* 29 */ "Solución: \n" + "29 \n",
-        /* 30 */ "Solución: \n" + "30 \n"
+        /* 1 */ "Solucion: \n" + "La variable que quiere declarar ya se encuentra anteriormente declarada \n" + "\n" + "Resultado esperado: \n" + "$ejemplo = 12",
+        /* 2 */ "Solucion: \n" + "No se puede cambiar el tipo de dato de la variable porque ya se encuentra definido \n",
+        /* 3 */ "Solucion: \n" + "La variable no se encuentra declarada para asignar en la función \n",
+        /* 4 */ "Solucion: \n" + "La variable asignada en la función es de tipo 'cadena', se esperaba una 'numero' \n" + "\n" + "Resultado esperado:  \n" + "Identificador OP_Asignacion Valor Punto_Coma \n" + "$identificador = 'Cadena'; \n" + "$ejemplo = 'Ejemplo'",
+        /* 5 */ "Solucion: \n" + "La puerta no se puede cerrar si esta cerrada \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL); \n" + "\n Ejemplo \n" + "puerta_cerar(#varControl);",
+        /* 6 */ "Solucion: \n" + "La puerta no se puede abrir si esta abierta \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL); \n" + "\n Ejemplo \n" + "puerta_abrir(#varControl);",
+        /* 7 */ "Solucion: \n" + "El aspersor no se puede desactivar si ya está desactivado \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL); \n" + "\n Ejemplo \n" + "aspersor_activar(#varControl);",
+        /* 8 */ "Solucion: \n" + "El aspersor no se puede activar si ya está activado \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL); \n" + "\n Ejemplo \n" + "aspersor_desactivar(#varControl);",
+        /* 9 */ "Solucion: \n" + "La cortadora no se puede desactivar si ya está desactivado \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL); \n" + "\n Ejemplo \n" + "cortadora_activar(#varControl);",
+        /* 10 */ "Solucion: \n" + "La cortadora no se puede activar si ya está activado \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL); \n" + "\n Ejemplo \n" + "cortadora_desactivar(#varControl);",
+        /* 11 */ "Solucion: \n" + "El ventilador no se puede desactivar si ya está desactivado \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL); \n" + "\n Ejemplo \n" + "ventilador_activar(#varControl);",
+        /* 12 */ "Solucion: \n" + "El ventilador no se puede activar si ya está activado \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL); \n" + "\n Ejemplo \n" + "ventilador_desactivar(#varControl);",
+        /* 13 */ "Solucion: \n" + "La iluminacion no se puede apagar si ya está apagada \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL); \n" + "\n Ejemplo \n" + "iluminacion_encender(#varControl);",
+        /* 14 */ "Solucion: \n" + "La iluminacion no se puede encender si ya está encendida  \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL); \n" + "\n Ejemplo \n" + "iluminacion_apagar(#varControl);",
+        /* 15 */ "Solucion: \n" + "La banda no se puede desactivar si ya está desactivado \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL); \n" + "\n Ejemplo \n" + "banda_activar(#varControl);",
+        /* 16 */ "Solucion: \n" + "La banda no se puede activar si ya está activado \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL); \n" + "\n Ejemplo \n" + "banda_desactivar(#varControl);",
+        /* 17 */ "Solucion: \n" + "La TV no se puede apagar si ya está apagada \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL); \n" + "\n Ejemplo \n" + "tv_encender(#varControl);",
+        /* 18 */ "Solucion: \n" + "La TV no se puede encender si ya está encendida \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL); \n" + "\n Ejemplo \n" + "tv_apagar(#varControl);",
+        /* 19 */ "Solucion: \n" + "La alarma no se puede desactivar si ya está desactivada \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL); \n" + "\n Ejemplo \n" + "alarma_activar(#varControl);",
+        /* 20 */ "Solucion: \n" + "La alarma no se puede activar si ya está activada \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL); \n" + "\n Ejemplo \n" + "alarma_desactivar(#varControl);",
+        /* 21 */ "Solucion: \n" + "La caja fuerte no se puede desactivar si ya está desactivada \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL); \n" + "\n Ejemplo \n" + "cajafuerte_activar(#varControl);",
+        /* 22 */ "Solucion: \n" + "La caja fuerte no se puede activar si ya está activada \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL); \n" + "\n Ejemplo \n" + "cajafuerte_desactivar(#varControl);",
+        /* 23 */ "Solucion: \n" + "La variable asignada no corresponde al tipo de funcion \n",
+        /* 23 */ "Solucion: \n" + "El panel no se puede apagar si ya esta apagado \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL); \n" + "\n Ejemplo \n" + "panel_encender(#varControl);",
+        /* 25 */ "Solucion: \n" + "El panel no se puede encender si ya esta encendido \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL); \n" + "\n Ejemplo \n" + "panel_apagar(#varControl);",
+        /* 26 */ "Solucion: \n" + "El panel no puede girar si no se encuentra encendido \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL); \n" + "\n Ejemplo \n" + "panel_encender(#varControl);",
+        /* 27 */ "Solucion: \n" + "El panel no puede girar a más de 180° \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL,Numero o Identificador); \n" + "\n Ejemplo \n" + "panel_girar(#varCOntrol,180);"
+
     };
 
     public Compilador() {
@@ -324,7 +319,6 @@ public class Compilador extends javax.swing.JFrame {
         ArreCompleto = new ArrayList<>();
         identProd = new ArrayList<>(); //Identificadores de producción
         identificadores = new HashMap<>();
-        esteXO = this.getX();
 
         Functions.setAutocompleterJTextComponent(new String[]{"INICIO $programa {\n    PRINCIPAL(){\n//Bloque de codigo\n       \n       \n       \n//Fin bloque de codigo\n    }//Fin PRINCIPAL\n}//Fin INICIO\nFINAL\n//NO AGREGAR CODIGO DESPUES DE LA PALABRA FINAL",
             "cortadora_activar(#cortadora);", "cortadora_desactivar(#cortadora);",
@@ -336,8 +330,8 @@ public class Compilador extends javax.swing.JFrame {
             "tv_encender(#tvRecepcion);", "tv_apagar(#tvRecepcion);",
             "alarma_activar(#alarma);", "alarma_desactivar(#alarma);",
             "cajafuerte_activar(#caja);", "cajafuerte_desactivar(#caja);",
-            "panel_girar(#panelPatio,GRADOS);","panel_encender(#panelPatio);","panel_apagar(#panelPatio);",
-            "#vRecepcion;","#pRecepcion;",
+            "panel_girar(#panelPatio,GRADOS);", "panel_encender(#panelPatio);", "panel_apagar(#panelPatio);",
+            "#vRecepcion;", "#pRecepcion;",
             "#pSala1;", "#pSala2;",
             "#iluRecepcion;", "#iluPrincipal;",
             "#iluSala2;", "#iluSala1;",
@@ -478,13 +472,16 @@ public class Compilador extends javax.swing.JFrame {
     }
 
     private void fillTablaCuadruplos() {
+        String cadena="";
         ArrayList<String> Arre = codigoIntermedio();
-        VentanaCuadruplos vtnIntermedio = new VentanaCuadruplos();
+        System. out. println("=================\n"+Arre); 
+        VentanaCuadruplos vtnIntermedio = new VentanaCuadruplos(cadena);
         Functions.clearDataInTable(vtnIntermedio.tblCuadru);
         for (int a = 0; a < Arre.size(); a++) {
             ArbolExpresion arbolExpresionArit = new ArbolExpresion();
             String cad = Arre.get(a);
-            arbolExpresionArit.crearArbol(cad);
+            cadena=cadena+arbolExpresionArit.crearArbol(cad);
+            
             ArrayList<Cuadruplo> cuadruplos = arbolExpresionArit.getCuadruplos();
             for (int i = 0; i < cuadruplos.size(); i++) {
                 Cuadruplo cuadruplo = cuadruplos.get(i);
@@ -498,39 +495,12 @@ public class Compilador extends javax.swing.JFrame {
             }
         }
         System.out.println("Tokens listos");
+        System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&\n"+cadena);
+        vtnIntermedio.setCadena(cadena);
         vtnIntermedio.setVisible(true);
     }
 
     private void semanticAnalysis() {
-
-//        errores.clear();
-//        System.out.println("NUMERO DE FUNCIONES DEFINIDAS: " + ArreFunciones_CadenaoVariable.size());
-//        ArreFunciones_CadenaoVariable.forEach(var
-//                -> {
-//            System.out.println("");
-//            System.out.println("Nombre: " + var.nombre());
-//            System.out.println("Valor: " + var.valor());
-//            System.out.println("Tipo: " + var.tipo());
-//            System.out.println("Fila_Columna: " + var.fila_columna());
-//            System.out.println("Status: " + var.status());
-//        }
-//        );
-//        if (!sema_variables_repetidas()){
-//            System.out.println("Sin variables repetidas");
-//        }
-//        ArreFunciones_CadenaoVariable.forEach(fnc ->{
-//            System.out.println("Fila de "+fnc.nombre()+ " desde propiedad -> "+fnc.fila());
-//        });
-//        ArreVariables.forEach(variables ->{
-//            System.out.println("Fila de "+variables.nombre()+ " desde propiedad -> "+variables.fila());
-//        });
-//        ArreFilaFnc.forEach(ffnc -> {
-//            System.out.println("Fila de la funcion: " + ffnc);
-//        });
-//        ArreFilaVar.forEach(fv -> {
-//            System.out.println("Fila de la variable: " + fv);
-//        });
-        //SERGIO_EDITANDO 
         sema_asignaFilas();
         if (ArreVariables.size() > 0) {
             if (sema_variables_tipoDato()) {
@@ -585,6 +555,14 @@ public class Compilador extends javax.swing.JFrame {
         } else {
             txtConsola.setText("Compilación terminada...");
             txtConsola.setForeground(Color.green);
+            String msg = "";
+
+            for (int i = 0; i < ArreVariables.size(); i++) {
+                Variables var = ArreVariables.get(i);
+                msg += var.nombre() + " " + var.valor() + " " + var.tipo() + " " + var.fila_columna() + "\n";
+            }
+            //mensaje(msg);
+
         }
         txtConsola.setCaretPosition(0);
     }
@@ -663,6 +641,7 @@ public class Compilador extends javax.swing.JFrame {
         opCaja = new javax.swing.JMenuItem();
         opCortadora = new javax.swing.JMenuItem();
         opCodIntermedio = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
 
         jMenu1.setText("jMenu1");
 
@@ -1122,6 +1101,9 @@ public class Compilador extends javax.swing.JFrame {
         });
         opciones.add(opCodIntermedio);
 
+        jMenuItem2.setText("Código optimizado");
+        opciones.add(jMenuItem2);
+
         menu.add(opciones);
 
         setJMenuBar(menu);
@@ -1536,6 +1518,7 @@ public class Compilador extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JPopupMenu.Separator jSeparator1;
@@ -1721,7 +1704,6 @@ public class Compilador extends javax.swing.JFrame {
     }
 
     private boolean forCorrecto() {
-        String error = "";
         if (valorCorrecto(ArreNomToken.get(pos), "Parentesis_A")) {
             pos++;
             if (hayOtro() && (valorCorrecto(ArreNomToken.get(pos), "Numero") || valorCorrecto(ArreNomToken.get(pos), "Identificador"))) {
@@ -2016,7 +1998,7 @@ public class Compilador extends javax.swing.JFrame {
                         || ArreToken.get(pos - 2).equals("tv_encender") || ArreToken.get(pos - 2).equals("tv_apagar")
                         || ArreToken.get(pos - 2).equals("cajafuerte_desactivar") || ArreToken.get(pos - 2).equals("aspersor_desactivar")
                         || ArreToken.get(pos - 2).equals("panel_encender") || ArreToken.get(pos - 2).equals("panel_apagar")
-                        || ArreToken.get(pos - 2).equals("aspersor_activar") || ArreToken.get(pos - 2).equals("cajafuerte_activar"))  {
+                        || ArreToken.get(pos - 2).equals("aspersor_activar") || ArreToken.get(pos - 2).equals("cajafuerte_activar")) {
                     fncCoV_NoVNombre = ArreToken.get(pos - 2);
                     if (agregaPila(ArreToken.get(pos - 2), ArreToken.get(pos), "")) {
                         //System.out.println(ANSI_RED+" Error semantico "+ANSI_RESET);
@@ -2050,11 +2032,11 @@ public class Compilador extends javax.swing.JFrame {
                             if (hayOtro()) {
                                 switch (ArreNomToken.get(pos)) {
                                     case "Numero":
-                                        if(fncCoV_NoVNombre.equals("panel_girar")){
+                                        if (fncCoV_NoVNombre.equals("panel_girar")) {
                                             int valor = Integer.parseInt(ArreToken.get(pos));
-                                            
-                                            if(valor <0 || valor>180){
-                                                agregarError("semantico", 27, ArreFilaColumnaToken.get(pos - 1),"Valor ---> "+valor);
+
+                                            if (valor < 0 || valor > 180) {
+                                                agregarError("semantico", 27, ArreFilaColumnaToken.get(pos - 1), "Valor ---> " + valor);
 //                                                return false;
                                             }
                                         }
@@ -2157,31 +2139,136 @@ public class Compilador extends javax.swing.JFrame {
     }
 
     private boolean ifCorrecta() {
+        boolean correcto = true;
         if (valorCorrecto(ArreNomToken.get(pos), "Parentesis_A")) {
             pos++;
+            Variables var1 = new Variables("var1", "var1", "var1", "var1");
+            Variables var2 = new Variables("var2", "var2", "var2", "var2");
             if (hayOtro() && (valorCorrecto() || valorCorrecto(ArreNomToken.get(pos++), "Identificador"))) {
+                if (ArreNomToken.get(pos - 1).equals("Identificador")) {
+                    var1 = identificadorDeclarado(ArreToken.get(pos - 1));
+                    if (var1.nombre().equals("XXX")) {
+                        agregarError("semantico", 3, ArreFilaColumnaToken.get(pos - 1), "Variable ---> " + ArreToken.get(pos - 1));
+                        return false;
+                    }
+                } else if (ArreNomToken.get(pos - 1).equals("Numero") || ArreNomToken.get(pos - 1).equals("Cadena")) {
+                    var1.setTipo(ArreNomToken.get(pos - 1));
+                    var1.setValor(ArreToken.get(pos - 1));
+                }
                 if (hayOtro() && valorCorrecto(ArreNomToken.get(pos), "Op_Relacional")) {
+                    String operador = ArreToken.get(pos);
                     pos++;
                     if (hayOtro() && (valorCorrecto() || valorCorrecto(ArreNomToken.get(pos++), "Identificador"))) {
+                        if (ArreNomToken.get(pos - 1).equals("Identificador")) {
+                            var2 = identificadorDeclarado(ArreToken.get(pos - 1));
+                            if (var2.nombre().equals("XXX")) {
+                                agregarError("semantico", 3, ArreFilaColumnaToken.get(pos - 1), "Variable ---> " + ArreToken.get(pos - 1));
+                                return false;
+                            }
+                        } else if (ArreNomToken.get(pos - 1).equals("Numero") || ArreNomToken.get(pos - 1).equals("Cadena")) {
+                            var2.setTipo(ArreNomToken.get(pos - 1));
+                            var2.setValor(ArreToken.get(pos - 1));
+                        }
+                        if (!tiposIguales(var1, var2)) {
+                            agregarError("semantico", 28, ArreFilaColumnaToken.get(pos - 1), "Tipo 1 ---> " + var1.tipo() + "\nTipo 2 ---> " + var2.tipo());
+                            return false;
+                        } else { //SI SON IGUALES
+
+                            switch (var1.tipo()) {
+                                case "Cadena":
+                                    if (operador.equals("==") || operador.equals("!=")) {
+                                    } else {
+                                        agregarError("semantico", 29, ArreFilaColumnaToken.get(pos - 1), "Operacion no permitida entre cadenas");
+                                        return false;
+                                    }
+                                    break;
+                                default:
+                            }
+                            switch (operador) {
+                                case ">":
+                                    if (Integer.parseInt(var1.valor()) > Integer.parseInt(var2.valor())) {
+                                    } else {
+                                        correcto = false;
+                                    }
+                                    break;
+                                case "<":
+                                    if (Integer.parseInt(var1.valor()) < Integer.parseInt(var2.valor())) {
+                                    } else {
+                                        correcto = false;
+                                    }
+                                    break;
+                                case ">=":
+                                    if (Integer.parseInt(var1.valor()) >= Integer.parseInt(var2.valor())) {
+                                    } else {
+                                        correcto = false;
+                                    }
+                                    break;
+                                case "<=":
+                                    if (Integer.parseInt(var1.valor()) <= Integer.parseInt(var2.valor())) {
+                                    } else {
+                                        correcto = false;
+                                    }
+                                    break;
+                                case "==":
+
+                                    if (var1.tipo().equals("Numero") && (Integer.parseInt(var1.valor()) == Integer.parseInt(var2.valor()))) {
+                                    } else if (var1.tipo().equals("Cadena") && (var1.valor().equals(var2.valor()))) {
+                                    } else {
+                                        correcto = false;
+                                    }
+                                    break;
+                                case "!=":
+                                    if (var1.tipo().equals("Numero") && (Integer.parseInt(var1.valor()) != Integer.parseInt(var2.valor()))) {
+                                    } else if (var1.tipo().equals("Cadena") && (!var1.valor().equals(var2.valor()))) {
+                                    } else {
+                                        correcto = false;
+                                    }
+                                    break;
+                                default:
+                            }
+                        }
+
                         if (hayOtro() && valorCorrecto(ArreNomToken.get(pos), "Parentesis_C")) {
                             pos++;
+
                             if (hayOtro() && valorCorrecto(ArreNomToken.get(pos), "Llave_A")) {
                                 pos++;
                                 agregarGramaticaUsada();
-                                boolean test;
-                                do {
-                                    if (!hayOtro()) {
-                                        agregarError("sintactico", 32, ArreFilaColumnaToken.get(pos - 1), "");
-                                        return false;
-                                    }
-                                    System.out.println("Analiznado el codigo dentro de estructura if");
-                                    test = operacionCorrecta();
-                                    if (errores.size() > 0) {
-                                        System.out.println("Se encontro un error dentro del codigo en el if");
-                                        return false;
-                                    }
-                                } while (test);
-                                System.out.println("Saliendo de analizar el codigo dentro de la estructura de if");
+                                if (correcto) {
+                                    boolean test;
+                                    do {
+                                        if (!hayOtro()) {
+                                            agregarError("sintactico", 32, ArreFilaColumnaToken.get(pos - 1), "");
+                                            return false;
+                                        }
+                                        System.out.println("Analiznado el codigo dentro de estructura if");
+                                        test = operacionCorrecta();
+                                        if (errores.size() > 0) {
+                                            System.out.println("Se encontro un error dentro del codigo en el if");
+                                            return false;
+                                        }
+                                    } while (test);
+                                    System.out.println("Saliendo de analizar el codigo dentro de la estructura de if");
+
+                                } else {
+                                    boolean nivelado = true;
+                                    do {
+                                        String par = "no";
+                                        if (ArreNomToken.get(pos++).equals("Llave_A")) {
+
+                                            do {
+                                                if (ArreNomToken.get(pos).equals("Llave_C")) {
+                                                    par = "si";
+                                                } else {
+                                                    pos++;
+                                                }
+                                            } while (par.equals("no"));
+                                        } else if (ArreNomToken.get(pos).equals("Llave_C") && par.equals("no")) {
+                                            nivelado = false;
+                                        } else {
+                                        }
+                                    } while (nivelado);
+                                }
                                 if (hayOtro() && valorCorrecto(ArreNomToken.get(pos), "Llave_C")) {
                                     pos++;
                                     return true;
@@ -2189,6 +2276,7 @@ public class Compilador extends javax.swing.JFrame {
                                 else {
                                     agregarError("sintactico", 32, ArreFilaColumnaToken.get(pos - 1), "");
                                 } // }
+
                             } // {
                             else {
                                 agregarError("sintactico", 31, ArreFilaColumnaToken.get(pos - 1), "");
@@ -2620,10 +2708,10 @@ public class Compilador extends javax.swing.JFrame {
     public ArrayList<String> codigoIntermedio() {
         String codigo = txtCodigo.getText();
         codigo = codigo.replaceAll("[\r]+", "");
-        System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXX");
+        System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXx");
         System.out.println(codigo);
-        System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXX");
-        String expregularnumero = "\\$[A-Za-zÑñÁÉÍÓÚ]+[\t\s]*=[\t\s]*([0-9]+|\".*\")";
+        System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXx");
+        String expregularnumero = "(for[\t\s]*\\([\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*\\))|(if[\t\s]*\\([\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*(>|<|>=|<=|==|!=)[\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*\\))|(\\$[A-Za-zÑñÁÉÍÓÚ]+[\t\s]*=[\t\s]*([0-9]+|\".*\"))";
         return matches(codigo, expregularnumero);
 
     }
@@ -2731,7 +2819,7 @@ public class Compilador extends javax.swing.JFrame {
                             if (ultimo.contains("activar")) {
                                 agregarError("semantico", 8, ArreFilaColumnaToken.get(pos - 1), "Activando ---> " + variable);
                             } else {
-                                ArreFun_aspPatio.add(operacion + "( " + variable + " , " + variable2 + " )");
+                                ArreFun_aspPatio.add(operacion + "( " + variable + " )");
                             }
                         } else {
                             agregarError("semantico", 3, ArreFilaColumnaToken.get(pos - 1), "Variable ---> " + variable);
@@ -3056,14 +3144,14 @@ public class Compilador extends javax.swing.JFrame {
                         agregarError("semantico", 23, ArreFilaColumnaToken.get(pos - 1), "Variable ---> " + variable);
                 }
                 break;
-                
-                case "panel_encender":
+
+            case "panel_encender":
                 switch (variable) {
                     case "#panelPatio":
                         if (ArreFun_panelPatio.size() > 0) {
                             tamaño = ArreFun_panelPatio.size() - 1;
                             ultimo = ArreFun_panelPatio.get(tamaño);
-                            if (ultimo.contains("encender") ) {
+                            if (ultimo.contains("encender") || ultimo.contains("girar")) {
                                 agregarError("semantico", 25, ArreFilaColumnaToken.get(pos - 1), "Encendiendo ---> " + variable);
                             } else {
                                 ArreFun_panelPatio.add(operacion + "( " + variable + " )");
@@ -3081,8 +3169,8 @@ public class Compilador extends javax.swing.JFrame {
                 switch (variable) {
                     case "#panelPatio":
                         if (ArreFun_panelPatio.size() > 1) {
-                            while(ArreFun_panelPatio.size()>1){
-                                ArreFun_panelPatio.remove(ArreFun_panelPatio.size()-1);
+                            while (ArreFun_panelPatio.size() > 1) {
+                                ArreFun_panelPatio.remove(ArreFun_panelPatio.size() - 1);
                             }
                         } else {
                             agregarError("semantico", 24, ArreFilaColumnaToken.get(pos - 1), "Apagando ---> " + variable);
@@ -3095,18 +3183,18 @@ public class Compilador extends javax.swing.JFrame {
             case "panel_girar":
                 switch (variable) {
                     case "#panelPatio":
-                        if(ArreFun_panelPatio.size()>0){ //Si tiene la variable declarada
+                        if (ArreFun_panelPatio.size() > 0) { //Si tiene la variable declarada
                             tamaño = ArreFun_panelPatio.size() - 1;
                             ultimo = ArreFun_panelPatio.get(tamaño);
                             if (ultimo.contains("encender") || ultimo.contains("girar")) {
-                                ArreFun_panelPatio.add(operacion + "( " + variable + " , "+variable2 + " )");
-                            }else{
+                                ArreFun_panelPatio.add(operacion + "( " + variable + " , " + variable2 + " )");
+                            } else {
                                 agregarError("semantico", 26, ArreFilaColumnaToken.get(pos - 1), "Girando ---> " + variable);
                             }
-                        }else{
+                        } else {
                             agregarError("semantico", 26, ArreFilaColumnaToken.get(pos - 1), "Girando ---> " + variable);
                         }
-                        
+
                         break;
                     default:
                         agregarError("semantico", 23, ArreFilaColumnaToken.get(pos - 1), "Variable ---> " + variable);
@@ -3184,6 +3272,25 @@ public class Compilador extends javax.swing.JFrame {
 
         } else {
             agregarError("sintactico", 43, ArreFilaColumnaToken.get(pos - 1), "");
+        }
+        return false;
+    }
+
+    private Variables identificadorDeclarado(String identificador) {
+        Variables variable = new Variables("XXX", "XXX", "XXX", "XXX");
+        for (int i = 0; i < ArreVariables.size(); i++) {
+            Variables var = ArreVariables.get(i);
+            if (var.nombre().equals(identificador)) {
+                variable = var;
+                return variable;
+            }
+        }
+        return variable;
+    }
+
+    private boolean tiposIguales(Variables var1, Variables var2) {
+        if (var1.tipo().equals(var2.tipo())) {
+            return true;
         }
         return false;
     }
