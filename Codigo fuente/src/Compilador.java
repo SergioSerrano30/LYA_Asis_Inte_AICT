@@ -268,7 +268,9 @@ public class Compilador extends javax.swing.JFrame {
         /* 23 */ "Solucion: \n" + "El panel no se puede apagar si ya esta apagado \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL); \n" + "\n Ejemplo \n" + "panel_encender(#varControl);",
         /* 25 */ "Solucion: \n" + "El panel no se puede encender si ya esta encendido \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL); \n" + "\n Ejemplo \n" + "panel_apagar(#varControl);",
         /* 26 */ "Solucion: \n" + "El panel no puede girar si no se encuentra encendido \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL); \n" + "\n Ejemplo \n" + "panel_encender(#varControl);",
-        /* 27 */ "Solucion: \n" + "El panel no puede girar a más de 180° \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL,Numero o Identificador); \n" + "\n Ejemplo \n" + "panel_girar(#varCOntrol,180);"
+        /* 27 */ "Solucion: \n" + "El panel no puede girar a más de 180° \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL,Numero o Identificador); \n" + "\n Ejemplo \n" + "panel_girar(#varCOntrol,180);",
+        /* 28 */ "Solucion: \n" + "Los tipos de datos no coinciden \n" + "\n" + "Resultado esperado: \n" + "Ambos tipos de datos deben ser iguales \n \nEjemplo: \n 5==$variable",
+        /* 29 */ "Solucion: \n" + "Operacion invalida \n"
 
     };
 
@@ -472,16 +474,16 @@ public class Compilador extends javax.swing.JFrame {
     }
 
     private void fillTablaCuadruplos() {
-        String cadena="";
+        String cadena = "";
         ArrayList<String> Arre = codigoIntermedio();
-        System. out. println("=================\n"+Arre); 
+        System.out.println("=================\n" + Arre);
         VentanaCuadruplos vtnIntermedio = new VentanaCuadruplos(cadena);
         Functions.clearDataInTable(vtnIntermedio.tblCuadru);
         for (int a = 0; a < Arre.size(); a++) {
             ArbolExpresion arbolExpresionArit = new ArbolExpresion();
             String cad = Arre.get(a);
-            cadena=cadena+arbolExpresionArit.crearArbol(cad);
-            
+            cadena = cadena + arbolExpresionArit.crearArbol(cad);
+
             ArrayList<Cuadruplo> cuadruplos = arbolExpresionArit.getCuadruplos();
             for (int i = 0; i < cuadruplos.size(); i++) {
                 Cuadruplo cuadruplo = cuadruplos.get(i);
@@ -495,7 +497,7 @@ public class Compilador extends javax.swing.JFrame {
             }
         }
         System.out.println("Tokens listos");
-        System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&\n"+cadena);
+        System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&\n" + cadena);
         vtnIntermedio.setCadena(cadena);
         vtnIntermedio.setVisible(true);
     }
@@ -2030,6 +2032,7 @@ public class Compilador extends javax.swing.JFrame {
                             pos++;
 
                             if (hayOtro()) {
+
                                 switch (ArreNomToken.get(pos)) {
                                     case "Numero":
                                         if (fncCoV_NoVNombre.equals("panel_girar")) {
@@ -2045,6 +2048,15 @@ public class Compilador extends javax.swing.JFrame {
                                         break;
                                     case "Identificador":
                                         valorCorrecto(ArreNomToken.get(pos), "Identificador");
+                                        Variables var = identificadorDeclarado(ArreToken.get(pos));
+                                        if (var.nombre().equals("XXX")) {
+                                            agregarError("semantico", 3, ArreFilaColumnaToken.get(pos - 1), "Variable ---> " + ArreToken.get(pos - 1));
+                                            return false;
+                                        }else{//Si existe la variable
+                                            if(var.tipo().equals("Cadena")){
+                                                agregarError("semantico", 4, ArreFilaColumnaToken.get(pos - 1), "Variable ---> " + ArreToken.get(pos));
+                                            }
+                                        }
                                         agregarFuncionDosParams(fncCoV_NoVNombre, fncCoV_NoVValor_CoV, fncCoV_NoVTipo_CoV, ArreToken.get(pos), ArreNomToken.get(pos), ArreFilaColumnaToken.get(pos - 1));
                                         break;
                                     default:

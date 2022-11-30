@@ -11,7 +11,7 @@ aspersor_activar(#aspPatio);
 for(5){
 def #panelPatio;
 panel_encender(#panelPatio);
-panel_girar(#panelPatio,3);
+panel_girar(#panelPatio,$y);
 panel_girar(#panelPatio,20);
 panel_girar(#panelPatio,10);
 panel_girar(#panelPatio,120);

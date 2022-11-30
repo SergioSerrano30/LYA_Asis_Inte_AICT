@@ -1,26 +1,23 @@
  INICIO $programa {
     PRINCIPAL(){
 //Bloque de codigo
-$x = "";
+$x = "x";
 def #aspPatio;
 $veces = 5;
-if(3==$x){
+$y =4;
+if($y<=$veces){
+}
 aspersor_activar(#aspPatio);
-aspersor_desactivar(#aspPatio);
-//aspersor_desactivar(#aspPatio);
-aspersor_activar(#aspPatio);
-def #pRecepcion;
-puerta_abrir(#pRecepcion);
-puerta_cerrar(#pRecepcion);
-//puerta_abrir(#pSala1);
-}   
+for(5){
 def #panelPatio;
 panel_encender(#panelPatio);
-panel_girar(#panelPatio,70);
-//panel_apagar(#panelPatio);
-panel_girar(#panelPatio,2);
+panel_girar(#panelPatio,$y);
 panel_girar(#panelPatio,20);
-panel_girar(#panelPatio,67);
+panel_girar(#panelPatio,10);
+panel_girar(#panelPatio,120);
 //panel_apagar(#panelPatio);
+
+}   
+//aspersor_activar(#aspPatio);
 }}FINAL
 
