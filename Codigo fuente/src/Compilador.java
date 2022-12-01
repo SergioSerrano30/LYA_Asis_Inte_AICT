@@ -92,6 +92,7 @@ public class Compilador extends javax.swing.JFrame {
     private String fncCoV_NoVNombre = "";
     private String fncCoV_NoVValor_CoV = "";
     private String fncCoV_NoVTipo_CoV = "";
+    private String CodigoOptimizado="";
 
     //Colores
     public static final String ANSI_BLACK = "\u001B[30m";
@@ -475,6 +476,7 @@ public class Compilador extends javax.swing.JFrame {
 
     private void fillTablaCuadruplos() {
         String cadena = "";
+        String cadenaOpti = "";
         ArrayList<String> Arre = codigoIntermedio();
         System.out.println("=================\n" + Arre);
         VentanaCuadruplos vtnIntermedio = new VentanaCuadruplos(cadena);
@@ -482,7 +484,10 @@ public class Compilador extends javax.swing.JFrame {
         for (int a = 0; a < Arre.size(); a++) {
             ArbolExpresion arbolExpresionArit = new ArbolExpresion();
             String cad = Arre.get(a);
-            cadena = cadena + arbolExpresionArit.crearArbol(cad);
+            String Cadena[]=arbolExpresionArit.crearArbol(cad);
+            cadena = cadena +Cadena[0];
+            cadenaOpti=cadenaOpti+Cadena[1];
+             System.out.println("CadenaOptimazada\n" + Cadena[1]);
 
             ArrayList<Cuadruplo> cuadruplos = arbolExpresionArit.getCuadruplos();
             for (int i = 0; i < cuadruplos.size(); i++) {
@@ -498,6 +503,8 @@ public class Compilador extends javax.swing.JFrame {
         }
         System.out.println("Tokens listos");
         System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&\n" + cadena);
+        System.out.println("Optimizado\n" + cadenaOpti);
+        CodigoOptimizado=cadenaOpti;
         vtnIntermedio.setCadena(cadena);
         vtnIntermedio.setVisible(true);
     }
@@ -1104,6 +1111,11 @@ public class Compilador extends javax.swing.JFrame {
         opciones.add(opCodIntermedio);
 
         jMenuItem2.setText("Código optimizado");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
         opciones.add(jMenuItem2);
 
         menu.add(opciones);
@@ -1455,6 +1467,14 @@ public class Compilador extends javax.swing.JFrame {
         OperacionesPila pila = new OperacionesPila(ArreFun_panelPatio);
         pila.setVisible(true);
     }//GEN-LAST:event_opPanelPatioActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+    VentanaOptimizado vtnOptimizado = new VentanaOptimizado(CodigoOptimizado);
+   vtnOptimizado.setCadena(CodigoOptimizado);
+   vtnOptimizado.setVisible(true);
+  
+        
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -2723,9 +2743,10 @@ public class Compilador extends javax.swing.JFrame {
         System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXx");
         System.out.println(codigo);
         System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXx");
-        String expregularnumero = "(for[\t\s]*\\([\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*\\))|(if[\t\s]*\\([\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*(>|<|>=|<=|==|!=)[\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*\\))|(\\$[A-Za-zÑñÁÉÍÓÚ]+[\t\s]*=[\t\s]*([0-9]+|\".*\"))";
+        String expregularnumero = "([\t\s]*panel_girar[\t\s]*\\([\t\s]*(#alarma|#aspPatio|#caja|#cortadora|#iluPrincipal|#iluRepecion|#iluSala1|#iluSala2|#panelPatio|#pRecepcion|#pSala1|#pSala2|#tvRecepcion|#vRecepcion)[\t\s]*,[\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*\\))|([\t\s]*(cortadora_activar|ventilador_activar|iluminacion_activar|banda_activar|puerta_abrir|tv_encender|cajafuerte_desactivar|panel_encender|aspersor_activar)[\t\s]*\\([\t\s]*(#alarma|#aspPatio|#caja|#cortadora|#iluPrincipal|#iluRepecion|#iluSala1|#iluSala2|#panelPatio|#pRecepcion|#pSala1|#pSala2|#tvRecepcion|#vRecepcion)[\t\s]*\\))|([\t\s]*def[\t\s]*(#alarma|#aspPatio|#caja|#cortadora|#iluPrincipal|#iluRepecion|#iluSala1|#iluSala2|#panelPatio|#pRecepcion|#pSala1|#pSala2|#tvRecepcion|#vRecepcion))|(for[\t\s]*\\([\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*\\))|(if[\t\s]*\\([\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*(>|<|>=|<=|==|!=)[\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*\\))|(\\$[A-Za-zÑñÁÉÍÓÚ]+[\t\s]*=[\t\s]*([0-9]+|\".*\"))";
         return matches(codigo, expregularnumero);
-
+        //(cortadora_activar|ventilador_activar|iluminacion_activar|banda_activar|puerta_abrir|tv_encender|cajafuerte_desactivar|panel_encender|aspersor_activar)
+        //(#alarma|#aspPatio|#caja|#cortadora|#iluPrincipal|#iluRepecion|#iluSala1|#iluSala2|#panelPatio|#pRecepcion|#pSala1|#pSala2|#tvRecepcion|#vRecepcion)
     }
 
     private void agregarGramaticaUsada() {
