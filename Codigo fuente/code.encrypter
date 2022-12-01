@@ -1,7 +1,7 @@
  INICIO $programa {
     PRINCIPAL(){
 //Bloque de codigo
-$x = "x";
+$x=2;
 def #aspPatio;
 $veces = 5;
 $y =4;

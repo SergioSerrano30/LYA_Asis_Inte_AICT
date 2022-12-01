@@ -92,13 +92,8 @@ public class VentanaObjeto extends javax.swing.JFrame {
 
     private void btnCrearArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearArchivoActionPerformed
 
-//        if (directorio.Save()) {
-//            JOptionPane.showMessageDialog(this, "Guardado");
-//        }
-
-
         try{
-            String r = "C:\\Users\\sergi\\Desktop\\Pruebas\\"+title;
+            String r = System.getProperty("user.dir")+"\\CodigoObjeto\\"+title;
             File directorio = new File(r);
         if (!directorio.exists()) {
             if (directorio.mkdirs()) {
@@ -111,9 +106,8 @@ public class VentanaObjeto extends javax.swing.JFrame {
             e.printStackTrace();
         }
         try {
-            String ruta = "C:\\Users\\sergi\\Desktop\\Pruebas\\"+title+"\\"+title+".ino";
+            String ruta = System.getProperty("user.dir")+"\\CodigoObjeto\\"+title+"\\"+title+".ino";
             
-            String contenido = "Contenido de ejemplo";
             File file = new File(ruta);
             // Si el archivo no existe es creado
             if (!file.exists()) {
