@@ -94,7 +94,7 @@ public class Compilador extends javax.swing.JFrame {
     private String fncCoV_NoVNombre = "";
     private String fncCoV_NoVValor_CoV = "";
     private String fncCoV_NoVTipo_CoV = "";
-    private String CodigoOptimizado="";
+    private String CodigoOptimizado = "";
 
     //Colores
     public static final String ANSI_BLACK = "\u001B[30m";
@@ -491,10 +491,10 @@ public class Compilador extends javax.swing.JFrame {
         for (int a = 0; a < Arre.size(); a++) {
             ArbolExpresion arbolExpresionArit = new ArbolExpresion();
             String cad = Arre.get(a);
-            String Cadena[]=arbolExpresionArit.crearArbol(cad);
-            cadena = cadena +Cadena[0];
-            cadenaOpti=cadenaOpti+Cadena[1];
-             System.out.println("CadenaOptimazada\n" + Cadena[1]);
+            String Cadena[] = arbolExpresionArit.crearArbol(cad);
+            cadena = cadena + Cadena[0];
+            cadenaOpti = cadenaOpti + Cadena[1];
+            System.out.println("CadenaOptimazada\n" + Cadena[1]);
 
             ArrayList<Cuadruplo> cuadruplos = arbolExpresionArit.getCuadruplos();
             for (int i = 0; i < cuadruplos.size(); i++) {
@@ -511,7 +511,7 @@ public class Compilador extends javax.swing.JFrame {
         System.out.println("Tokens listos");
         System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&\n" + cadena);
         System.out.println("Optimizado\n" + cadenaOpti);
-        CodigoOptimizado=cadenaOpti;
+        CodigoOptimizado = cadenaOpti;
         vtnIntermedio.setCadena(cadena);
         vtnIntermedio.setVisible(true);
     }
@@ -658,6 +658,7 @@ public class Compilador extends javax.swing.JFrame {
         opCortadora = new javax.swing.JMenuItem();
         opCodIntermedio = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
+        opObjeto = new javax.swing.JMenuItem();
 
         jMenu1.setText("jMenu1");
 
@@ -1125,6 +1126,14 @@ public class Compilador extends javax.swing.JFrame {
         });
         opciones.add(jMenuItem2);
 
+        opObjeto.setText("Código objeto");
+        opObjeto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                opObjetoActionPerformed(evt);
+            }
+        });
+        opciones.add(opObjeto);
+
         menu.add(opciones);
 
         setJMenuBar(menu);
@@ -1480,12 +1489,51 @@ public class Compilador extends javax.swing.JFrame {
     }//GEN-LAST:event_opPanelPatioActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-    VentanaOptimizado vtnOptimizado = new VentanaOptimizado(CodigoOptimizado);
-   vtnOptimizado.setCadena(CodigoOptimizado);
-   vtnOptimizado.setVisible(true);
-  
-        
+        VentanaOptimizado vtnOptimizado = new VentanaOptimizado(CodigoOptimizado);
+        vtnOptimizado.setCadena(CodigoOptimizado);
+        vtnOptimizado.setVisible(true);
+
+
     }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void opObjetoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opObjetoActionPerformed
+        String codVars = ""+"\n";
+        for (int i = 0; i < ArreVariables.size(); i++) {
+            Variables v = ArreVariables.get(i);
+            String tipo = "";
+            String name = v.nombre().replace("$", "");
+            switch (v.tipo()) {
+                case "Cadena":
+                    tipo = "String";
+                    break;
+                case "Numero":
+                    tipo = "int";
+                    break;
+                default:
+            }
+            codVars+= tipo+" "+name+" = "+v.valor()+";\n";
+        }
+        
+        String p2 = "\n" 
+                + "void setup() {\n" 
+                + "// Código que se ejecuta una vez:\n" 
+                + "Serial.begin(9600);\n";
+        String p3 = "void loop() {\n" 
+                + "// Código que se repite:\n";
+        String codP2 = "XXX"+"\n";
+        String codP3 = "YYY"+"\n";
+        String codigo = 
+                  codVars
+                + p2
+                + codP2
+                + "}\n"
+                + p3
+                + codP3
+                + "}";
+        String t [] = this.getTitle().split(".aict");
+        VentanaObjeto vtnObjeto = new VentanaObjeto(t[0],codigo);
+        vtnObjeto.setVisible(true);
+    }//GEN-LAST:event_opObjetoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1582,6 +1630,7 @@ public class Compilador extends javax.swing.JFrame {
     private javax.swing.JMenuItem opIluSala1;
     private javax.swing.JMenuItem opIluSala2;
     private javax.swing.JMenuItem opNuevo;
+    private javax.swing.JMenuItem opObjeto;
     private javax.swing.JMenu opPanel;
     private javax.swing.JMenuItem opPanelPatio;
     private javax.swing.JMenuItem opPegar;
