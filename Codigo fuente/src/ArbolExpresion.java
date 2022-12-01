@@ -16,8 +16,8 @@ public class ArbolExpresion {
     private int contador = 0;
     private int operaciones = 0;
     private String asignacion = "";
-    private String Ciclos="  \n";
-     private String CiclosOpti = "  \n";
+    private String Ciclos="  ";
+     private String CiclosOpti = "  ";
 
     public ArbolExpresion() {
         this.c = new ArrayList<>();

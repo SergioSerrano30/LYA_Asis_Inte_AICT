@@ -2,7 +2,7 @@
     PRINCIPAL(){
 //Bloque de codigo
 def #aspPatio;
-$veces = 5;
+$veces = 5; 
 $y =4;
 if($y<=$veces){
 }

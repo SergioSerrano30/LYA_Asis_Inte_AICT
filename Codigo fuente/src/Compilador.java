@@ -2739,6 +2739,7 @@ public class Compilador extends javax.swing.JFrame {
 
     public ArrayList<String> codigoIntermedio() {
         String codigo = txtCodigo.getText();
+        codigo = codigo.replaceAll("//.*", "");
         codigo = codigo.replaceAll("[\r]+", "");
         System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXx");
         System.out.println(codigo);
