@@ -1,7 +1,7 @@
  INICIO $programa {
     PRINCIPAL(){
 //Bloque de codigo
-def #aspPatio;
+//def #aspPatio;
 $veces = 5; 
 $y =4;
 if($y<=$veces){
@@ -19,5 +19,6 @@ panel_girar(#panelPatio,120);
 
 }   
 }
-}FINAL
+}
+FINAL
 
