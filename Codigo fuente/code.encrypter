@@ -5,6 +5,8 @@ def #aspPatio;
 $veces = 5; 
 $y =4;
 if($y<=$veces){
+$veces = 5; 
+$y =4;
 }
 aspersor_activar( #aspPatio);
 for(5){
