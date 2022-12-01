@@ -482,6 +482,8 @@ public class Compilador extends javax.swing.JFrame {
     }
 
     private void fillTablaCuadruplos() {
+        String Estado="";
+        String If_For="";
         String cadena = "";
         String cadenaOpti = "";
         ArrayList<String> Arre = codigoIntermedio();
@@ -491,10 +493,37 @@ public class Compilador extends javax.swing.JFrame {
         for (int a = 0; a < Arre.size(); a++) {
             ArbolExpresion arbolExpresionArit = new ArbolExpresion();
             String cad = Arre.get(a);
-            String Cadena[] = arbolExpresionArit.crearArbol(cad);
-            cadena = cadena + Cadena[0];
-            cadenaOpti = cadenaOpti + Cadena[1];
-            System.out.println("CadenaOptimazada\n" + Cadena[1]);
+            String Cadena[]=arbolExpresionArit.crearArbol(cad);
+            cadena = cadena +Cadena[0];
+            cadenaOpti=cadenaOpti+Cadena[1];
+            if(cad.contains("if")){
+                If_For="if";  
+             if(Arre.get(a+1).equals("{")&&Arre.get(a+2).equals("}")){
+              cadenaOpti=cadenaOpti+"\n\n label L1\n";
+               Estado="NoCodigo";
+             }else{
+             Estado="SiCodigo";
+             }
+            }
+            // "\n goto L1\n label L2\n\n" ; 
+            if(cad.contains("for")){
+                If_For="for";  
+             if(Arre.get(a+1).equals("{")&&Arre.get(a+2).equals("}")){
+              cadenaOpti=cadenaOpti+"\n\n goto L1\n label L2\n\n" ;
+               Estado="NoCodigo";
+             }else{
+             Estado="SiCodigo";
+             }
+            }
+            if(cad.contains("}")&&Estado.equals("SiCodigo")&&If_For.equals("if")){
+             cadenaOpti=cadenaOpti+"\n\n label L1\n";
+             If_For="NoBucles";
+            }
+            if(cad.contains("}")&&Estado.equals("SiCodigo")&&If_For.equals("for")){
+             cadenaOpti=cadenaOpti+"\n\n goto L1\n label L2\n\n" ;
+             If_For="NoBucles";
+            }
+             System.out.println("CadenaOptimazada\n" + Cadena[1]);
 
             ArrayList<Cuadruplo> cuadruplos = arbolExpresionArit.getCuadruplos();
             for (int i = 0; i < cuadruplos.size(); i++) {
@@ -511,11 +540,10 @@ public class Compilador extends javax.swing.JFrame {
         System.out.println("Tokens listos");
         System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&\n" + cadena);
         System.out.println("Optimizado\n" + cadenaOpti);
-        CodigoOptimizado = cadenaOpti;
+        CodigoOptimizado=cadenaOpti;
         vtnIntermedio.setCadena(cadena);
         vtnIntermedio.setVisible(true);
     }
-
     private void semanticAnalysis() {
         sema_asignaFilas();
         if (ArreVariables.size() > 0) {
@@ -2804,7 +2832,7 @@ public class Compilador extends javax.swing.JFrame {
         System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXx");
         System.out.println(codigo);
         System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXx");
-        String expregularnumero = "([\t\s]*panel_girar[\t\s]*\\([\t\s]*(#alarma|#aspPatio|#caja|#cortadora|#iluPrincipal|#iluRepecion|#iluSala1|#iluSala2|#panelPatio|#pRecepcion|#pSala1|#pSala2|#tvRecepcion|#vRecepcion)[\t\s]*,[\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*\\))|([\t\s]*(cortadora_activar|ventilador_activar|iluminacion_activar|banda_activar|puerta_abrir|tv_encender|cajafuerte_desactivar|panel_encender|aspersor_activar)[\t\s]*\\([\t\s]*(#alarma|#aspPatio|#caja|#cortadora|#iluPrincipal|#iluRepecion|#iluSala1|#iluSala2|#panelPatio|#pRecepcion|#pSala1|#pSala2|#tvRecepcion|#vRecepcion)[\t\s]*\\))|([\t\s]*def[\t\s]*(#alarma|#aspPatio|#caja|#cortadora|#iluPrincipal|#iluRepecion|#iluSala1|#iluSala2|#panelPatio|#pRecepcion|#pSala1|#pSala2|#tvRecepcion|#vRecepcion))|(for[\t\s]*\\([\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*\\))|(if[\t\s]*\\([\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*(>|<|>=|<=|==|!=)[\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*\\))|(\\$[A-Za-zÑñÁÉÍÓÚ]+[\t\s]*=[\t\s]*([0-9]+|\".*\"))";
+        String expregularnumero = "(\\}|\\{|[\t\s]*panel_girar[\t\s]*\\([\t\s]*(#alarma|#aspPatio|#caja|#cortadora|#iluPrincipal|#iluRepecion|#iluSala1|#iluSala2|#panelPatio|#pRecepcion|#pSala1|#pSala2|#tvRecepcion|#vRecepcion)[\t\s]*,[\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*\\))|([\t\s]*(cortadora_activar|ventilador_activar|iluminacion_activar|banda_activar|puerta_abrir|tv_encender|cajafuerte_desactivar|panel_encender|aspersor_activar)[\t\s]*\\([\t\s]*(#alarma|#aspPatio|#caja|#cortadora|#iluPrincipal|#iluRepecion|#iluSala1|#iluSala2|#panelPatio|#pRecepcion|#pSala1|#pSala2|#tvRecepcion|#vRecepcion)[\t\s]*\\))|([\t\s]*def[\t\s]*(#alarma|#aspPatio|#caja|#cortadora|#iluPrincipal|#iluRepecion|#iluSala1|#iluSala2|#panelPatio|#pRecepcion|#pSala1|#pSala2|#tvRecepcion|#vRecepcion))|(for[\t\s]*\\([\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*\\))|(if[\t\s]*\\([\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*(>|<|>=|<=|==|!=)[\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*\\))|(\\$[A-Za-zÑñÁÉÍÓÚ]+[\t\s]*=[\t\s]*([0-9]+|\".*\"))";
         return matches(codigo, expregularnumero);
         //(cortadora_activar|ventilador_activar|iluminacion_activar|banda_activar|puerta_abrir|tv_encender|cajafuerte_desactivar|panel_encender|aspersor_activar)
         //(#alarma|#aspPatio|#caja|#cortadora|#iluPrincipal|#iluRepecion|#iluSala1|#iluSala2|#panelPatio|#pRecepcion|#pSala1|#pSala2|#tvRecepcion|#vRecepcion)
