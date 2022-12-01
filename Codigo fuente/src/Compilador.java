@@ -30,6 +30,7 @@ import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import jflex.logging.Out;
+import panamahitek.Arduino.PanamaHitek_Arduino;
 import say.swing.JFontChooser;
 
 /**
@@ -38,6 +39,7 @@ import say.swing.JFontChooser;
  */
 public class Compilador extends javax.swing.JFrame {
 
+    //PanamaHitek_Arduino Arduino = new PanamaHitek_Arduino();
     private String title;
     private Directory directorio;
     private ArrayList<Token> tokens;
@@ -276,6 +278,11 @@ public class Compilador extends javax.swing.JFrame {
 
     public Compilador() {
         initComponents();
+//        try {
+//            Arduino.arduinoTX("COM3", 9600);
+//        } catch (Exception e) {
+//            System.out.println("Error: " + e);
+//        }
         init();
         //a_dOpciones();
     }
@@ -1126,7 +1133,11 @@ public class Compilador extends javax.swing.JFrame {
             if (!errors.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Se encontró un error");
             } else {
-
+//                try {
+//                    Arduino.sendData("c");
+//                } catch (Exception e) {
+//                    System.out.println("Error: " + e);
+//                }
             }
         }
     }//GEN-LAST:event_imgEjecutarMousePressed
@@ -2052,8 +2063,8 @@ public class Compilador extends javax.swing.JFrame {
                                         if (var.nombre().equals("XXX")) {
                                             agregarError("semantico", 3, ArreFilaColumnaToken.get(pos - 1), "Variable ---> " + ArreToken.get(pos - 1));
                                             return false;
-                                        }else{//Si existe la variable
-                                            if(var.tipo().equals("Cadena")){
+                                        } else {//Si existe la variable
+                                            if (var.tipo().equals("Cadena")) {
                                                 agregarError("semantico", 4, ArreFilaColumnaToken.get(pos - 1), "Variable ---> " + ArreToken.get(pos));
                                             }
                                         }

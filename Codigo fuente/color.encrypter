@@ -5,9 +5,10 @@ $x = "x";
 def #aspPatio;
 $veces = 5;
 $y =4;
-if($y<=$veces){
-}
+if($y>=$veces){
 aspersor_activar(#aspPatio);
+}
+//aspersor_activar(#aspPatio);
 for(5){
 def #panelPatio;
 panel_encender(#panelPatio);
