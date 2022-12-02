@@ -5,6 +5,7 @@ $x=2;
 def #aspPatio;
 $veces = 5;
 $y =4;
+def #pSala1;
 if($y>=$veces){
 aspersor_activar(#aspPatio);
 }
@@ -12,13 +13,12 @@ aspersor_activar(#aspPatio);
 for(5){
 def #panelPatio;
 panel_encender(#panelPatio);
-panel_girar(#panelPatio,$y);
-panel_girar(#panelPatio,20);
-panel_girar(#panelPatio,10);
 panel_girar(#panelPatio,120);
 //panel_apagar(#panelPatio);
 
-}   
+}  
+
+puerta_abrir(#pSala1);
 //aspersor_activar(#aspPatio);
 }}FINAL
 

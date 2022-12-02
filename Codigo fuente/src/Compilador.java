@@ -246,7 +246,7 @@ public class Compilador extends javax.swing.JFrame {
     public String soluciones_semantico[] = {
         /* 0 */"",
         /* 1 */ "Solucion: \n" + "La variable que quiere declarar ya se encuentra anteriormente declarada \n" + "\n" + "Resultado esperado: \n" + "$ejemplo = 12",
-        /* 2 */ "Solucion: \n" + "No se puede cambiar el tipo de dato de la variable porque ya se encuentra definido \n",
+        /* 2 */ "Solucion: \n" + "Asigne el valor que corresponde al identificador \n",
         /* 3 */ "Solucion: \n" + "La variable no se encuentra declarada para asignar en la función \n",
         /* 4 */ "Solucion: \n" + "La variable asignada en la función es de tipo 'cadena', se esperaba una 'numero' \n" + "\n" + "Resultado esperado:  \n" + "Identificador OP_Asignacion Valor Punto_Coma \n" + "$identificador = 'Cadena'; \n" + "$ejemplo = 'Ejemplo'",
         /* 5 */ "Solucion: \n" + "La puerta no se puede cerrar si esta cerrada \n" + "\n" + "Resultado esperado: \n" + "funcion(CONTROL); \n" + "\n Ejemplo \n" + "puerta_cerar(#varControl);",
@@ -431,12 +431,11 @@ public class Compilador extends javax.swing.JFrame {
     private void compile() {
         clearField();
         lexicalAnalysis();
-        //fillTablaTokens();
-        //syntacticAnalysis();
         sintactico();
-        //semanticAnalysis();
-        printConsole();
+        semanticAnalysis();
         codigoIntermedio();
+        printConsole();
+        
         codeHasBeenCompiled = true;
         //a_dOpciones();
 
@@ -457,7 +456,6 @@ public class Compilador extends javax.swing.JFrame {
                     break;
                 }
                 tokens.add(token);
-
             }
         } catch (FileNotFoundException ex) {
             System.out.println("El archivo no pudo ser encontrado... " + ex.getMessage());
@@ -482,8 +480,8 @@ public class Compilador extends javax.swing.JFrame {
     }
 
     private void fillTablaCuadruplos() {
-        String Estado="";
-        String If_For="";
+        String Estado = "";
+        String If_For = "";
         String cadena = "";
         String cadenaOpti = "";
         ArrayList<String> Arre = codigoIntermedio();
@@ -493,37 +491,37 @@ public class Compilador extends javax.swing.JFrame {
         for (int a = 0; a < Arre.size(); a++) {
             ArbolExpresion arbolExpresionArit = new ArbolExpresion();
             String cad = Arre.get(a);
-            String Cadena[]=arbolExpresionArit.crearArbol(cad);
-            cadena = cadena +Cadena[0];
-            cadenaOpti=cadenaOpti+Cadena[1];
-            if(cad.contains("if")){
-                If_For="if";  
-             if(Arre.get(a+1).equals("{")&&Arre.get(a+2).equals("}")){
-              cadenaOpti=cadenaOpti+"\n\n label L1\n";
-               Estado="NoCodigo";
-             }else{
-             Estado="SiCodigo";
-             }
+            String Cadena[] = arbolExpresionArit.crearArbol(cad);
+            cadena = cadena + Cadena[0];
+            cadenaOpti = cadenaOpti + Cadena[1];
+            if (cad.contains("if")) {
+                If_For = "if";
+                if (Arre.get(a + 1).equals("{") && Arre.get(a + 2).equals("}")) {
+                    cadenaOpti = cadenaOpti + "\n\n label L1\n";
+                    Estado = "NoCodigo";
+                } else {
+                    Estado = "SiCodigo";
+                }
             }
             // "\n goto L1\n label L2\n\n" ; 
-            if(cad.contains("for")){
-                If_For="for";  
-             if(Arre.get(a+1).equals("{")&&Arre.get(a+2).equals("}")){
-              cadenaOpti=cadenaOpti+"\n\n goto L1\n label L2\n\n" ;
-               Estado="NoCodigo";
-             }else{
-             Estado="SiCodigo";
-             }
+            if (cad.contains("for")) {
+                If_For = "for";
+                if (Arre.get(a + 1).equals("{") && Arre.get(a + 2).equals("}")) {
+                    cadenaOpti = cadenaOpti + "\n\n goto L1\n label L2\n\n";
+                    Estado = "NoCodigo";
+                } else {
+                    Estado = "SiCodigo";
+                }
             }
-            if(cad.contains("}")&&Estado.equals("SiCodigo")&&If_For.equals("if")){
-             cadenaOpti=cadenaOpti+"\n\n label L1\n";
-             If_For="NoBucles";
+            if (cad.contains("}") && Estado.equals("SiCodigo") && If_For.equals("if")) {
+                cadenaOpti = cadenaOpti + "\n\n label L1\n";
+                If_For = "NoBucles";
             }
-            if(cad.contains("}")&&Estado.equals("SiCodigo")&&If_For.equals("for")){
-             cadenaOpti=cadenaOpti+"\n\n goto L1\n label L2\n\n" ;
-             If_For="NoBucles";
+            if (cad.contains("}") && Estado.equals("SiCodigo") && If_For.equals("for")) {
+                cadenaOpti = cadenaOpti + "\n\n goto L1\n label L2\n\n";
+                If_For = "NoBucles";
             }
-             System.out.println("CadenaOptimazada\n" + Cadena[1]);
+            System.out.println("CadenaOptimazada\n" + Cadena[1]);
 
             ArrayList<Cuadruplo> cuadruplos = arbolExpresionArit.getCuadruplos();
             for (int i = 0; i < cuadruplos.size(); i++) {
@@ -540,10 +538,11 @@ public class Compilador extends javax.swing.JFrame {
         System.out.println("Tokens listos");
         System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&\n" + cadena);
         System.out.println("Optimizado\n" + cadenaOpti);
-        CodigoOptimizado=cadenaOpti;
+        CodigoOptimizado = cadenaOpti;
         vtnIntermedio.setCadena(cadena);
         vtnIntermedio.setVisible(true);
     }
+
     private void semanticAnalysis() {
         sema_asignaFilas();
         if (ArreVariables.size() > 0) {
@@ -551,6 +550,7 @@ public class Compilador extends javax.swing.JFrame {
                 System.out.println("Sin cambios de tipos de variables");
             }
         }
+        /*
         if (ArreFunciones_CadenaoVariable.size() > 0) {
             if (!sema_fncCoV_varNoDeclarada()) { //true -> hubo variables no declaradas. false -> todas las variables están declaradas
                 System.out.println("Todas las variables estan bien definidas para las funciones");
@@ -568,7 +568,7 @@ public class Compilador extends javax.swing.JFrame {
                 }
             }
         }
-
+*/
     }
 
     private boolean sema_variables_repetidas() {
@@ -1525,7 +1525,7 @@ public class Compilador extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void opObjetoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opObjetoActionPerformed
-        String codVars = ""+"\n";
+        String codVars = "" + "\n";
         for (int i = 0; i < ArreVariables.size(); i++) {
             Variables v = ArreVariables.get(i);
             String tipo = "";
@@ -1539,27 +1539,11 @@ public class Compilador extends javax.swing.JFrame {
                     break;
                 default:
             }
-            codVars+= tipo+" "+name+" = "+v.valor()+";\n";
+            codVars += tipo + " " + name+";\n";
         }
-        
-        String p2 = "\n" 
-                + "void setup() {\n" 
-                + "// Código que se ejecuta una vez:\n" 
-                + "Serial.begin(9600);\n";
-        String p3 = "void loop() {\n" 
-                + "// Código que se repite:\n";
-        String codP2 = "XXX"+"\n";
-        String codP3 = "YYY"+"\n";
-        String codigo = 
-                  codVars
-                + p2
-                + codP2
-                + "}\n"
-                + p3
-                + codP3
-                + "}";
-        String t [] = this.getTitle().split(".aict");
-        VentanaObjeto vtnObjeto = new VentanaObjeto(t[0],codigo);
+
+        String t[] = this.getTitle().split(".aict");
+        VentanaObjeto vtnObjeto = new VentanaObjeto(t[0],codVars, CodigoOptimizado);
         vtnObjeto.setVisible(true);
     }//GEN-LAST:event_opObjetoActionPerformed
 
@@ -2158,7 +2142,7 @@ public class Compilador extends javax.swing.JFrame {
                                         valorCorrecto(ArreNomToken.get(pos), "Identificador");
                                         Variables var = identificadorDeclarado(ArreToken.get(pos));
                                         if (var.nombre().equals("XXX")) {
-                                            agregarError("semantico", 3, ArreFilaColumnaToken.get(pos - 1), "Variable ---> " + ArreToken.get(pos - 1));
+                                            agregarError("semantico", 3, ArreFilaColumnaToken.get(pos - 1), "Variable ---> " + ArreToken.get(pos));
                                             return false;
                                         } else {//Si existe la variable
                                             if (var.tipo().equals("Cadena")) {
@@ -2872,7 +2856,7 @@ public class Compilador extends javax.swing.JFrame {
 
                         break;
                     case "#pSala1":
-                        if (ArreFun_pRecepcion.size() > 0) {
+                        if (ArreFun_pSala1.size() > 0) {
                             tamaño = ArreFun_pSala1.size() - 1;
                             ultimo = ArreFun_pSala1.get(tamaño);
                             if (ultimo.contains("abrir")) {
@@ -2886,7 +2870,7 @@ public class Compilador extends javax.swing.JFrame {
 
                         break;
                     case "#pSala2":
-                        if (ArreFun_pRecepcion.size() > 0) {
+                        if (ArreFun_pSala2.size() > 0) {
                             tamaño = ArreFun_pSala2.size() - 1;
                             ultimo = ArreFun_pSala2.get(tamaño);
                             if (ultimo.contains("abrir")) {
@@ -3347,43 +3331,95 @@ public class Compilador extends javax.swing.JFrame {
 
                         break;
                     case "#iluRecepcion":
-                        ArreFun_iluRecepcion.add("def " + control);
+                        if (ArreFun_iluRecepcion.size() > 0) {
+                            agregarError("semantico", 1, ArreFilaColumnaToken.get(pos - 1), "Variable ---> " + control);
+                        } else {
+                            ArreFun_iluRecepcion.add("def " + control);
+                        }
                         break;
                     case "#iluPrincipal":
-                        ArreFun_iluPrincipal.add("def " + control);
+                        if (ArreFun_iluPrincipal.size() > 0) {
+                            agregarError("semantico", 1, ArreFilaColumnaToken.get(pos - 1), "Variable ---> " + control);
+                        } else {
+                            ArreFun_iluPrincipal.add("def " + control);
+                        }
                         break;
                     case "#iluSala1":
-                        ArreFun_iluSala1.add("def " + control);
+                        if (ArreFun_iluSala1.size() > 0) {
+                            agregarError("semantico", 1, ArreFilaColumnaToken.get(pos - 1), "Variable ---> " + control);
+                        } else {
+                            ArreFun_iluSala1.add("def " + control);
+                        }
                         break;
                     case "#iluSala2":
-                        ArreFun_iluSala2.add("def " + control);
+                        if (ArreFun_iluSala2.size() > 0) {
+                            agregarError("semantico", 1, ArreFilaColumnaToken.get(pos - 1), "Variable ---> " + control);
+                        } else {
+                            ArreFun_iluSala2.add("def " + control);
+                        }
                         break;
                     case "#pRecepcion":
-                        ArreFun_pRecepcion.add("def " + control);
+                        if (ArreFun_pRecepcion.size() > 0) {
+                            agregarError("semantico", 1, ArreFilaColumnaToken.get(pos - 1), "Variable ---> " + control);
+                        } else {
+                            ArreFun_pRecepcion.add("def " + control);
+                        }
                         break;
                     case "#pSala1":
-                        ArreFun_pSala1.add("def " + control);
+                        if (ArreFun_pSala1.size() > 0) {
+                            agregarError("semantico", 1, ArreFilaColumnaToken.get(pos - 1), "Variable ---> " + control);
+                        } else {
+                            ArreFun_pSala1.add("def " + control);
+                        }
                         break;
                     case "#pSala2":
-                        ArreFun_pSala2.add("def " + control);
+                        if (ArreFun_pSala2.size() > 0) {
+                            agregarError("semantico", 1, ArreFilaColumnaToken.get(pos - 1), "Variable ---> " + control);
+                        } else {
+                            ArreFun_pSala2.add("def " + control);
+                        }
                         break;
                     case "#panelPatio":
-                        ArreFun_panelPatio.add("def " + control);
+                        if (ArreFun_panelPatio.size() > 0) {
+                            agregarError("semantico", 1, ArreFilaColumnaToken.get(pos - 1), "Variable ---> " + control);
+                        } else {
+                            ArreFun_panelPatio.add("def " + control);
+                        }
                         break;
                     case "#tvRecepcion":
-                        ArreFun_tvRecepcion.add("def " + control);
+                        if (ArreFun_tvRecepcion.size() > 0) {
+                            agregarError("semantico", 1, ArreFilaColumnaToken.get(pos - 1), "Variable ---> " + control);
+                        } else {
+                            ArreFun_tvRecepcion.add("def " + control);
+                        }
                         break;
                     case "#vRecepcion":
-                        ArreFun_vRecepcion.add("def " + control);
+                        if (ArreFun_vRecepcion.size() > 0) {
+                            agregarError("semantico", 1, ArreFilaColumnaToken.get(pos - 1), "Variable ---> " + control);
+                        } else {
+                            ArreFun_vRecepcion.add("def " + control);
+                        }
                         break;
                     case "#alarma":
-                        ArreFun_Alarma.add("def " + control);
+                        if (ArreFun_Alarma.size() > 0) {
+                            agregarError("semantico", 1, ArreFilaColumnaToken.get(pos - 1), "Variable ---> " + control);
+                        } else {
+                            ArreFun_Alarma.add("def " + control);
+                        }
                         break;
                     case "#caja":
-                        ArreFun_Caja.add("def " + control);
+                        if (ArreFun_Caja.size() > 0) {
+                            agregarError("semantico", 1, ArreFilaColumnaToken.get(pos - 1), "Variable ---> " + control);
+                        } else {
+                            ArreFun_Caja.add("def " + control);
+                        }
                         break;
                     case "#cortadora":
-                        ArreFun_Cortador.add("def " + control);
+                        if (ArreFun_Cortador.size() > 0) {
+                            agregarError("semantico", 1, ArreFilaColumnaToken.get(pos - 1), "Variable ---> " + control);
+                        } else {
+                            ArreFun_Cortador.add("def " + control);
+                        }
                         break;
                     default:
                 }
