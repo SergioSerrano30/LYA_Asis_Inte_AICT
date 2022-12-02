@@ -1,24 +1,18 @@
- INICIO $programa {
+INICIO $programa {
     PRINCIPAL(){
 //Bloque de codigo
-//def #aspPatio;
-$veces = 5; 
-$y =4;
-if($y<=$veces){
-$veces = 5; 
-$y =4;
-}
-aspersor_activar( #aspPatio);
-for(5){
-def #panelPatio;
-panel_encender(#panelPatio);
-panel_girar(#panelPatio,$y);
-panel_girar(#panelPatio,20);
-panel_girar(#panelPatio,10);
-panel_girar(#panelPatio,120);
+        def #pSala1;
+        def #aspPatio;
+        def #panelPatio;
+       $x = 5;
+       $y = "Cerrado";   
+        puerta_abrir(#pSala1);
+        aspersor_activar(#aspPatio);
+        panel_encender(#panelPatio);
+        panel_girar(#panelPatio,10);
 
-}   
-}
-}
+//Fin bloque de codigo
+    }//Fin PRINCIPAL
+}//Fin INICIO
 FINAL
-
+//NO AGREGAR CODIGO DESPUES DE LA PALABRA FINAL
