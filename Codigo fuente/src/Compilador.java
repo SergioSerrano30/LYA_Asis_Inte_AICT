@@ -434,7 +434,7 @@ public class Compilador extends javax.swing.JFrame {
         lexicalAnalysis();
         sintactico();
         semanticAnalysis();
-        codigoIntermedio();
+
         printConsole();
 
         codeHasBeenCompiled = true;
@@ -668,6 +668,7 @@ public class Compilador extends javax.swing.JFrame {
             }
             //mensaje(msg);
 
+            codigoIntermedio();
         }
         txtConsola.setCaretPosition(0);
     }
@@ -746,7 +747,7 @@ public class Compilador extends javax.swing.JFrame {
         opCaja = new javax.swing.JMenuItem();
         opCortadora = new javax.swing.JMenuItem();
         opCodIntermedio = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
+        opCodigoOptimizado = new javax.swing.JMenuItem();
         opObjeto = new javax.swing.JMenuItem();
 
         jMenu1.setText("jMenu1");
@@ -1207,13 +1208,13 @@ public class Compilador extends javax.swing.JFrame {
         });
         opciones.add(opCodIntermedio);
 
-        jMenuItem2.setText("Código optimizado");
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+        opCodigoOptimizado.setText("Código optimizado");
+        opCodigoOptimizado.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2ActionPerformed(evt);
+                opCodigoOptimizadoActionPerformed(evt);
             }
         });
-        opciones.add(jMenuItem2);
+        opciones.add(opCodigoOptimizado);
 
         opObjeto.setText("Código objeto");
         opObjeto.addActionListener(new java.awt.event.ActionListener() {
@@ -1581,7 +1582,7 @@ public class Compilador extends javax.swing.JFrame {
         pila.setVisible(true);
     }//GEN-LAST:event_opPanelPatioActionPerformed
 
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+    private void opCodigoOptimizadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opCodigoOptimizadoActionPerformed
         if (err != null) {
             err.dispose();
         }
@@ -1601,7 +1602,7 @@ public class Compilador extends javax.swing.JFrame {
 
         VentanaOptimizado();
 
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
+    }//GEN-LAST:event_opCodigoOptimizadoActionPerformed
 
     private void opObjetoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opObjetoActionPerformed
         String codVars = "" + "\n";
@@ -1619,6 +1620,7 @@ public class Compilador extends javax.swing.JFrame {
                 default:
             }
             codVars += tipo + " " + name + ";\n";
+
         }
 
         String t[] = this.getTitle().split(".aict");
@@ -1690,7 +1692,6 @@ public class Compilador extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JPopupMenu.Separator jSeparator1;
@@ -1704,6 +1705,7 @@ public class Compilador extends javax.swing.JFrame {
     private javax.swing.JMenuItem opBanda;
     private javax.swing.JMenuItem opCaja;
     private javax.swing.JMenuItem opCodIntermedio;
+    private javax.swing.JMenuItem opCodigoOptimizado;
     private javax.swing.JMenuItem opCompilar;
     private javax.swing.JMenuItem opCopiar;
     private javax.swing.JMenuItem opCortadora;
@@ -2165,7 +2167,7 @@ public class Compilador extends javax.swing.JFrame {
                     }
                 } else if (ArreToken.get(pos - 2).equals("cortadora_activar") || ArreToken.get(pos - 2).equals("cortadora_desactivar")
                         || ArreToken.get(pos - 2).equals("ventilador_activar") || ArreToken.get(pos - 2).equals("ventilador_desactivar")
-                        || ArreToken.get(pos - 2).equals("iluminacion_activar") || ArreToken.get(pos - 2).equals("iluminacion_desactivar")
+                        || ArreToken.get(pos - 2).equals("iluminacion_encender") || ArreToken.get(pos - 2).equals("iluminacion_apagar")
                         || ArreToken.get(pos - 2).equals("banda_activar") || ArreToken.get(pos - 2).equals("banda_desactivar")
                         || ArreToken.get(pos - 2).equals("puerta_abrir") || ArreToken.get(pos - 2).equals("puerta_cerrar")
                         || ArreToken.get(pos - 2).equals("tv_encender") || ArreToken.get(pos - 2).equals("tv_apagar")
@@ -2226,6 +2228,8 @@ public class Compilador extends javax.swing.JFrame {
                                         } else {//Si existe la variable
                                             if (var.tipo().equals("Cadena")) {
                                                 agregarError("semantico", 4, ArreFilaColumnaToken.get(pos - 1), "Variable ---> " + ArreToken.get(pos));
+                                            }else if(Integer.parseInt(var.valor())  < 0 || Integer.parseInt(var.valor()) > 180){
+                                                agregarError("semantico", 27, ArreFilaColumnaToken.get(pos - 1), "Variable ---> " + ArreToken.get(pos));
                                             }
                                         }
                                         agregarFuncionDosParams(fncCoV_NoVNombre, fncCoV_NoVValor_CoV, fncCoV_NoVTipo_CoV, ArreToken.get(pos), ArreNomToken.get(pos), ArreFilaColumnaToken.get(pos - 1));
@@ -2890,12 +2894,12 @@ public class Compilador extends javax.swing.JFrame {
 
     public ArrayList<String> codigoIntermedio() {
         String codigo = txtCodigo.getText();
-     // codigo = codigo.replaceAll("//.*", "");
+        // codigo = codigo.replaceAll("//.*", "");
         codigo = codigo.replaceAll("[\r]+", "");
         System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXx");
         System.out.println(codigo);
         System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXx");
-        String expregularnumero = "(//.*|\\}|\\{|panel_girar[\t\s]*\\([\t\s]*(#alarma|#aspPatio|#caja|#cortadora|#iluPrincipal|#iluRepecion|#iluSala1|#iluSala2|#panelPatio|#pRecepcion|#pSala1|#pSala2|#tvRecepcion|#vRecepcion)[\t\s]*,[\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*\\))|((cortadora_activar|ventilador_activar|iluminacion_activar|banda_activar|puerta_abrir|tv_encender|cajafuerte_desactivar|panel_encender|aspersor_activar)[\t\s]*\\([\t\s]*(#alarma|#aspPatio|#caja|#cortadora|#iluPrincipal|#iluRepecion|#iluSala1|#iluSala2|#panelPatio|#pRecepcion|#pSala1|#pSala2|#tvRecepcion|#vRecepcion)[\t\s]*\\))|(for[\t\s]*\\([\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*\\))|(if[\t\s]*\\([\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*(>|<|>=|<=|==|!=)[\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*\\))|(\\$[A-Za-zÑñÁÉÍÓÚ]+[\t\s]*=[\t\s]*([0-9]+|\".*\"))";
+        String expregularnumero = "(//.*|\\}|\\{|panel_girar[\t\s]*\\([\t\s]*(#alarma|#aspPatio|#caja|#cortadora|#iluPrincipal|#iluRepecion|#iluSala1|#iluSala2|#panelPatio|#pRecepcion|#pSala1|#pSala2|#tvRecepcion|#vRecepcion)[\t\s]*,[\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*\\))|((cortadora_activar|cortadora_desactivar|ventilador_activar|ventilador_desactivar|iluminacion_encender|iluminacion_apagar|banda_activar|banda_desactivar|puerta_abrir|puerta_cerrar|tv_encender|tv_apagar|cajafuerte_desactivar|panel_encender|aspersor_activar)[\t\s]*\\([\t\s]*(#alarma|#aspPatio|#caja|#cortadora|#iluPrincipal|#iluRecepcion|#iluSala1|#iluSala2|#panelPatio|#pRecepcion|#pSala1|#pSala2|#tvRecepcion|#vRecepcion)[\t\s]*\\))|(for[\t\s]*\\([\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*\\))|(if[\t\s]*\\([\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*(>|<|>=|<=|==|!=)[\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*\\))|(\\$[A-Za-zÑñÁÉÍÓÚ]+[\t\s]*=[\t\s]*([0-9]+|\".*\"))";
         return matches(codigo, expregularnumero);
         //(cortadora_activar|ventilador_activar|iluminacion_activar|banda_activar|puerta_abrir|tv_encender|cajafuerte_desactivar|panel_encender|aspersor_activar)
         //(#alarma|#aspPatio|#caja|#cortadora|#iluPrincipal|#iluRepecion|#iluSala1|#iluSala2|#panelPatio|#pRecepcion|#pSala1|#pSala2|#tvRecepcion|#vRecepcion)
@@ -2978,14 +2982,14 @@ public class Compilador extends javax.swing.JFrame {
                         break;
                     case "#pSala1":
                         if (ArreFun_pSala1.size() > 1) {
-                            ArreFun_pSala1.remove(ArreFun_pRecepcion.size() - 1);
+                            ArreFun_pSala1.remove(ArreFun_pSala1.size() - 1);
                         } else {
-                            agregarError("semantico", 5, ArreFilaColumnaToken.get(pos - 1), "Cerrando ---> " + variable);
+                            agregarError("semantico", 5, ArreFun_pSala1.get(pos - 1), "Cerrando ---> " + variable);
                         }
                         break;
                     case "#pSala2":
                         if (ArreFun_pSala2.size() > 1) {
-                            ArreFun_pSala2.remove(ArreFun_pRecepcion.size() - 1);
+                            ArreFun_pSala2.remove(ArreFun_pSala2.size() - 1);
                         } else {
                             agregarError("semantico", 5, ArreFilaColumnaToken.get(pos - 1), "Cerrando ---> " + variable);
                         }

@@ -27,6 +27,7 @@ const int servoSala1 = 9;
 const int servoSala2 = 10;
 const int servoAspersor = 11;
 const int servoPanel = 12;
+int tiempo = 1000;
 
 void iluminacion_desactivar(int led);
 void iluminacion_activar(int led);
@@ -79,17 +80,13 @@ void setup() {
   serPanel.write(0);
 
   // Esperamos 1 segundo.
-  delay(1000);
+  delay(tiempo);
 
   //INICIO CODIGO GENERADO EN COMPILADOR
 
  x=2;
  veces=5;
  y=4;
- if(y>=veces){
-aspersor_activar();
-
-}
  for(int i = 0; i<5; i++){
 panel_encender();
 
@@ -137,7 +134,7 @@ void iluminacion_desactivar(int led) {
       digitalWrite(ledSala2, LOW);
       break;
   }
-  delay(250);
+  delay(tiempo);
 }
 void iluminacion_activar(int led) {
   switch (led) {
@@ -155,7 +152,7 @@ void iluminacion_activar(int led) {
       digitalWrite(ledSala2, HIGH);
       break;
   }
-  delay(250);
+  delay(tiempo);
 }
 void puerta_abrir(int puerta) {
   switch (puerta) {
@@ -172,7 +169,7 @@ void puerta_abrir(int puerta) {
       serSala2.write(80);
       break;
   }
-  delay(250);
+  delay(tiempo);
 }
 void puerta_cerrar(int puerta) {
   switch (puerta) {
@@ -189,45 +186,45 @@ void puerta_cerrar(int puerta) {
       serSala2.write(0);
       break;
   }
-  delay(250);
+  delay(tiempo);
 }
 void ventilador_activar() {
   digitalWrite(motorVentilador, HIGH);
-  delay(1000);
+  delay(tiempo+1000);
 }
 void ventilador_desactivar() {
   digitalWrite(motorVentilador, LOW);
-  delay(1000);
+  delay(tiempo);
 }
 void panel_encender() {
   // Panel (rango de 0 a 180).
   serPanel.write(90);
-  delay(250);
+  delay(tiempo);
 }
 void panel_apagar() {
   // Panel (rango de 0 a 180).
   serPanel.write(0);
-  delay(250);
+  delay(tiempo);
 }
 void panel_girar(int grados) {
   // Panel (rango de 0 a 180).
   serPanel.write(grados);
-  delay(250);
+  delay(tiempo);
 }
 void aspersor_activar() {
   // Aspersor.
   for (pos = 0; pos <= 180; pos += 10) {
     serAspersor.write(pos);
-    delay(250);
+    delay(tiempo);
   }
 
 
   for (pos = 180; pos <= 0; pos += 10) {
     serAspersor.write(pos);
-    delay(250);
+    delay(tiempo);
   }
 }
 void aspersor_desactivar() {
   serAspersor.write(0);
-  delay(250);
+  delay(tiempo);
 }

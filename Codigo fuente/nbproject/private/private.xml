@@ -1,21 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="16">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="19">
+        <file>
+            <url>src/VentanaObjeto.java</url>
+            <bookmark id="19">
+                <name/>
+                <line>201</line>
+                <key/>
+            </bookmark>
+        </file>
         <file>
             <url>src/Compilador.java</url>
             <bookmark id="12">
                 <name/>
-                <line>210</line>
+                <line>211</line>
+                <key/>
+            </bookmark>
+            <bookmark id="17">
+                <name/>
+                <line>431</line>
+                <key/>
+            </bookmark>
+            <bookmark id="18">
+                <name/>
+                <line>1987</line>
                 <key/>
             </bookmark>
             <bookmark id="16">
                 <name/>
-                <line>2053</line>
+                <line>2181</line>
                 <key/>
             </bookmark>
             <bookmark id="15">
                 <name/>
-                <line>2157</line>
+                <line>2287</line>
                 <key/>
             </bookmark>
         </file>
@@ -23,6 +41,8 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/D:/Tec%20AGO-DIC%202022/Automatas%202/LYA_Asis_Inte_AICT/Codigo%20fuente/src/Compilador.java</file>
+            <file>file:/D:/Tec%20AGO-DIC%202022/Automatas%202/LYA_Asis_Inte_AICT/Codigo%20fuente/src/Lexer.flex</file>
+            <file>file:/D:/Tec%20AGO-DIC%202022/Automatas%202/LYA_Asis_Inte_AICT/Codigo%20fuente/src/VentanaObjeto.java</file>
         </group>
     </open-files>
 </project-private>

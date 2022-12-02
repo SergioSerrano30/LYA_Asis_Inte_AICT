@@ -179,7 +179,7 @@ public class VentanaObjeto extends javax.swing.JFrame {
             FileWriter fw = new FileWriter(file);
             BufferedWriter bw = new BufferedWriter(fw);
             bw.write(cod);
-            JOptionPane.showMessageDialog(this, "Archivo guardado");
+            //JOptionPane.showMessageDialog(this, "Archivo guardado");
 
             bw.close();
         } catch (Exception e) {
@@ -201,11 +201,11 @@ public class VentanaObjeto extends javax.swing.JFrame {
             //codigo = "Funcion ---> " + info[0] + " Lugar ---> " + info[1];
             String parte1 = "";
             switch (info[0]) {
-                case "iluminacion_activar":
+                case "iluminacion_encender":
                     parte1 = complemento(info[1]);
                     codigo = info[0] + parte1;
                     break;
-                case "iluminacion_desactivar":
+                case "iluminacion_apagar":
                     parte1 = complemento(info[1]);
                     codigo = info[0] + parte1;
                     break;
@@ -219,11 +219,11 @@ public class VentanaObjeto extends javax.swing.JFrame {
                     break;
                 case "ventilador_activar":
                     parte1 = complemento(info[1]);
-                    codigo = info[0]+parte1;
+                    codigo = info[0]+"();\n";
                     break;
                 case "ventilador_desactivar":
                     parte1 = complemento(info[1]);
-                    codigo = info[0]+parte1;
+                    codigo = info[0]+"();\n";
                     break;
                 case "panel_encender":
                     codigo = info[0]+"();\n";
@@ -317,9 +317,10 @@ public class VentanaObjeto extends javax.swing.JFrame {
                 + "const int servoSala2 = 10;\n"
                 + "const int servoAspersor = 11;\n"
                 + "const int servoPanel = 12;\n"
+                + "int tiempo = 1000;\n"
                 + "\n"
-                + "void iluminacion_desactivar(int led);\n"
-                + "void iluminacion_activar(int led);\n"
+                + "void iluminacion_apagar(int led);\n"
+                + "void iluminacion_encender(int led);\n"
                 + "void puerta_abrir(int puerta);\n"
                 + "void puerta_cerrar(int puerta);\n"
                 + "void ventilador_activar();\n"
@@ -366,7 +367,7 @@ public class VentanaObjeto extends javax.swing.JFrame {
                 + "  serPanel.write(0);\n"
                 + "\n"
                 + "  // Esperamos 1 segundo.\n"
-                + "  delay(1000);\n"
+                + "  delay(tiempo);\n"
                 + "\n"
                 + "  //INICIO CODIGO GENERADO EN COMPILADOR\n\n";
 
@@ -390,7 +391,7 @@ public class VentanaObjeto extends javax.swing.JFrame {
                 + "\n"
                 + "*/\n"
                 + "\n"
-                + "void iluminacion_desactivar(int led) {\n"
+                + "void iluminacion_apagar(int led) {\n"
                 + "  switch (led) {\n"
                 + "    case 1:\n"
                 + "      digitalWrite(ledRecepcion, LOW);\n"
@@ -406,9 +407,9 @@ public class VentanaObjeto extends javax.swing.JFrame {
                 + "      digitalWrite(ledSala2, LOW);\n"
                 + "      break;\n"
                 + "  }\n"
-                + "  delay(250);\n"
+                + "  delay(tiempo);\n"
                 + "}\n"
-                + "void iluminacion_activar(int led) {\n"
+                + "void iluminacion_encender(int led) {\n"
                 + "  switch (led) {\n"
                 + "    case 1:\n"
                 + "      digitalWrite(ledRecepcion, HIGH);\n"
@@ -424,7 +425,7 @@ public class VentanaObjeto extends javax.swing.JFrame {
                 + "      digitalWrite(ledSala2, HIGH);\n"
                 + "      break;\n"
                 + "  }\n"
-                + "  delay(250);\n"
+                + "  delay(tiempo);\n"
                 + "}\n"
                 + "void puerta_abrir(int puerta) {\n"
                 + "  switch (puerta) {\n"
@@ -441,7 +442,7 @@ public class VentanaObjeto extends javax.swing.JFrame {
                 + "      serSala2.write(80);\n"
                 + "      break;\n"
                 + "  }\n"
-                + "  delay(250);\n"
+                + "  delay(tiempo);\n"
                 + "}\n"
                 + "void puerta_cerrar(int puerta) {\n"
                 + "  switch (puerta) {\n"
@@ -458,30 +459,30 @@ public class VentanaObjeto extends javax.swing.JFrame {
                 + "      serSala2.write(0);\n"
                 + "      break;\n"
                 + "  }\n"
-                + "  delay(250);\n"
+                + "  delay(tiempo);\n"
                 + "}\n"
                 + "void ventilador_activar() {\n"
                 + "  digitalWrite(motorVentilador, HIGH);\n"
-                + "  delay(1000);\n"
+                + "  delay(tiempo+1000);\n"
                 + "}\n"
                 + "void ventilador_desactivar() {\n"
                 + "  digitalWrite(motorVentilador, LOW);\n"
-                + "  delay(1000);\n"
+                + "  delay(tiempo);\n"
                 + "}\n"
                 + "void panel_encender() {\n"
                 + "  // Panel (rango de 0 a 180).\n"
                 + "  serPanel.write(90);\n"
-                + "  delay(250);\n"
+                + "  delay(tiempo);\n"
                 + "}\n"
                 + "void panel_apagar() {\n"
                 + "  // Panel (rango de 0 a 180).\n"
                 + "  serPanel.write(0);\n"
-                + "  delay(250);\n"
+                + "  delay(tiempo);\n"
                 + "}\n"
                 + "void panel_girar(int grados) {\n"
                 + "  // Panel (rango de 0 a 180).\n"
                 + "  serPanel.write(grados);\n"
-                + "  delay(250);\n"
+                + "  delay(tiempo);\n"
                 + "}\n"
                 + "void aspersor_activar() {\n"
                 + "  // Aspersor.\n"
@@ -498,7 +499,7 @@ public class VentanaObjeto extends javax.swing.JFrame {
                 + "}\n"
                 + "void aspersor_desactivar() {\n"
                 + "  serAspersor.write(0);\n"
-                + "  delay(250);\n"
+                + "  delay(tiempo);\n"
                 + "}";
         String codP2 = codigoObjeto + "\n";
 
