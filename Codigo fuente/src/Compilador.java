@@ -90,7 +90,8 @@ public class Compilador extends javax.swing.JFrame {
     Automata auto;
     VentanaErrores venErrores;
     OpcionesGrama opcGrama;
-    VentanaCuadruplos vIntermedio;
+    VentanaCuadruplos vtnIntermedio;
+    VentanaOptimizado vtnOptimizado;
     private String fncCoV_NoVNombre = "";
     private String fncCoV_NoVValor_CoV = "";
     private String fncCoV_NoVTipo_CoV = "";
@@ -435,7 +436,7 @@ public class Compilador extends javax.swing.JFrame {
         semanticAnalysis();
         codigoIntermedio();
         printConsole();
-        
+
         codeHasBeenCompiled = true;
         //a_dOpciones();
 
@@ -486,7 +487,7 @@ public class Compilador extends javax.swing.JFrame {
         String cadenaOpti = "";
         ArrayList<String> Arre = codigoIntermedio();
         System.out.println("=================\n" + Arre);
-        VentanaCuadruplos vtnIntermedio = new VentanaCuadruplos(cadena);
+        vtnIntermedio = new VentanaCuadruplos(cadena);
         Functions.clearDataInTable(vtnIntermedio.tblCuadru);
         for (int a = 0; a < Arre.size(); a++) {
             ArbolExpresion arbolExpresionArit = new ArbolExpresion();
@@ -498,6 +499,7 @@ public class Compilador extends javax.swing.JFrame {
                 If_For = "if";
                 if (Arre.get(a + 1).equals("{") && Arre.get(a + 2).equals("}")) {
                     cadenaOpti = cadenaOpti + "\n\n label L1\n";
+                    cadena = cadena + "\n\n label L1\n";
                     Estado = "NoCodigo";
                 } else {
                     Estado = "SiCodigo";
@@ -508,6 +510,7 @@ public class Compilador extends javax.swing.JFrame {
                 If_For = "for";
                 if (Arre.get(a + 1).equals("{") && Arre.get(a + 2).equals("}")) {
                     cadenaOpti = cadenaOpti + "\n\n goto L1\n label L2\n\n";
+                    cadena = cadena + "\n\n goto L1\n label L2\n\n";
                     Estado = "NoCodigo";
                 } else {
                     Estado = "SiCodigo";
@@ -515,10 +518,12 @@ public class Compilador extends javax.swing.JFrame {
             }
             if (cad.contains("}") && Estado.equals("SiCodigo") && If_For.equals("if")) {
                 cadenaOpti = cadenaOpti + "\n\n label L1\n";
+                cadena = cadena + "\n\n label L1\n";
                 If_For = "NoBucles";
             }
             if (cad.contains("}") && Estado.equals("SiCodigo") && If_For.equals("for")) {
                 cadenaOpti = cadenaOpti + "\n\n goto L1\n label L2\n\n";
+                cadena = cadena + "\n\n goto L1\n label L2\n\n";
                 If_For = "NoBucles";
             }
             System.out.println("CadenaOptimazada\n" + Cadena[1]);
@@ -541,6 +546,62 @@ public class Compilador extends javax.swing.JFrame {
         CodigoOptimizado = cadenaOpti;
         vtnIntermedio.setCadena(cadena);
         vtnIntermedio.setVisible(true);
+    }
+
+    private void VentanaOptimizado() {
+        String Estado = "";
+        String If_For = "";
+        String cadena = "";
+        String cadenaOpti = "";
+        ArrayList<String> Arre = codigoIntermedio();
+        vtnOptimizado = new VentanaOptimizado(cadenaOpti);
+        System.out.println("=================\n" + Arre);
+        for (int a = 0; a < Arre.size(); a++) {
+            ArbolExpresion arbolExpresionArit = new ArbolExpresion();
+            String cad = Arre.get(a);
+            String Cadena[] = arbolExpresionArit.crearArbol(cad);
+            cadena = cadena + Cadena[0];
+            cadenaOpti = cadenaOpti + Cadena[1];
+            if (cad.contains("if")) {
+                If_For = "if";
+                if (Arre.get(a + 1).equals("{") && Arre.get(a + 2).equals("}")) {
+                    cadenaOpti = cadenaOpti + "\n\n label L1\n";
+                    cadena = cadena + "\n\n label L1\n";
+                    Estado = "NoCodigo";
+                } else {
+                    Estado = "SiCodigo";
+                }
+            }
+            // "\n goto L1\n label L2\n\n" ; 
+            if (cad.contains("for")) {
+                If_For = "for";
+                if (Arre.get(a + 1).equals("{") && Arre.get(a + 2).equals("}")) {
+                    cadenaOpti = cadenaOpti + "\n\n goto L1\n label L2\n\n";
+                    cadena = cadena + "\n\n goto L1\n label L2\n\n";
+                    Estado = "NoCodigo";
+                } else {
+                    Estado = "SiCodigo";
+                }
+            }
+            if (cad.contains("}") && Estado.equals("SiCodigo") && If_For.equals("if")) {
+                cadenaOpti = cadenaOpti + "\n\n label L1\n";
+                cadena = cadena + "\n\n label L1\n";
+                If_For = "NoBucles";
+            }
+            if (cad.contains("}") && Estado.equals("SiCodigo") && If_For.equals("for")) {
+                cadenaOpti = cadenaOpti + "\n\n goto L1\n label L2\n\n";
+                cadena = cadena + "\n\n goto L1\n label L2\n\n";
+                If_For = "NoBucles";
+            }
+            System.out.println("CadenaOptimazada\n" + Cadena[1]);
+
+            ArrayList<Cuadruplo> cuadruplos = arbolExpresionArit.getCuadruplos();
+        }
+        System.out.println("Tokens listos");
+        System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&\n" + cadena);
+        System.out.println("Optimizado\n" + cadenaOpti);
+        vtnOptimizado.setCadena(cadenaOpti);
+        vtnOptimizado.setVisible(true);
     }
 
     private void semanticAnalysis() {
@@ -568,7 +629,7 @@ public class Compilador extends javax.swing.JFrame {
                 }
             }
         }
-*/
+         */
     }
 
     private boolean sema_variables_repetidas() {
@@ -1437,6 +1498,10 @@ public class Compilador extends javax.swing.JFrame {
         if (opcGrama != null) {
             opcGrama.dispose();
         }
+        if (vtnOptimizado != null) {
+            vtnOptimizado.dispose();
+        }
+
         fillTablaCuadruplos();
     }//GEN-LAST:event_opCodIntermedioActionPerformed
 
@@ -1517,10 +1582,24 @@ public class Compilador extends javax.swing.JFrame {
     }//GEN-LAST:event_opPanelPatioActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        VentanaOptimizado vtnOptimizado = new VentanaOptimizado(CodigoOptimizado);
-        vtnOptimizado.setCadena(CodigoOptimizado);
-        vtnOptimizado.setVisible(true);
+        if (err != null) {
+            err.dispose();
+        }
+        if (auto != null) {
+            auto.dispose();
+        }
+        if (venErrores != null) {
+            venErrores.dispose();
+        }
 
+        if (opcGrama != null) {
+            opcGrama.dispose();
+        }
+        if (vtnIntermedio != null) {
+            vtnIntermedio.dispose();
+        }
+
+        VentanaOptimizado();
 
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
@@ -1539,11 +1618,11 @@ public class Compilador extends javax.swing.JFrame {
                     break;
                 default:
             }
-            codVars += tipo + " " + name+";\n";
+            codVars += tipo + " " + name + ";\n";
         }
 
         String t[] = this.getTitle().split(".aict");
-        VentanaObjeto vtnObjeto = new VentanaObjeto(t[0],codVars, CodigoOptimizado);
+        VentanaObjeto vtnObjeto = new VentanaObjeto(t[0], codVars, CodigoOptimizado);
         vtnObjeto.setVisible(true);
     }//GEN-LAST:event_opObjetoActionPerformed
 
@@ -2811,12 +2890,12 @@ public class Compilador extends javax.swing.JFrame {
 
     public ArrayList<String> codigoIntermedio() {
         String codigo = txtCodigo.getText();
-        codigo = codigo.replaceAll("//.*", "");
+     // codigo = codigo.replaceAll("//.*", "");
         codigo = codigo.replaceAll("[\r]+", "");
         System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXx");
         System.out.println(codigo);
         System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXx");
-        String expregularnumero = "(\\}|\\{|[\t\s]*panel_girar[\t\s]*\\([\t\s]*(#alarma|#aspPatio|#caja|#cortadora|#iluPrincipal|#iluRepecion|#iluSala1|#iluSala2|#panelPatio|#pRecepcion|#pSala1|#pSala2|#tvRecepcion|#vRecepcion)[\t\s]*,[\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*\\))|([\t\s]*(cortadora_activar|ventilador_activar|iluminacion_activar|banda_activar|puerta_abrir|tv_encender|cajafuerte_desactivar|panel_encender|aspersor_activar)[\t\s]*\\([\t\s]*(#alarma|#aspPatio|#caja|#cortadora|#iluPrincipal|#iluRepecion|#iluSala1|#iluSala2|#panelPatio|#pRecepcion|#pSala1|#pSala2|#tvRecepcion|#vRecepcion)[\t\s]*\\))|([\t\s]*def[\t\s]*(#alarma|#aspPatio|#caja|#cortadora|#iluPrincipal|#iluRepecion|#iluSala1|#iluSala2|#panelPatio|#pRecepcion|#pSala1|#pSala2|#tvRecepcion|#vRecepcion))|(for[\t\s]*\\([\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*\\))|(if[\t\s]*\\([\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*(>|<|>=|<=|==|!=)[\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*\\))|(\\$[A-Za-zÑñÁÉÍÓÚ]+[\t\s]*=[\t\s]*([0-9]+|\".*\"))";
+        String expregularnumero = "(//.*|\\}|\\{|panel_girar[\t\s]*\\([\t\s]*(#alarma|#aspPatio|#caja|#cortadora|#iluPrincipal|#iluRepecion|#iluSala1|#iluSala2|#panelPatio|#pRecepcion|#pSala1|#pSala2|#tvRecepcion|#vRecepcion)[\t\s]*,[\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*\\))|((cortadora_activar|ventilador_activar|iluminacion_activar|banda_activar|puerta_abrir|tv_encender|cajafuerte_desactivar|panel_encender|aspersor_activar)[\t\s]*\\([\t\s]*(#alarma|#aspPatio|#caja|#cortadora|#iluPrincipal|#iluRepecion|#iluSala1|#iluSala2|#panelPatio|#pRecepcion|#pSala1|#pSala2|#tvRecepcion|#vRecepcion)[\t\s]*\\))|(for[\t\s]*\\([\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*\\))|(if[\t\s]*\\([\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*(>|<|>=|<=|==|!=)[\t\s]*([0-9]+|\\$[A-Za-zÑñÁÉÍÓÚ]+)[\t\s]*\\))|(\\$[A-Za-zÑñÁÉÍÓÚ]+[\t\s]*=[\t\s]*([0-9]+|\".*\"))";
         return matches(codigo, expregularnumero);
         //(cortadora_activar|ventilador_activar|iluminacion_activar|banda_activar|puerta_abrir|tv_encender|cajafuerte_desactivar|panel_encender|aspersor_activar)
         //(#alarma|#aspPatio|#caja|#cortadora|#iluPrincipal|#iluRepecion|#iluSala1|#iluSala2|#panelPatio|#pRecepcion|#pSala1|#pSala2|#tvRecepcion|#vRecepcion)

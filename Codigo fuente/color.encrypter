@@ -6,14 +6,13 @@ def #aspPatio;
 $veces = 5;
 $y =4;
 def #pSala1;
-if($y>=$veces){
-aspersor_activar(#aspPatio);
-}
+
 //aspersor_activar(#aspPatio);
 for(5){
 def #panelPatio;
 panel_encender(#panelPatio);
 panel_girar(#panelPatio,120);
+//aspersor_activar(#panelPatio);
 //panel_apagar(#panelPatio);
 
 }  

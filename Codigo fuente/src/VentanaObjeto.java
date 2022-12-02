@@ -33,7 +33,7 @@ public class VentanaObjeto extends javax.swing.JFrame {
         title = titulo;
         setTitle(title);
         cod = codigo;
-        cod = generaIntermedio(variables, cod);
+        cod = generaOptimizado(variables, cod);
         txtCodigo.setText(cod);
         //directorio = new Directory(this, txtCodigo, title, ".ino");
     }
@@ -62,9 +62,9 @@ public class VentanaObjeto extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 48)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 51, 0));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Código objeto");
+        jLabel1.setText("CÓDIGO OBJETO");
         getContentPane().add(jLabel1);
-        jLabel1.setBounds(10, 10, 690, 60);
+        jLabel1.setBounds(0, 10, 700, 60);
 
         txtCodigo.setEditable(false);
         txtCodigo.setColumns(20);
@@ -253,7 +253,7 @@ public class VentanaObjeto extends javax.swing.JFrame {
         return codigo;
     }
 
-    private String generaIntermedio(String variables, String cod) {
+    private String generaOptimizado(String variables, String cod) {
         String codigoObjeto = "";
         String lineasCodigo[] = cod.split("\n");
         for (int i = 0; i < lineasCodigo.length; i++) {

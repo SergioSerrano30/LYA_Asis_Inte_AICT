@@ -34,7 +34,11 @@ public class ArbolExpresion {
         this.operandosPila.clear();
         this.operadoresPila.clear();
         if(expresion.equals("{")|expresion.equals("}")){
-        }else{
+        }
+        else if(expresion.contains("//")){
+        Ciclos=Ciclos+"\n"+expresion;
+        }
+        else{
         String[] e = expresion.split("(\\(|=|==|>|<|!=|#)", 2);
         asignacion = e[0]; 
         System. out. println("###UNO###\n"+e[0]);
@@ -43,72 +47,33 @@ public class ArbolExpresion {
         if (e[0].contains("if")) {
         String[] uno=expresion.split("(\\()", 2);
         String[] dos=uno[1].split("(\\))", 2);
-         Ciclos=Ciclos+"\n\n=============================================================\n"
-                      + expresion+"\n=============================================================\n"+"\n"+"T1= "+dos[0]+"\n"+
-                       "if_false T1 goto L1"+"\n.\n.\n.\n label L1\n\n" ;
-         CiclosOpti=CiclosOpti+"\n\n=============================================================\n"
-                      + expresion+"\n=============================================================\n"+"\n"+"T1= "+dos[0]+"\n"+
+         Ciclos=Ciclos+"\n\n============================\n"
+                      + expresion+"\n============================\n"+"\n"+"T1= "+dos[0]+"\n"+
+                       "if_false T1 goto L1\n" ;
+         CiclosOpti=CiclosOpti+"\n\n============================\n"
+                      + expresion+"\n============================\n"+"\n"+"T1= "+dos[0]+"\n"+
                        "if_false T1 goto L1\n" ;
         }
         else if (e[0].contains("for")) {
         String[] uno=expresion.split("(\\()", 2);
         String[] dos=uno[1].split("(\\))", 2);
-         Ciclos=Ciclos+"\n\n=============================================================\n"
-                      + expresion+"\n=============================================================\n"+"\n"+"Label L1\n"+"T1= "+dos[0]+"-1\n"+
+         Ciclos=Ciclos+"\n\n============================\n"
+                      + expresion+"\n============================\n"+"\n"+"Label L1\n"+"T1= "+dos[0]+"-1\n"+
                      "T2= T1>=0\n"+  
-                 "if_false T2 goto L2"+"\n.\n.\n.\n goto L1\n label L2\n\n" ;
-        CiclosOpti=CiclosOpti+"\n\n=============================================================\n"
-                      + expresion+"\n=============================================================\n"+"\n"+"Label L1\n"+"T1= "+dos[0]+"-1\n"+
+                 "if_false T2 goto L2\n" ;
+        CiclosOpti=CiclosOpti+"\n\n============================\n"
+                      + expresion+"\n============================\n"+"\n"+"Label L1\n"+"T1= "+dos[0]+"-1\n"+
                      "T2= T1>=0\n"+  
                  "if_false T2 goto L2\n";
         }
         else if (e[0].contains("(cortadora_activar|ventilador_activar|iluminacion_activar|banda_activar|puerta_abrir|tv_encender|cajafuerte_desactivar|panel_encender|aspersor_activar|panel_girar)")) {
-           CiclosOpti=CiclosOpti+"\n"+expresion;
+            Ciclos=Ciclos+"\n"+expresion;
+            CiclosOpti=CiclosOpti+"\n"+expresion;
         }
-        else if (e[1].contains("aspPatio")){
-        CiclosOpti=CiclosOpti+"\n"+expresion;
-        }
-        else if (e[1].contains("alarma")){
-        CiclosOpti=CiclosOpti+"\n"+expresion;
-        }
-        else  if (e[1].contains("caja")){
-        CiclosOpti=CiclosOpti+"\n"+expresion;
-        }
-        else if (e[1].contains("cortadora")){
-        CiclosOpti=CiclosOpti+"\n"+expresion;
-        }
-        else if (e[1].contains("iluPrincipal")){
-        CiclosOpti=CiclosOpti+"\n"+expresion;
-        }
-        else if (e[1].contains("iluRepecion")){
-        CiclosOpti=CiclosOpti+"\n"+expresion;
-        }
-        else if (e[1].contains("iluSala1")){
-        CiclosOpti=CiclosOpti+"\n"+expresion;
-        }
-        else if (e[1].contains("iluSala2")){
-        CiclosOpti=CiclosOpti+"\n"+expresion;
-        }
-        else if (e[1].contains("panelPatio")){
-        CiclosOpti=CiclosOpti+"\n"+expresion;
-        }
-        else if (e[1].contains("pRecepcion")){
-        CiclosOpti=CiclosOpti+"\n"+expresion;
-        }
-        else if (e[1].contains("pSala1")){
-        CiclosOpti=CiclosOpti+"\n"+expresion;
-        }
-        else if (e[1].contains("pSala2")){
-        CiclosOpti=CiclosOpti+"\n"+expresion;
-        }
-        else if (e[1].contains("tvRecepcion")){
-        CiclosOpti=CiclosOpti+"\n"+expresion;
-        }
-        else if (e[1].contains("vRecepcion")){
-        CiclosOpti=CiclosOpti+"\n"+expresion;
-        }
+        
      //#alarma|#aspPatio|#caja|#cortadora|#iluPrincipal|#iluRepecion|#iluSala1|#iluSala2|#panelPatio|#pRecepcion|#pSala1|#pSala2|#tvRecepcion|#vRecepcion   
     else{
+            Ciclos=Ciclos+"\n"+expresion;
             CiclosOpti=CiclosOpti+"\n"+expresion;
             operaciones = contarOperacionesArit(e[1].trim());
             crearArbolAritmetico(e[1]);
